@@ -1,0 +1,70 @@
+{
+
+  "format_version": 2,
+
+  "header": {
+
+    "name": "§6§lUtility Mod Plus",
+
+    "description": "§9§lWhat is Utility Mod +, Utility Mod + is a paid version of Utility Mod it helps you to protect your server and make it look cooler. \n§bMade By: mp09",
+
+    "min_engine_version": [1, 20, 0],
+
+    "uuid": "d2b92634-5f4b-47c3-92de-5ade0e67dea1",
+
+    "version": [17, 0, 0]
+
+  },
+
+  "modules": [
+
+    {
+
+      "description": "Data Module",
+
+      "type": "data",
+
+      "uuid": "b8a89370-6787-4111-a904-89a54cd5f721",
+
+      "version": [1, 0, 0]
+
+    },
+
+    {
+
+      "description": "Gametest Module",
+
+      "language": "javascript",
+
+      "type": "script",
+
+      "uuid": "20301768-94eb-4344-838a-fc80aeb68343",
+
+      "version": [1, 0, 0],
+
+      "entry": "scripts/main.js"
+
+    }
+
+  ],
+  "dependencies": [{
+    "module_name": "@minecraft/server",
+    "version": "1.4.0-beta"
+  },
+  {
+    "module_name": "@minecraft/server-ui",
+    "version": "1.2.0-beta"
+  }
+  ],
+
+  "metadata": {
+
+    "authors": ["MP09"],
+
+    "license": "MIT",
+
+    "url": ""
+
+  }
+
+}
