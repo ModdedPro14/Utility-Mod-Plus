@@ -18,18 +18,6 @@ class Player {
         if (!plr)
             return;
         return Object.assign(player, {
-            event:{
-                /**
-                 * Clears the velocity of the player
-                 * @returns 
-                 */
-                clearVelocity: () => this.clearVelocity(plr),
-                /**
-                 * Applies knockback to the player that s been hit 
-                 * @returns 
-                 */
-                applyKnockback: () => this.applyKnockback(plr),
-                  },
             response: {
                 /**
                  * Send a message to the player
