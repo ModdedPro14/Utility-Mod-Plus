@@ -5,8 +5,6 @@ import { CX } from '../../API/CX';
 CX.Build(CX.BuildTypes['@event'], {
     data: 'EntityHurt',
     executes(data) {
-        data.hurtEntity.clearVelocity()
-        data.hurtEntity.applyKnockback(0, 0, 0, 1.3);
         if (config.damageIndicators)
             CX.extra.indicator(data.hurtEntity, `§c§l${(data.damage / 2).toFixed(1)}`, [0, -0.1, 0], [CX.extra.random(-1, 1), 0.5, CX.extra.random(-1, 1)]);
     }
