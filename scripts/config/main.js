@@ -238,5 +238,5 @@ export const config = {
         ':frowning2:': ''
     }
 };
-export const bounties = [], playerRequests = [];
+export const bounties = [], playerRequests = [], log = new Map()
 export default config;

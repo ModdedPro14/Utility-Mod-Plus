@@ -1,6 +1,6 @@
 import { system, world, EquipmentSlot, GameMode } from "@minecraft/server";
 import { Area } from "../../API/handlers/protect";
-import config, { playerRequests } from "../../config/main";
+import config, { playerRequests, log } from "../../config/main";
 import { Databases } from "../../API/handlers/databases";
 import { CX } from "../../API/CX";
 import { ItemDB } from "../../API/Item Database/main";
@@ -232,5 +232,13 @@ system.runInterval(() => {
             })
             plr.applyDamage(10)
         }
+    })
+})
+
+system.runInterval(() => {
+    world.getPlayers({ excludeTags: [config.adminTag] }).forEach(player => {
+        try {
+            log.set(player, log.get(player).map(e => e - 1).filter(e => e !== 0))
+        } catch {}
     })
 })

@@ -1,7 +1,8 @@
 import { CX } from "../../API/CX";
-import { Player, EquipmentSlot } from "@minecraft/server";
+import { Player, EquipmentSlot, system, world } from "@minecraft/server";
 import { Databases } from "../../API/handlers/databases";
-import config from "../../config/main";
+import config, { log } from "../../config/main";
+
 CX.Build(CX.BuildTypes["@event"], {
     data: 'EntityHitEntity',
     executes(data) {
@@ -57,7 +58,18 @@ CX.Build(CX.BuildTypes["@event"], {
     data: 'EntityHitEntity',
     executes(data) {
         if (!(data.damagingEntity instanceof Player) || data.damagingEntity.hasTag(config.adminTag)) return;
-        AAC(data.damagingEntity);
+        const arr = (log.get(data.damagingEntity) ?? [])
+        arr.push(11)
+        log.set(data.damagingEntity, arr)
+        if (arr.length > 20) {
+            new CX.log({
+                reason: 'Auto Clicker',
+                translate: 'AntiCheat',
+                from: data.damagingEntity.name,
+                warn: true
+            })
+            data.damagingEntity.kill()
+        }
         if (AKA(data.damagingEntity, data.hitEntity)) {
             new CX.log({
                 reason: 'Kill Aura',
@@ -77,31 +89,4 @@ const AKA = (attacker, target) => {
         return angleInDegrees > 90 && distance >= 4;
     }
     return false;
-}
-const log = new Map()
-const AAC = (player) => {
-    const currentTime = Date.now();
-    const lastData = log.get(`${player.id}-clickData`) || { lastClickTime: 0, cpsHistory: [] };
-    const lastClickTime = lastData.lastClickTime;
-    const cpsHistory = lastData.cpsHistory;
-    if (lastClickTime && currentTime - lastClickTime > 1) {
-        const timeBetweenClicks = currentTime - lastClickTime;
-        const cps = 1000 / timeBetweenClicks;
-        if (isFinite(cps)) {
-            cpsHistory.push(cps);
-            if (cpsHistory.length > 5) cpsHistory.shift();
-            const CPS = cpsHistory.reduce((acc, val) => acc + val, 0) / cpsHistory.length;
-            if (CPS > 20) {
-                log.set(`${player.id}-clickData`, { qlastClickTime: currentTime, cpsHistory: [] });
-                new CX.log({
-                    reason: 'Auto Clicker',
-                    translate: 'AntiCheat',
-                    from: player.name,
-                    warn: true
-                })
-                player.kill()
-            }
-        }
-    }
-    log.set(`${player.id}-clickData`, { lastClickTime: currentTime, cpsHistory });
 }
