@@ -109,7 +109,7 @@ class cx {
         BuildType(callback);
     }
     /**
-     * rewrites a key in the config and settings
+     * Rewrites a key in the config and settings
      * @param {any} key The key to rewrite
      * @param {any} value The value 
      * @param {any} category The category if there is

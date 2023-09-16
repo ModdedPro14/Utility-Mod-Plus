@@ -6,7 +6,7 @@ export class ItemDB {
   /**
    * Creates an item database
    * @param {any} name The name of the database
-   * @returns {this} DB service manager
+   * @returns {this} IDB service manager
    */
   constructor(name) {
     this.database = new Database(name)
@@ -18,8 +18,8 @@ export class ItemDB {
           })
             if (this.entity) return system.clearRun(run)
             try {
-                this.entity = world.getDimension('overworld').spawnEntity('mod:database', new Vector(3000000, -60, 3000000))
-                this.entity.nameTag = name 
+              this.entity = world.getDimension('overworld').spawnEntity('mod:database', new Vector(1000000, -60, 1000000))
+              this.entity.nameTag = name 
             } catch {}
         })
     }

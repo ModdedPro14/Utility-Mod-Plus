@@ -213,6 +213,7 @@ export class Database {
     /**
      * Creates a database
      * @param {any} name The name of the database
+     * @returns {this} DB service manager
      */
     constructor(name) {
         this.Database = new JsonDatabase(name).load()

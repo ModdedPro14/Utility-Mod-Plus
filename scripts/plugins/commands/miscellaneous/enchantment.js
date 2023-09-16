@@ -76,7 +76,7 @@ CX.Build(CX.BuildTypes["@command"], {
             if (args[1] > Data.maxLevel) return sender.response.error('The amount u entered is above the max level of the enchantment');
             const lore = `${selectedItem.getLore()}`.trim().split(/\s+/g);
             if (lore.includes(CX.enchantment.getTierColor(Data.tier) + Data.name)) return sender.response.error('This enchantment is already applied on the item ur holding');
-            selectedItem.setLore([`${selectedItem.getLore().join('')}\n${CX.enchantment.getTierColor(Data.tier)}${Data.name} ${CX.extra.convertToRoman(args[1])}`]);
+            selectedItem.setLore([`${CX.enchantment.getTierColor(Data.tier)}${Data.name} ${CX.extra.convertToRoman(args[1])}\n${selectedItem.getLore().join('')}\n`]);
             inv.setItem(sender.selectedSlot, selectedItem);
             sender.response.send(`Successfully applied the enchantment ${Data.name}`);
         });
