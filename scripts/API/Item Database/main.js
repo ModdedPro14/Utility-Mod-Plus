@@ -19,20 +19,18 @@ export class ItemDB {
    * Loads the database
    */
   load() {
-    const run = system.runInterval(() => {
-      world.getDimension('overworld').getEntities({ type: 'mod:database'}).forEach(e => {
-        if (e.nameTag == this.name) {
-          this.entity = e
-          system.clearRun(run)
-        }
-      })
-      if (!this.entity) {
-        try {
-          this.entity = world.getDimension('overworld').spawnEntity('mod:database', new Vector(1000000, -60, 1000000))
-          this.entity.nameTag = this.name 
-        } catch {}
+    if (world.getAllPlayers().length) {
+      if (world.getDimension('overworld').getEntities({ type: 'mod:database', name: this.name }).length) world.getDimension('overworld').getEntities({ type: 'mod:database', name: this.name }).map(e => this.entity = e)
+      else {
+        const r = system.runInterval(() => {
+          try {
+            this.entity = world.getDimension('overworld').spawnEntity('mod:database', new Vector(1000000, -60, 1000000))
+            this.entity.nameTag = this.name
+            if (this.entity) system.clearRun(r)
+          } catch {}
+        })
       }
-    })
+    }
     return this
   }
   /**
@@ -99,11 +97,13 @@ export class ItemDB {
    */
   forEach(callback) {
     if (!this.entity) this.load()
-    const inv = this.entity.getComponent('inventory').container
-    for (let i = 0; i < inv.size; i++) {
-      if (!inv.getItem(i)) continue
-      callback(inv.getItem(i).nameTag, this.readID(inv.getItem(i).nameTag))
-    }
+    try {
+      const inv = this.entity.getComponent('inventory').container
+      for (let i = 0; i < inv.size; i++) {
+        if (!inv.getItem(i)) continue
+        callback(inv.getItem(i).nameTag, this.readID(inv.getItem(i).nameTag))
+      }
+    } catch {}
   }
   /**
    * Returns all the item with their IDs and additonal data in an array
@@ -128,9 +128,9 @@ export class ItemDB {
    * Clears all the IDs in the database
    */
   clearIDs() {
-    this.forEach(async (ID) => {
+    this.forEach((ID) => {
       try {
-        await this.deleteID(ID)
+        this.deleteID(ID)
       } catch {}
     })
   }
