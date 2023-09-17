@@ -11,18 +11,28 @@ export class ItemDB {
   constructor(name) {
     this.database = new Database(name)
     this.entity = undefined
-    if (!this.entity) {
-        const run = system.runInterval(() => {
-          world.getDimension('overworld').getEntities({ type: 'mod:database'}).forEach(e => {
-            if (e.nameTag == name) this.entity = e
-          })
-            if (this.entity) return system.clearRun(run)
-            try {
-              this.entity = world.getDimension('overworld').spawnEntity('mod:database', new Vector(1000000, -60, 1000000))
-              this.entity.nameTag = name 
-            } catch {}
-        })
-    }
+    this.name = name
+    this.load()
+    return this
+  }
+  /**
+   * Loads the database
+   */
+  load() {
+    const run = system.runInterval(() => {
+      world.getDimension('overworld').getEntities({ type: 'mod:database'}).forEach(e => {
+        if (e.nameTag == this.name) {
+          this.entity = e
+          system.clearRun(run)
+        }
+      })
+      if (!this.entity) {
+        try {
+          this.entity = world.getDimension('overworld').spawnEntity('mod:database', new Vector(1000000, -60, 1000000))
+          this.entity.nameTag = this.name 
+        } catch {}
+      }
+    })
     return this
   }
   /**
@@ -32,6 +42,7 @@ export class ItemDB {
    * @returns {number} The ID of the item
    */
   writeItem(item, data = {}) {
+    if (!this.entity) this.load()
     if (!item) return
     const id = CX.generateID()
     this.database.write(id, Object.assign(data, { nameTag: CX.item.getItemName(item) }))
@@ -45,6 +56,7 @@ export class ItemDB {
    * @returns 
    */
   readID(id) {
+    if (!this.entity) this.load()
     const inv = this.entity.getComponent('inventory').container
     for (let i = 0; i < inv.size; i++) {
       if (!inv.getItem(i)) continue
@@ -86,6 +98,7 @@ export class ItemDB {
    * @param {(ID, item) => void} callback Callback
    */
   forEach(callback) {
+    if (!this.entity) this.load()
     const inv = this.entity.getComponent('inventory').container
     for (let i = 0; i < inv.size; i++) {
       if (!inv.getItem(i)) continue
@@ -110,5 +123,15 @@ export class ItemDB {
   readData(id) {
     if (!this.has(id)) return
     return this.database.read(id)
+  }
+  /**
+   * Clears all the IDs in the database
+   */
+  clearIDs() {
+    this.forEach(async (ID) => {
+      try {
+        await this.deleteID(ID)
+      } catch {}
+    })
   }
 }

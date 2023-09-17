@@ -57,7 +57,7 @@ CX.Build(CX.BuildTypes["@event"], {
 CX.Build(CX.BuildTypes["@event"], {
     data: 'EntityHitEntity',
     executes(data) {
-        if (!(data.damagingEntity instanceof Player) || data.damagingEntity.hasTag(config.adminTag)) return;
+        if (!(data.damagingEntity instanceof Player) && !(data.damagingEntity instanceof Player) || data.damagingEntity.hasTag(config.adminTag)) return;
         const arr = (log.get(data.damagingEntity) ?? [])
         arr.push(11)
         log.set(data.damagingEntity, arr)
