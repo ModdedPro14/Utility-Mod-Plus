@@ -4,7 +4,7 @@ import { Chat } from "./beforeChat.js";
 import { PlayerSpawn } from "./playerSpawn.js";
 import { ItemUse } from "./beforeItemUse.js";
 import { EntityHurt } from "./entityHurt.js";
-import { ProjectileHit } from "./projectileHit.js";
+import { ProjectileHitEntity } from "./projectileHitEntity.js";
 import { ItemUseOn } from "./beforeItemUseOn.js";
 import { EntityHitEntity } from "./entityHitEntity.js";
 import { EntityHitBlock } from "./entityHitBlock.js";
@@ -17,7 +17,7 @@ export const events = {
     ItemUse,
     EntityHurt,
     EntityHitEntity,
-    ProjectileHit,
+    ProjectileHitEntity,
     ItemUseOn,
     EntityHitBlock,
     WorldInitialize

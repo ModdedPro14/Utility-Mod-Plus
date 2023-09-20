@@ -2,7 +2,8 @@ import { CX } from "../../API/CX";
 import { Databases } from "../../API/handlers/databases";
 import { Area } from "../../API/handlers/protect";
 import config from "../../config/main";
-import { system, MinecraftBlockTypes } from "@minecraft/server";
+import { system, BlockTypes } from "@minecraft/server";
+
 CX.Build(CX.BuildTypes["@event"], {
     data: 'ItemUseOn',
     executes(data) {
@@ -49,7 +50,7 @@ CX.Build(CX.BuildTypes["@event"], {
             return;
         if (CX.factions.isInFaction(data.interaction) && CX.factions.getPlayersFaction(data.interaction) == Databases.claims.read(`${chunk[0]}_${chunk[1]}`).faction)
             return;
-        if (config.toggleAblePermissions && block.typeId.endsWith('door') || block.typeId.endsWith('button') || block.typeId === MinecraftBlockTypes.lever.id)
+        if (config.toggleAblePermissions && block.typeId.endsWith('door') || block.typeId.endsWith('button') || block.typeId === BlockTypes.get('lever').id)
             return;
         const i = data.interaction;
         data.cancel = true;

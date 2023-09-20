@@ -4,7 +4,7 @@ export const config = {
     trustTag: !Databases.settings.has('trustTag') ? Databases.settings.write('trustTag', 'trusted') && Databases.settings.read('trustTag') : Databases.settings.read('trustTag'),
     defaultRank: !Databases.settings.has('defaultRank') ? Databases.settings.write('defaultRank', '§6Member') && Databases.settings.read('defaultRank') : Databases.settings.read('defaultRank'),
     prefix: !Databases.settings.has('prefix') ? Databases.settings.write('prefix', '!') && Databases.settings.read('prefix') : Databases.settings.read('prefix'),
-    version: "U18",
+    version: "U19",
     discord: "https://discord.gg/U8P5NhKs2d",
     youtube: "https://www.youtube.com/@MP09234",
     omlet: "moddedpro234",
@@ -21,6 +21,7 @@ export const config = {
     veinMiner: !Databases.settings.has('veinMiner') ? Databases.settings.write('veinMiner', true) && Databases.settings.read('veinMiner') : Databases.settings.read('veinMiner'),
     betting: !Databases.settings.has('betting') ? Databases.settings.write('betting', true) && Databases.settings.read('betting') : Databases.settings.read('betting'),
     maxAuctions: !Databases.settings.has('maxAuctions') ? Databases.settings.write('maxAuctions', 3) && Databases.settings.read('maxAuctions') : Databases.settings.read('maxAuctions'),
+    enderPearlT: !Databases.settings.has('enderPearlT') ? Databases.settings.write('enderPearlT', true) && Databases.settings.read('enderPearlT') : Databases.settings.read('enderPearlT'),
     chatFilteredWords: [
         "fuck",
         "ass",
@@ -60,7 +61,8 @@ export const config = {
     AntiCheat: {
         cbes: !Databases.settings.has('cbes') ? Databases.settings.write('cbes', true) && Databases.settings.read('cbes') : Databases.settings.read('cbes'),
         nuker: !Databases.settings.has('nuker') ? Databases.settings.write('nuker', true) && Databases.settings.read('nuker') : Databases.settings.read('nuker'),
-        illegalEnchantments: !Databases.settings.has('illegalEnchantments') ? Databases.settings.write('illegalEnchantments', true) && Databases.settings.read('illegalEnchantments') : Databases.settings.read('illegalEnchantments')
+        illegalEnchantments: !Databases.settings.has('illegalEnchantments') ? Databases.settings.write('illegalEnchantments', true) && Databases.settings.read('illegalEnchantments') : Databases.settings.read('illegalEnchantments'),
+        AAC: !Databases.settings.has('AAC') ? Databases.settings.write('AAC', true) && Databases.settings.read('AAC') : Databases.settings.read('AAC')
     },
     plugins: {
         commands: {
@@ -85,7 +87,6 @@ export const config = {
                 bounty: true,
                 shop: true,
                 sell: true,
-                test: true
             },
             gamemodes: {
                 gma: true,
@@ -124,7 +125,8 @@ export const config = {
                 protect: true,
                 text: true,
                 command: true,
-                gui: true
+                gui: true,
+                slapper: true
             },
             miscellaneous: {
                 drunk: true,

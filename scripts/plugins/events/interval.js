@@ -1,12 +1,9 @@
 import { system, world, EquipmentSlot, GameMode } from "@minecraft/server";
 import { Area } from "../../API/handlers/protect";
-import config, { playerRequests, log } from "../../config/main";
+import config, { playerRequests } from "../../config/main";
 import { Databases } from "../../API/handlers/databases";
 import { CX } from "../../API/CX";
-import { ItemDB } from "../../API/Item Database/main";
 import { open } from "../commands/management/gui";
-
-const auctions = new ItemDB('auctions'), expiredAuctions = new ItemDB('expiredAuctions')
 
 Databases.customCmds.forEach((k, v) => {
     CX.Build(CX.BuildTypes["@command"], {
@@ -28,13 +25,11 @@ Databases.customCmds.forEach((k, v) => {
 });
 world.getDimension('overworld').runCommandAsync('gamerule sendcommandfeedback false');
 world.getDimension('overworld').runCommandAsync('gamerule commandblockoutput false');
-try {
-    world.scoreboard.addObjective(config.currency, `§c§l${config.currency}`);
-    world.scoreboard.addObjective('pearlTimer', '');
-    world.scoreboard.addObjective('inCombat', '');
-    world.scoreboard.addObjective('sents', '');
-}
-catch (e) { }
+if (!world.scoreboard.getObjective(config.currency))world.scoreboard.addObjective(config.currency, `§c§l${config.currency}`);
+if (!world.scoreboard.getObjective('pearlTimer')) world.scoreboard.addObjective('pearlTimer', '');
+if (!world.scoreboard.getObjective('inCombat')) world.scoreboard.addObjective('inCombat', '');
+if (!world.scoreboard.getObjective('sents')) world.scoreboard.addObjective('sents', '');
+
 system.runInterval(() => {
     if (config.itemNamesDisplay)
         for (const entity of world.getDimension('overworld').getEntities({ type: 'item' }))
@@ -43,6 +38,7 @@ system.runInterval(() => {
 system.runInterval(() => {
     world.getAllPlayers().forEach((player) => {
         player.runCommandAsync('scoreboard players add @s money 0');
+        player.runCommandAsync('scoreboard players add @s pearlTimer 0');
         const health = player.getComponent("health");
         const ranks = (plr) => `§r§8[§r${CX.player.getRanks(plr)}§r§8] `;
         player.nameTag = `${config.ranks ? ranks(player) : ''}§r${player.getTags().find(tag => tag.startsWith('nickname:'))?.replace('nickname:', '') ?? CX.player.hasColor(player, 'name') ? CX.player.colorize(player.getTags().find(tag => tag.startsWith('nickname:'))?.replace('nickname:', '') ?? player.name, CX.player.getColor(player, 'name')) : player.name}\n§4❤${Math.round(health.currentValue) / 2}`;
@@ -87,12 +83,11 @@ system.runInterval(() => {
     Array.from(world.getDimension('overworld').getEntities({ type: 'mod:ft', tags: ['ftlb'] })).forEach(async (entity) => {
         const objective = entity.getTags().find(t => t.startsWith('ft:')).replace('ft:', '');
         if (!objective || !world.scoreboard.getObjective(objective)) entity.nameTag = `§c§lObjective: ${objective} has no records`;
-        let leaderboard = [], i = 0
+        let leaderboard = []
         world.getAllPlayers().forEach(p => {
-            if (!leaderboard.find(s => s.plr.id == p.id)) leaderboard.push({ plr: p, i: i, score: CX.scoreboard.get(p, objective), obj: objective })
-            i++
+            if (!leaderboard.find(s => s.plr.id == p.id)) leaderboard.push({ plr: p, score: CX.scoreboard.get(p, objective), obj: objective })
         });
-        leaderboard = leaderboard.filter(o => o.obj == objective).sort((a, b) => b.score - a.score).map(s => `§b#${s.i + 1} §r${CX.player.hasColor(s.plr, 'name') ? CX.player.colorize(s.plr.name, CX.player.getColor(s.plr, 'name')) : '§c' + s.plr.name} §r§e${!s.score ? 0 : CX.extra.parseNumber(s.score)}§r`)
+        leaderboard = leaderboard.filter(o => o.obj == objective).sort((a, b) => b.score - a.score).map((s, i) => `§b#${++i} §r${CX.player.hasColor(s.plr, 'name') ? CX.player.colorize(s.plr.name, CX.player.getColor(s.plr, 'name')) : '§c' + s.plr.name} §r§e${!s.score ? 0 : CX.extra.parseNumber(s.score)}§r`)
         if (!leaderboard.length) return;
         leaderboard = leaderboard.slice(0, parseInt(entity?.getTags().find(t => t.startsWith('ftl:')).replace('ftl:', '')));
         leaderboard.unshift(entity?.getTags().find(t => t.startsWith('fth:')).replace('fth:', ''));
@@ -209,19 +204,6 @@ system.runInterval(() => {
 });
 
 system.runInterval(() => {
-    auctions.allIDs().forEach((i) => {
-        if ((parseInt(i.data.expires, 16)) < Date.now()) {
-            try {
-                expiredAuctions.writeItem(i.item, {
-                    plrId: i.data.plrId
-                })
-                auctions.deleteID(i.ID)
-            } catch {}
-        }
-    })
-}, 170)
-
-system.runInterval(() => {
     world.getPlayers({ excludeTags: [config.adminTag], excludeGameModes: [GameMode.creative, GameMode.spectator] }).forEach(plr => {
         if (plr.isFlying) {
             new CX.log({
@@ -236,9 +218,19 @@ system.runInterval(() => {
 })
 
 system.runInterval(() => {
-    world.getPlayers({ excludeTags: [config.adminTag] }).forEach(player => {
-        try {
-            log.set(player, log.get(player).map(e => e - 1).filter(e => e !== 0))
-        } catch {}
-    })
+    world.getAllPlayers().forEach(player => {
+        for (const e of player.dimension.getEntities()) if (e.hasTag('slapper')) {
+            e.addEffect('resistance', 255, { amplifier: 255, showParticles: false })
+            e.addEffect('health_boost', 255, { amplifier: 255, showParticles: false })
+            e.addEffect('regeneration', 255, { amplifier: 255, showParticles: false })
+            e.addEffect('absorption', 255, { amplifier: 255, showParticles: false })
+            e.addEffect('instant_health', 255, { amplifier: 255, showParticles: false })
+            e.addEffect('fire_resistance', 255, { amplifier: 255, showParticles: false })
+            e.addEffect('weakness', 255, { amplifier: 255, showParticles: false })
+            try {
+                e.triggerEvent('minecraft:stop_exploding')
+            } catch {}
+            e.runCommandAsync(`tp @s ~0 ~0 ~0`)
+        }
+    }) 
 })

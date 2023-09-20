@@ -1,8 +1,7 @@
 import { CX } from "../../API/CX";
-import { VAILD_BLOCK_TAGS, IMPOSSIBLE_BREAKS, BLOCK_CONTAINERS } from "./extras/blockBreak/moderation";
+import { VAILD_BLOCK_TAGS, IMPOSSIBLE_BREAKS } from "./extras/blockBreak/moderation";
 import { PlayerLog } from "./extras/blockBreak/PlayerLog";
 import config from "../../config/main";
-import { system } from "@minecraft/server";
 import { Area } from "../../API/handlers/protect";
 import { Capitator } from "../../API/handlers/capitator";
 import { Databases } from "../../API/handlers/databases";
@@ -25,7 +24,7 @@ CX.Build(CX.BuildTypes['@event'], {
             return;
         if (old < Date.now() - IMPOSSIBLE_BREAK_TIME)
             return;
-        data.block.setPermutation(data.brokenBlockPermutation);
+        data.cancel = true
         new CX.log({
             from: interaction.name,
             translate: 'AntiCheat',
@@ -33,18 +32,6 @@ CX.Build(CX.BuildTypes['@event'], {
             warn: false
         });
         interaction.kill()
-        if (BLOCK_CONTAINERS.includes(data.brokenBlockPermutation.type.id)) {
-            system.run(() => {
-                [...data.dimension.getEntities({
-                        type: 'minecraft:item',
-                        maxDistance: 2,
-                        location: data.block.location
-                    })].forEach(e => {
-                    data.block.getComponent('inventory').container.addItem(e.getComponent('item').itemStack);
-                    e.kill();
-                });
-            });
-        }
     }
 });
 CX.Build(CX.BuildTypes["@event"], {
@@ -58,22 +45,7 @@ CX.Build(CX.BuildTypes["@event"], {
         if (CX.factions.isInFaction(interaction) && CX.factions.getPlayersFaction(interaction) == Databases.claims.read(`${chunk[0]}_${chunk[1]}`).faction)
             return;
         interaction.response.error(`You need to be in the faction ${Databases.claims.read(`${chunk[0]}_${chunk[1]}`).faction}§r§c§l to be able to break blocks here`);
-        data.block.setPermutation(data.brokenBlockPermutation);
-        if (BLOCK_CONTAINERS.includes(data.brokenBlockPermutation.type.id)) {
-            system.run(() => {
-                [...data.dimension.getEntities({
-                        type: 'minecraft:item',
-                        maxDistance: 2,
-                        location: data.block.location
-                    })].forEach(e => {
-                    data.block.getComponent('inventory').container.addItem(e.getComponent('item').itemStack);
-                    e.kill();
-                });
-            });
-        }
-        else {
-            interaction.runCommandAsync('kill @e[type=item, r=4]');
-        }
+        data.cancel = true
     }
 });
 CX.Build(CX.BuildTypes["@event"], {
@@ -84,22 +56,7 @@ CX.Build(CX.BuildTypes["@event"], {
             if (interaction.permission.hasPermission('admin'))
                 return;
             interaction.response.error('You cannot break blocks here');
-            data.block.setPermutation(data.brokenBlockPermutation);
-            if (BLOCK_CONTAINERS.includes(data.brokenBlockPermutation.type.id)) {
-                system.run(() => {
-                    [...data.dimension.getEntities({
-                            type: 'minecraft:item',
-                            maxDistance: 2,
-                            location: data.block.location
-                        })].forEach(e => {
-                        data.block.getComponent('inventory').container.addItem(e.getComponent('item').itemStack);
-                        e.kill();
-                    });
-                });
-            }
-            else {
-                interaction.runCommandAsync('kill @e[type=item, r=4]');
-            }
+            data.cancel = true
         }
     }
 });

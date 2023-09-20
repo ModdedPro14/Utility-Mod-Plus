@@ -1,4 +1,4 @@
-import { MinecraftBlockTypes, GameMode, world } from "@minecraft/server";
+import { GameMode, world } from "@minecraft/server";
 import { Area } from "../../API/handlers/protect";
 import { CX } from "../../API/CX";
 import { Databases } from "../../API/handlers/databases";
@@ -15,7 +15,7 @@ CX.Build(CX.BuildTypes["@event"], {
         if (CX.factions.isInFaction(interaction) && CX.factions.getPlayersFaction(interaction) == Databases.claims.read(`${chunk[0]}_${chunk[1]}`).faction)
             return;
         interaction.response.error(`You need to be in the faction ${Databases.claims.read(`${chunk[0]}_${chunk[1]}`).faction}§r§c§l to be able to place blocks here`);
-        data.block.setType(MinecraftBlockTypes.air);
+        data.cancel = true
     }
 });
 CX.Build(CX.BuildTypes["@event"], {
@@ -26,7 +26,7 @@ CX.Build(CX.BuildTypes["@event"], {
             if (interaction.permission.hasPermission('admin'))
                 return;
             data.interaction.response.error('You cannot place blocks here');
-            data.block.setType(MinecraftBlockTypes.air);
+            data.cancel = true
         }
     }
 });
@@ -50,7 +50,7 @@ CX.Build(CX.BuildTypes["@event"], {
         const blocksPlacedPerSecond = updatedActions.length / (timeDifference / 500);
         const averageDistance = distance / updatedActions.length;
         if (blocksPlacedPerSecond >= 5 && averageDistance < 1) {
-            data.dimension.getBlock(data.block.location).setType(MinecraftBlockTypes.air);
+            data.cancel = true
             new CX.log({
                 reason: 'Scaffold',
                 translate: 'AntiCheat',

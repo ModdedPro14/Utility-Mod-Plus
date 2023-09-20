@@ -51,22 +51,22 @@ const shop = (page, sender) => {
     .setButton2('§cClose')
     .setButton1('§aOk')
     .force(sender, (_) => { }, 220))
-    if (!sender.permission.hasPermission('admin')) {
-        const form = new CX.chestForm('large')
-        .setTitle('Shop')
-        .addButton(49, '§cClose', ['§6Close this page'], 'textures/blocks/barrier');
-        if (page < pages) form.addButton(51, '§aNext page', ['§6Shows the next page'], 'minecraft:arrow')
-        if (page > 1) form.addButton(47, '§cPrevious page', ['§6Shows the previous page'], 'minecraft:arrow')
-        form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
-        items.forEach((item, i) => {
-            const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}`], data.typeId, data.amount, !data.enchantments.length ? false : true);    
-        })
-        form.force(sender, (res) => {
-            if (res.selection == 47 && page > 1) shop(page - 1, sender)
-            else if (res.selection == 51 && page < pages) shop(page + 1, sender)
-            else if (res.selection <= items.length) {
-                const selection = items[res.selection]
+    const form = new CX.chestForm('large')
+    .setTitle(`Shop page: ${page}/${pages}`)
+    .addButton(49, '§cClose', ['§6Close this page'], 'textures/blocks/barrier');
+    if (page < pages) form.addButton(51, '§aNext page', ['§6Shows the next page'], 'minecraft:arrow')
+    if (page > 1) form.addButton(47, '§cPrevious page', ['§6Shows the previous page'], 'minecraft:arrow')
+    form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
+    items.forEach((item, i) => {
+        const data = CX.item.getItemData(item.item)
+        form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}`], data.typeId, data.amount, !data.enchantments.length ? false : true);    
+    })
+    form.force(sender, (res) => {
+        if (res.selection == 47 && page > 1) shop(page - 1, sender)
+        else if (res.selection == 51 && page < pages) shop(page + 1, sender)
+        else if (res.selection <= items.length) {
+            const selection = items[res.selection]
+            if (!sender.permission.hasPermission('admin')) {
                 new CX.chestForm('small')
                 .setTitle(selection.data.itemName)
                 .addButton(3, '§aBuy', ['§6Do you want to buy this item?'], 'textures/blocks/glass_lime')
@@ -82,44 +82,19 @@ const shop = (page, sender) => {
                         sender.response.send(`You have succssfully bought the item ${selection.data.itemName}`);
                     }
                 });
+            } else {
+                if (res.selection == 5) {
+                    sender.response.send(`You have succssfully removed the item ${selection.data.itemName}`);
+                    shopItems.deleteID(selection.ID)
+                } else if (res.selection == 3) {
+                    if (sender.score.getScore(config.currency) < selection.data.price) return sender.response.error(`You do not have enough ${config.currency}§r§c§l to buy this item`);
+                    const inventory = sender.getComponent('inventory').container;
+                    if (inventory.emptySlotsCount < 1) return sender.response.error('You do not have enough space to buy this item');
+                    sender.score.removeScore(config.currency, selection.data.price);
+                    inventory.addItem(selection.item);
+                    sender.response.send(`You have succssfully bought the item ${selection.data.itemName}`);
+                }
             }
-        }, 220)
-    } else {
-        const form = new CX.chestForm('large')
-        .setTitle('Shop')
-        .addButton(49, '§cClose', ['§6Close this page'], 'textures/blocks/barrier');
-        if (page < pages) form.addButton(51, '§aNext page', ['§6Shows the next page'], 'minecraft:arrow')
-        if (page > 1) form.addButton(47, '§cPrevious page', ['§6Shows the previous page'], 'minecraft:arrow')
-        form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
-        items.forEach((item, i) => {
-            const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}`], data.typeId, data.amount, !data.enchantments.length ? false : true);    
-        })
-        form.show(sender, (result) => {
-            if (result.selection == 47 && page > 1) shop(page - 1, sender)
-            if (result.selection == 51 && page < pages) shop(page + 1, sender)
-            if (result.selection <= items.length) {
-                const selection = items[result.selection]
-                if (!selection) return;
-                new CX.chestForm('small')
-                .setTitle(selection.data.itemName)
-                .addButton(3, '§aBuy', ['§6Do you want to buy this item?'], 'textures/blocks/glass_lime')
-                .addButton(5, '§cRemove', ['§6Do you want to remove this item?'], 'textures/blocks/glass_red')
-                .show(sender, (ress) => {
-                    if (ress.canceled) return;
-                    if (ress.selection == 5) {
-                        sender.response.send(`You have succssfully removed the item ${selection.data.itemName}`);
-                        shopItems.deleteID(selection.ID)
-                    } else if (ress.selection == 3) {
-                        if (sender.score.getScore(config.currency) < selection.data.price) return sender.response.error(`You do not have enough ${config.currency}§r§c§l to buy this item`);
-                        const inventory = sender.getComponent('inventory').container;
-                        if (inventory.emptySlotsCount < 1) return sender.response.error('You do not have enough space to buy this item');
-                        sender.score.removeScore(config.currency, selection.data.price);
-                        inventory.addItem(selection.item);
-                        sender.response.send(`You have succssfully bought the item ${selection.data.itemName}`);
-                    }
-                });
-            }
-        });
-    }
+        }
+    }, 220)
 }

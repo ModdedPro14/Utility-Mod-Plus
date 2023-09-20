@@ -2,9 +2,11 @@ import { system } from "@minecraft/server";
 import { CX } from "../../API/CX";
 import { Databases } from "../../API/handlers/databases";
 import { open } from "../commands/management/gui";
+import config from "../../config/main";
 CX.Build(CX.BuildTypes["@event"], {
     data: 'ItemUse',
     executes(data) {
+        if (!config.enderPearlT) return
         const pearlD = 10;
         const interaction = data.interaction;
         if (interaction.permission.hasPermission('admin'))

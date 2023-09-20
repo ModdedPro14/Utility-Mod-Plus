@@ -1,5 +1,5 @@
 import { CX } from "../../API/CX";
-import { Player, EquipmentSlot, system, world } from "@minecraft/server";
+import { Player, EquipmentSlot } from "@minecraft/server";
 import { Databases } from "../../API/handlers/databases";
 import config, { log } from "../../config/main";
 
@@ -58,17 +58,19 @@ CX.Build(CX.BuildTypes["@event"], {
     data: 'EntityHitEntity',
     executes(data) {
         if (!(data.damagingEntity instanceof Player) && !(data.damagingEntity instanceof Player) || data.damagingEntity.hasTag(config.adminTag)) return;
-        const arr = (log.get(data.damagingEntity) ?? [])
-        arr.push(11)
-        log.set(data.damagingEntity, arr)
-        if (arr.length > 20) {
-            new CX.log({
-                reason: 'Auto Clicker',
-                translate: 'AntiCheat',
-                from: data.damagingEntity.name,
-                warn: true
-            })
-            data.damagingEntity.kill()
+        if (config.AntiCheat.AAC) {
+            const arr = (log.get(data.damagingEntity) ?? [])
+            arr.push(11)
+            log.set(data.damagingEntity, arr)
+            if (arr.length > 20) {
+                new CX.log({
+                    reason: 'Auto Clicker',
+                    translate: 'AntiCheat',
+                    from: data.damagingEntity.name,
+                    warn: true
+                })
+                data.damagingEntity.kill()
+            }
         }
         if (AKA(data.damagingEntity, data.hitEntity)) {
             new CX.log({
@@ -90,3 +92,11 @@ const AKA = (attacker, target) => {
     }
     return false;
 }
+CX.Build(CX.BuildTypes["@event"], {
+    data: 'EntityHitEntity',
+    executes(data) {
+        if (!(data.damagingEntity instanceof Player)) return
+        if (!data.hitEntity.hasTag('slapper')) return
+        data.damagingEntity.runCommandAsync(data.hitEntity.getTags().find(tag => tag.startsWith('cmd:')).split(':')[1]) 
+    }
+})

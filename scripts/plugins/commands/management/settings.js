@@ -22,12 +22,12 @@ CX.Build(CX.BuildTypes["@command"], {
                 if (res.selection == 0) {
                     new CX.modalForm()
                     .setTitle('General Settings')
-                    .addTextField('Admin Tag:', Databases.settings.read('adminTag'), Databases.settings.read('adminTag'))
-                    .addTextField('Trust Tag:', Databases.settings.read('trustTag'), Databases.settings.read('trustTag'))
-                    .addTextField('Default Rank:', Databases.settings.read('defaultRank'), Databases.settings.read('defaultRank'))
-                    .addTextField('Command Prefix:', Databases.settings.read('prefix'), Databases.settings.read('prefix'))
-                    .addTextField('Chat Style:', Databases.settings.read('chatStyle'), Databases.settings.read('chatStyle'))
-                    .addTextField('Currency:', Databases.settings.read('currency'), Databases.settings.read('currency'))
+                    .addTextField('Admin Tag:', `${Databases.settings.read('adminTag')}`, `${Databases.settings.read('adminTag')}`)
+                    .addTextField('Trust Tag:', `${Databases.settings.read('trustTag')}`, `${Databases.settings.read('trustTag')}`)
+                    .addTextField('Default Rank:', `${Databases.settings.read('defaultRank')}`, `${Databases.settings.read('defaultRank')}`)
+                    .addTextField('Command Prefix:', `${Databases.settings.read('prefix')}`, `${Databases.settings.read('prefix')}`)
+                    .addTextField('Chat Style:', `${Databases.settings.read('chatStyle')}`, `${Databases.settings.read('chatStyle')}`)
+                    .addTextField('Currency:', `${Databases.settings.read('currency')}`, `${Databases.settings.read('currency')}`)
                     .addTextField('Max Player Auctions:', `${Databases.settings.read('maxAuctions')}`, `${Databases.settings.read('maxAuctions')}`)
                     .addToggle('Ranks', Databases.settings.read('ranks'))
                     .addToggle('Item Names Display', Databases.settings.read('itemNamesDisplay'))
@@ -35,6 +35,7 @@ CX.Build(CX.BuildTypes["@command"], {
                     .addToggle('Tree Capitator', Databases.settings.read('treeCapitator'))
                     .addToggle('Vein Miner', Databases.settings.read('veinMiner'))
                     .addToggle('Betting System', Databases.settings.read('betting'))
+                    .addToggle('Ender Pearl Timer', Databases.settings.read('enderPearlT'))
                     .show(sender, (result) => {
                         if (result.canceled) return;
                         if (result.formValues[0] == result.formValues[1]) return sender.response.error('The trust tag cant be the same as the admin tag');
@@ -53,6 +54,7 @@ CX.Build(CX.BuildTypes["@command"], {
                         CX.overRide('treeCapitator', result.formValues[10]);
                         CX.overRide('veinMiner', result.formValues[11]);
                         CX.overRide('betting', result.formValues[12]);
+                        CX.overRide('enderPearlT', result.formValues[13])
                         sender.response.send('Successfully updated general settings data');
                     });
                 } else if (res.selection == 1) {
@@ -61,6 +63,7 @@ CX.Build(CX.BuildTypes["@command"], {
                     .addToggle("CBE's", Databases.settings.read('cbes'))
                     .addToggle('Nuker', Databases.settings.read('nuker'))
                     .addToggle('Illegal Enchantments', Databases.settings.read('illegalEnchantments'))
+                    .addToggle('Anti Auto Clicker', Databases.settings.read('AAC'))
                     .addDropDown('CBE\'s that cant be used from anyone: §c(Select to remove)', ['None', ...Databases.settings.read('allCbes')])
                     .addDropDown('CBE\'s that can only be used by trusted people: §c(Select to remove)', ['None', ...Databases.settings.read('trustedCbes')])
                     .addTextField('Add a CBE to all CBE\'s: §c(Only blocks)', 'None')
@@ -70,28 +73,29 @@ CX.Build(CX.BuildTypes["@command"], {
                         CX.overRide('cbes', result.formValues[0], 'AntiCheat');
                         CX.overRide('nuker', result.formValues[1], 'AntiCheat');
                         CX.overRide('illegalEnchantments', result.formValues[2], 'AntiCheat');
-                        if (!result.formValues[3] == 'None') {
-                            const cbes = Databases.settings.read('allCbes');
-                            cbes.splice(cbes.indexOf(cbes[result.formValues[3] - 1]), cbes.indexOf(cbes[result.formValues[3] - 1]));
-                            CX.overRide('allCbes', cbes);
-                        }
+                        CX.overRide('AAC', result.formValues[3], 'AntiCheat')
                         if (!result.formValues[4] == 'None') {
-                            const Tcbes = Databases.settings.read('trustedCbes');
-                            Tcbes.splice(Tcbes.indexOf(Tcbes[result.formValues[4] - 1]), Tcbes.indexOf(Tcbes[result.formValues[4] - 1]));
-                            CX.overRide('trustedCbes', Tcbes);
-                        }
-                        if (result.formValues[5]) {
-                            if (typeof ItemTypes.get(result.formValues[5]) == 'undefined') return sender.response.error('The cbe you tried to add was invalid');
-                            if (Databases.settings.read('allCbes').includes(result.formValues[5].replace('minecraft:', ''))) return sender.response.error('That cbe already exists in the list');
                             const cbes = Databases.settings.read('allCbes');
-                            cbes.push(result.formValues[5].replace('minecraft:', ''));
+                            cbes.splice(cbes.indexOf(cbes[result.formValues[4] - 1]), cbes.indexOf(cbes[result.formValues[4] - 1]));
                             CX.overRide('allCbes', cbes);
+                        }
+                        if (!result.formValues[5] == 'None') {
+                            const Tcbes = Databases.settings.read('trustedCbes');
+                            Tcbes.splice(Tcbes.indexOf(Tcbes[result.formValues[5] - 1]), Tcbes.indexOf(Tcbes[result.formValues[5] - 1]));
+                            CX.overRide('trustedCbes', Tcbes);
                         }
                         if (result.formValues[6]) {
                             if (typeof ItemTypes.get(result.formValues[6]) == 'undefined') return sender.response.error('The cbe you tried to add was invalid');
-                            if (Databases.settings.read('trustedCbes').includes(result.formValues[6].replace('minecraft:', ''))) return sender.response.error('That cbe already exists in the list');
+                            if (Databases.settings.read('allCbes').includes(result.formValues[6].replace('minecraft:', ''))) return sender.response.error('That cbe already exists in the list');
+                            const cbes = Databases.settings.read('allCbes');
+                            cbes.push(result.formValues[6].replace('minecraft:', ''));
+                            CX.overRide('allCbes', cbes);
+                        }
+                        if (result.formValues[7]) {
+                            if (typeof ItemTypes.get(result.formValues[7]) == 'undefined') return sender.response.error('The cbe you tried to add was invalid');
+                            if (Databases.settings.read('trustedCbes').includes(result.formValues[7].replace('minecraft:', ''))) return sender.response.error('That cbe already exists in the list');
                             const Tcbes = Databases.settings.read('trustedCbes');
-                            Tcbes.push(result.formValues[5].replace('minecraft:', ''));
+                            Tcbes.push(result.formValues[7].replace('minecraft:', ''));
                             CX.overRide('trustedCbes', Tcbes);
                         }
                         sender.response.send('Successfully updated Anti Cheat settings data');

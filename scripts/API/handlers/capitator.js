@@ -1,4 +1,4 @@
-import { MinecraftBlockTypes, ItemStack } from "@minecraft/server";
+import { BlockTypes, ItemStack } from "@minecraft/server";
 class Capitator {
     constructor(dimension, cord, type) {
         return this.removeBlocks(dimension, [cord], [cord], type);
@@ -29,11 +29,11 @@ class Capitator {
                 else
                     item = newBlock.type.id.replace('_ore', '').replace('deepslate_', '').replace('lit_', '');
                 dimension.spawnItem(new ItemStack(item), blocks[i]);
-                newBlock.setType(MinecraftBlockTypes.air);
+                newBlock.setType(BlockTypes.get('air').id);
             }
             else {
                 dimension.spawnItem(new ItemStack(newBlock.type.id), blocks[i]);
-                newBlock.setType(MinecraftBlockTypes.air);
+                newBlock.setType(BlockTypes.get('air').id);
             }
         }
         if (horizontalCordArray.length == 0 && blocks.length == 0)
