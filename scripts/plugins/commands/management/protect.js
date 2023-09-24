@@ -8,14 +8,14 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['create', 'set', 'delete', 'list'], true)
-    .addDynamicArgument('create', 'create', 'name')
-    .addDynamicArgument('set', 'set', 'area')
-    .addDynamicArgument('delete', 'delete', 'name')
-    .addDynamicArgument('list', 'list')
-    .addAnyArgument('name', 1)
-    .addAnyArgument('area', 1, null, ['pos1', 'pos2'])
-    .addDynamicArgument('pos1', 'pos1')
-    .addDynamicArgument('pos2', 'pos2'),
+    .addDynamicArgument('create', [], 'create', 'name')
+    .addDynamicArgument('set', [], 'set', 'area')
+    .addDynamicArgument('delete', [], 'delete', 'name')
+    .addDynamicArgument('list', [], 'list')
+    .addAnyArgument('name', ['create | delete'], 1)
+    .addAnyArgument('area', [], 1, null, ['pos1', 'pos2'])
+    .addDynamicArgument('pos1', ['set', 'area'], 'pos1')
+    .addDynamicArgument('pos2', ['set', 'area'], 'pos2'),
     executes(ctx) {
         ctx.executeArgument('create', (sender, _, args) => {
             if (Databases.areas.has(args[0])) return sender.response.error('That area name already exists');

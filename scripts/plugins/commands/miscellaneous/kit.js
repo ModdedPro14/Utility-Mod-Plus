@@ -12,17 +12,17 @@ CX.Build(CX.BuildTypes["@command"], {
     .setDescription('A simple kit system')
     .setCategory('miscellaneous')
     .firstArguments(['create', 'remove', 'set', 'buy', 'view', 'reset', 'list'], true)
-    .addDynamicArgument('create', 'create', 'name')
-    .addDynamicArgument('remove', 'remove', 'name')
-    .addDynamicArgument('set', 'set', 'nameset')
-    .addDynamicArgument('buy', 'buy', 'name')
-    .addDynamicArgument('view', 'view', 'name')
-    .addDynamicArgument('reset', 'reset', 'name')
-    .addDynamicArgument('list', 'list')
-    .addAnyArgument('name', 1)
-    .addAnyArgument('nameset', 1, {}, 'permission')
-    .addAnyArgument('permission', 1, {}, 'price')
-    .addNumberArgument('price'),
+    .addDynamicArgument('create', [], 'create', 'name')
+    .addDynamicArgument('remove', [], 'remove', 'name')
+    .addDynamicArgument('set', [], 'set', 'kit')
+    .addDynamicArgument('buy', [], 'buy', 'name')
+    .addDynamicArgument('view', [], 'view', 'name')
+    .addDynamicArgument('reset', [], 'reset', 'name')
+    .addDynamicArgument('list', [], 'list')
+    .addAnyArgument('name', ['create | remove | buy | view | reset'], 1)
+    .addAnyArgument('kit', [], 1, {}, 'permission')
+    .addAnyArgument('permission', [], 1, {}, 'price')
+    .addNumberArgument('price', ['set', 'kit', 'permission']),
     executes(ctx) {
         ctx.execute((sender) => sender.management.jailed && sender.response.error('You cant use this command while your jailed'));
         ctx.executeArgument('create', (sender, _, args) => {

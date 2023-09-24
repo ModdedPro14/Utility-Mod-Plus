@@ -9,11 +9,11 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['create', 'delete', 'open', 'edit'], true)
-    .addDynamicArgument('create', 'create')
-    .addDynamicArgument('delete', 'delete', 'name')
-    .addDynamicArgument('edit', 'edit', 'name')
-    .addDynamicArgument('open', 'open', 'name')
-    .addAnyArgument('name', 1),
+    .addDynamicArgument('create', [], 'create')
+    .addDynamicArgument('delete', [], 'delete', 'name')
+    .addDynamicArgument('edit', [], 'edit', 'name')
+    .addDynamicArgument('open', [], 'open', 'name')
+    .addAnyArgument('name', ['delete | edit | open'], 1),
     executes(ctx) {
         ctx.executeArgument('create', (sender) => {
             sender.response.send('Close the chat within 10 secondes')

@@ -8,14 +8,14 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('miscellaneous')
     .setAdmin(true)
     .firstArguments(['create', 'apply', 'delete', 'list', 'view'])
-    .addDynamicArgument('create', 'create')
-    .addDynamicArgument('apply', 'apply', 'name')
-    .addDynamicArgument('delete', 'delete', 'enchantment')
-    .addDynamicArgument('list', 'list')
-    .addDynamicArgument('view', 'view', 'enchantment')
-    .addAnyArgument('name', 1, null, 'level')
-    .addAnyArgument('enchantment', 1)
-    .addNumberArgument('level'),
+    .addDynamicArgument('create', [], 'create')
+    .addDynamicArgument('apply', [], 'apply', 'name')
+    .addDynamicArgument('delete', [], 'delete', 'enchantment')
+    .addDynamicArgument('list', [], 'list')
+    .addDynamicArgument('view', [], 'view', 'enchantment')
+    .addAnyArgument('name', [], 1, null, 'level')
+    .addAnyArgument('enchantment', ['delete | view'], 1)
+    .addNumberArgument('level', ['apply', 'name']),
     executes(ctx) {
         ctx.executeArgument('create', (sender) => {
             sender.response.send('Close the chat in 10 secondes');

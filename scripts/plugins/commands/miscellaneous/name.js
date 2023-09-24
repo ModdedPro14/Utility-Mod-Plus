@@ -7,7 +7,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('miscellaneous')
     .setAdmin(true)
     .firstArguments(['name'], true)
-    .addAnyArgument('name', 1),
+    .addAnyArgument('name', [], 1),
     executes(ctx) {
         ctx.executeArgument('name', (sender, val) => {
             CX.item.setName(sender, val.replaceAll('\\n', '\n'));

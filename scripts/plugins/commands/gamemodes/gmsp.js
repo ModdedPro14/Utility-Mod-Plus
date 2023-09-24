@@ -1,12 +1,12 @@
 import { CX } from "../../../API/CX";
 CX.Build(CX.BuildTypes["@command"], {
     data: new CX.command()
-        .setName('gmsp')
-        .setDescription('Changes your or a players gamemode to spectator')
-        .setCategory('gamemodes')
-        .setAdmin(true)
-        .firstArguments(['player'], false)
-        .addPlayerArgument('player', true, null, { self: true }, false),
+    .setName('gmsp')
+    .setDescription('Changes your or a players gamemode to spectator')
+    .setCategory('gamemodes')
+    .setAdmin(true)
+    .firstArguments(['player'], false)
+    .addPlayerArgument('player', [], true, null, { self: true }, false),
     executes(ctx) {
         ctx.execute((sender, args) => {
             if (!args.length) {

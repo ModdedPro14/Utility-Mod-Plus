@@ -7,7 +7,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['player'], true)
-    .addPlayerArgument('player', true, null, { self: false }),
+    .addPlayerArgument('player', [], true, null, { self: false }),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player) => {
             if (!player.management.freezed) return sender.response.error(`§6${player.name} §cis already not freezed`);

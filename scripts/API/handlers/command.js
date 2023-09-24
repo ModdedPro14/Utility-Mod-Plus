@@ -18,7 +18,10 @@ export class Commands {
             developers: ["MP09"],
             argNames: [[], false],
             args: {},
-            cb: {}
+            cb: {},
+            usage: {
+                args: []
+            }
         };
     }
     /**
@@ -208,8 +211,7 @@ export class Commands {
     firstArguments(args, nextArgs) {
         let arg = [].concat(args), t = [];
         arg.forEach(a => !t.includes(a) && t.push(a));
-        if (arg.length !== t.length)
-            return;
+        if (arg.length !== t.length) return;
         this.info.argNames = [arg, nextArgs ?? true];
         return this;
     }
@@ -221,9 +223,10 @@ export class Commands {
      * @param {any} needValue If the value is needed
      * @param {any} length Length
      * @param {any} needNextArgs NeedNextArgs
+     * @param {any[]?} beforeArgs The arguments before this argument
      * @returns 
      */
-    addDynamicArgument(name, value, nextArgs, needValue, length, needNextArgs) {
+    addDynamicArgument(name, beforeArgs, value, nextArgs, needValue, length, needNextArgs) {
         if (Object.keys(this.info.args).includes(name))
             return;
         const v = [].concat(value);
@@ -234,7 +237,8 @@ export class Commands {
                 cb: null,
                 na: na,
                 nn: na.length ? needNextArgs ?? Boolean(na?.length) : false,
-            } });
+        }});
+        if (!nextArgs?.length) this.info.usage.args.push({ name: name, beforeArgs: beforeArgs ?? [] })
         return this;
     }
     /**
@@ -243,9 +247,10 @@ export class Commands {
      * @param {any} nextArgs Nextargs
      * @param {any} data Data
      * @param {any} needNextArgs NeedNextArgs
+     * @param {any[]?} beforeArgs The arguments before this argument
      * @returns 
      */
-    addNumberArgument(name, nextArgs, data, needNextArgs) {
+    addNumberArgument(name, beforeArgs, nextArgs, data, needNextArgs) {
         if (Object.keys(this.info.argNames).includes(name))
             return;
         if (data && data.min > data.max)
@@ -257,7 +262,8 @@ export class Commands {
                 cb: null,
                 na: na,
                 nn: na.length ? needNextArgs ?? Boolean(na?.length) : false
-            } });
+        }});
+        if (!nextArgs?.length) this.info.usage.args.push({ name: name, beforeArgs: beforeArgs ?? [] })
         return this;
     }
     /**
@@ -267,9 +273,10 @@ export class Commands {
      * @param {any} nextArgs Nextargs
      * @param {any} data Data
      * @param {any} needNextArg NeedNextArgs
+     * @param {any[]?} beforeArgs The arguments before this argument
      * @returns 
      */
-    addPlayerArgument(name, online, nextArgs, data, needNextArg) {
+    addPlayerArgument(name, beforeArgs, online, nextArgs, data, needNextArg) {
         if (Object.keys(this.info.args).includes(name))
             return;
         const na = [].concat(nextArgs ?? []);
@@ -279,7 +286,8 @@ export class Commands {
                 cb: null,
                 na: na,
                 nn: na.length ? needNextArg ?? Boolean(na?.length) : false
-            } });
+        }});
+        if (!nextArgs?.length) this.info.usage.args.push({ name: name, beforeArgs: beforeArgs ?? [] })
         return this;
     }
     /**
@@ -289,9 +297,10 @@ export class Commands {
      * @param {any} filter The filter of the argument
      * @param {any} nextArgs Nextargs
      * @param {any} needNextArg NeedNextArgs
+     * @param {any[]?} beforeArgs The arguments before this argument
      * @returns 
      */
-    addAnyArgument(name, length, filter, nextArgs, needNextArg) {
+    addAnyArgument(name, beforeArgs, length, filter, nextArgs, needNextArg) {
         if (Object.keys(this.info.args).includes(name))
             return;
         const na = [].concat(nextArgs ?? []);
@@ -301,7 +310,8 @@ export class Commands {
                 cb: null,
                 na: na,
                 nn: na.length ? needNextArg ?? Boolean(na?.length) : false,
-            } });
+        }});
+        if (!nextArgs?.length) this.info.usage.args.push({ name: name, beforeArgs: beforeArgs ?? [] })
         return this;
     }
     /**
@@ -328,7 +338,8 @@ export class Commands {
             developers: command.info.developers,
             argNames: command.info.argNames,
             args: command.info.args,
-            cb: command.info.cb
+            cb: command.info.cb,
+            usage: command.info.usage
         });
     }
 }

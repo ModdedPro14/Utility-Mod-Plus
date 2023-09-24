@@ -9,14 +9,14 @@ CX.Build(CX.BuildTypes["@command"], {
     .setDescription('Sell items for money')
     .setCategory('general')
     .firstArguments(['add', 'hand', 'all', 'remove', 'list'], true)
-    .addDynamicArgument('add', 'add', 'itemName')
-    .addDynamicArgument('hand', 'hand')
-    .addDynamicArgument('all', 'all')
-    .addDynamicArgument('remove', 'remove', 'item')
-    .addDynamicArgument('list', 'list')
-    .addAnyArgument('itemName', 1, null, 'amountofmoney')
-    .addNumberArgument('amountofmoney')
-    .addAnyArgument('item', 1),
+    .addDynamicArgument('add', [], 'add', 'itemName')
+    .addDynamicArgument('hand', [], 'hand')
+    .addDynamicArgument('all', [], 'all')
+    .addDynamicArgument('remove', [], 'remove', 'item')
+    .addDynamicArgument('list', [], 'list')
+    .addAnyArgument('itemName', [], 1, null, 'amount')
+    .addNumberArgument('amount',  ['add' ,'item'])
+    .addAnyArgument('item', ['remove'], 1),
     executes(ctx) {
         ctx.executeArgument('add', (sender, _, args) => {
             if (!sender.permission.hasPermission('admin')) return sender.response.error('You do not have permission to use this arguement');

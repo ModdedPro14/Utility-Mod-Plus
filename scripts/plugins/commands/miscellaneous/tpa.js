@@ -7,10 +7,10 @@ CX.Build(CX.BuildTypes["@command"], {
     .setDescription('Teleport to a player')
     .setCategory('miscellaneous')
     .firstArguments(['accept', 'send', 'decline'], true)
-    .addDynamicArgument('accept', 'accept', 'player', true)
-    .addDynamicArgument('send', 'send', 'player')
-    .addDynamicArgument('decline', 'decline', 'player', true)
-    .addPlayerArgument('player', true, null, { self: false }),
+    .addDynamicArgument('accept', [], 'accept', 'player', true)
+    .addDynamicArgument('send', [], 'send', 'player')
+    .addDynamicArgument('decline', [], 'decline', 'player', true)
+    .addPlayerArgument('player', ['accept | send | decline'], true, null, { self: false }),
     executes(ctx) {
         ctx.executeArgument('accept', (sender, _, args) => {
             if (sender.score.getScore('inCombat') > 0) return sender.response.error(`You are in combat, you must wait ${sender.score.getScore('inCombat')}s before using this command`);

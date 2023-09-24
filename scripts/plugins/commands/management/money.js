@@ -8,13 +8,13 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['set', 'add', 'remove', 'reset'], true)
-    .addDynamicArgument('set', 'set', 'player')
-    .addDynamicArgument('add', 'add', 'player')
-    .addDynamicArgument('remove', 'remove', 'player')
-    .addDynamicArgument('reset', 'reset', 'plr')
-    .addPlayerArgument('player', true, 'amount', { self: true }, false)
-    .addPlayerArgument('plr', true, null, { self: true })
-    .addNumberArgument('amount'),
+    .addDynamicArgument('set', [], 'set', 'player')
+    .addDynamicArgument('add', [], 'add', 'player')
+    .addDynamicArgument('remove', [], 'remove', 'player')
+    .addDynamicArgument('reset', [], 'reset', 'plr')
+    .addPlayerArgument('player', [], true, 'amount', { self: true }, false)
+    .addPlayerArgument('plr', ['reset'], true, null, { self: true })
+    .addNumberArgument('amount', ['set | add | remove', 'player']),
     executes(ctx) {
         ctx.executeArgument('set', (sender, _, args) => {
             const player = args[0];

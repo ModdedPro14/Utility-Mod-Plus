@@ -8,7 +8,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('general')
     .setAliases(['bal'])
     .firstArguments(['player'], false)
-    .addPlayerArgument('player', true, null, { self: true }),
+    .addPlayerArgument('player', [], true, null, { self: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             sender.response.send(`Your balance: ${sender.score.getScore(config.currency) == undefined ? 0 : sender.score.getScore(config.currency)}`);

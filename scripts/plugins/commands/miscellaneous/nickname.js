@@ -7,8 +7,8 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('miscellaneous')
     .setAdmin(true)
     .firstArguments(['player'], true)
-    .addPlayerArgument('player', true, 'name')
-    .addAnyArgument('name', 1),
+    .addPlayerArgument('player', [], true, 'name')
+    .addAnyArgument('name', ['player'], 1),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player, args) => {
             if (!player.chat.getNicknameTag) {

@@ -8,7 +8,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['player'], true)
-    .addAnyArgument('player', 1),
+    .addAnyArgument('player', [], 1),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player) => {
             if (!Databases.bans.has(player)) return sender.response.error('You must type a players name that is banned');

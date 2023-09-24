@@ -7,7 +7,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('general')
     .setAdmin(true)
     .firstArguments(['message'], false)
-    .addAnyArgument('message', 1),
+    .addAnyArgument('message', [], 1),
     executes(ctx) {
         ctx.execute((sender, args) => !args.length && sender.response.error('You must type a message to broadcast'));
         ctx.executeArgument('message', (_, value) => {

@@ -7,9 +7,9 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['add', 'remove'], true)
-    .addDynamicArgument('add', 'add', 'player')
-    .addDynamicArgument('remove', 'remove', 'player')
-    .addPlayerArgument('player', true, null, { self: true }),
+    .addDynamicArgument('add', [], 'add', 'player')
+    .addDynamicArgument('remove', [], 'remove', 'player')
+    .addPlayerArgument('player', ['add | remove'], true, null, { self: true }),
     executes(ctx) {
         ctx.executeArgument('add', (sender, _, args) => {
             const player = args[0];

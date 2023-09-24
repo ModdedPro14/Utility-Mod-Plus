@@ -7,11 +7,11 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('miscellaneous')
     .setAdmin(true)
     .firstArguments(['player'], true)
-    .addPlayerArgument('player', true, ['add', 'remove', 'removeAll'])
-    .addDynamicArgument('add', 'add', 'rank')
-    .addDynamicArgument('remove', 'remove', 'rank')
-    .addDynamicArgument('removeAll', 'removeAll', null)
-    .addAnyArgument('rank', 1),
+    .addPlayerArgument('player', [], true, ['add', 'remove', 'removeAll'])
+    .addDynamicArgument('add', [], 'add', 'rank')
+    .addDynamicArgument('remove', [], 'remove', 'rank')
+    .addDynamicArgument('removeAll', ['player'], 'removeAll', null)
+    .addAnyArgument('rank', ['player', 'add | remove'], 1),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player, args) => {
             if (args[0] == 'add') {

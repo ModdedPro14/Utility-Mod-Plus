@@ -7,9 +7,9 @@ CX.Build(CX.BuildTypes["@command"], {
     .setDescription('A bounty system')
     .setCategory('general')
     .firstArguments(['set'], true)
-    .addDynamicArgument('set', 'set', 'name')
-    .addPlayerArgument('name', true, 'amount', { self: false })
-    .addNumberArgument('amount'),
+    .addDynamicArgument('set',  [], 'set', 'name')
+    .addPlayerArgument('name', [], true, 'amount', { self: false })
+    .addNumberArgument('amount', ['set', 'name']),
     executes(ctx) {
         ctx.executeArgument('set', (sender, _, args) => {
             if (args[1] > sender.score.getScore(config.currency)) return sender.response.error(`You do not have enough ${config.currency}`);

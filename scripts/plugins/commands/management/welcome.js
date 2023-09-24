@@ -8,8 +8,8 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['message', 'remove'], true)
-    .addDynamicArgument('remove', 'remove')
-    .addAnyArgument('message', 1),
+    .addDynamicArgument('remove', [], 'remove')
+    .addAnyArgument('message', [], 1),
     executes(ctx) {
         ctx.executeArgument('message', (sender, val) => {
             Databases.server.write('welcomeMessage', val);

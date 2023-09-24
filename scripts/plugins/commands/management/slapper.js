@@ -8,8 +8,8 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['create', 'edit'], true)
-    .addDynamicArgument('create', 'create')
-    .addDynamicArgument('edit', 'edit'),
+    .addDynamicArgument('create', [], 'create')
+    .addDynamicArgument('edit', [], 'edit'),
     executes(ctx) {
         ctx.executeArgument('create', (sender) => {
             sender.response.send('Close the chat within 10 secondes')

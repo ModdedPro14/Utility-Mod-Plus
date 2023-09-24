@@ -8,7 +8,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['player'], true)
-    .addPlayerArgument('player', true, null, { self: false }),
+    .addPlayerArgument('player', [], true, null, { self: false }),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player) => {
             if (player.permission.hasPermission('admin')) return sender.response.error('You cant jail a staff member');

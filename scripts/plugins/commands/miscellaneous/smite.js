@@ -7,7 +7,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('miscellaneous')
     .setAdmin(true)
     .firstArguments(['player'], true)
-    .addPlayerArgument('player', true, null, { self: false }),
+    .addPlayerArgument('player', [], true, null, { self: false }),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player) => {
             sender.response.send(`You have smited the player: §6${player.name}`);

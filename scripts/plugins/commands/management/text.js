@@ -7,8 +7,8 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['text', 'remove'], true)
-    .addDynamicArgument('remove', 'remove')
-    .addAnyArgument('text', 1),
+    .addDynamicArgument('remove', [], 'remove')
+    .addAnyArgument('text', [], 1),
     executes(ctx) {
         ctx.executeArgument('text', (sender, val) => {
             const ft = sender.dimension.spawnEntity('mod:ft', sender.location);

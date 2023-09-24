@@ -1,6 +1,5 @@
 import { world } from "@minecraft/server";
 import { CX } from "../../../API/CX";
-import config from "../../../config/main";
 import { Databases } from "../../../API/handlers/databases";
 
 CX.Build(CX.BuildTypes["@command"], {
@@ -9,12 +8,11 @@ CX.Build(CX.BuildTypes["@command"], {
     .setDescription('Create warps for your server')
     .setCategory('management')
     .firstArguments(['create', 'name', 'delete', 'list'], true)
-    .addDynamicArgument('create', 'create', 'warp')
-    .addDynamicArgument('delete', 'delete', 'warpname')
-    .addDynamicArgument('list', 'list')
-    .addAnyArgument('warp', 1, null)
-    .addAnyArgument('warpname', 1)
-    .addAnyArgument('name', 1),
+    .addDynamicArgument('create', [], 'create', 'warp')
+    .addDynamicArgument('delete', [], 'delete', 'warp')
+    .addDynamicArgument('list', [], 'list')
+    .addAnyArgument('warp', ['create | delete'], 1)
+    .addAnyArgument('name', [], 1),
     executes(ctx) {
         ctx.executeArgument('name', (sender, val) => {
             if (!Databases.warps.has(val)) return sender.response.error('That warp dosent exist');

@@ -7,8 +7,8 @@ CX.Build(CX.BuildTypes["@command"], {
     .setDescription(`Transfer an amount of ${config.currency} from your money to a player`)
     .setCategory('general')
     .firstArguments(['player'], true)
-    .addPlayerArgument('player', true, 'amount', { self: true })
-    .addNumberArgument('amount'),
+    .addPlayerArgument('player', [], true, 'amount', { self: true })
+    .addNumberArgument('amount', ['player']),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player, args) => {
             if (sender.score.getScore(config.currency) < args[0]) return sender.response.error(`You do not have enough ${config.currency} to transfer that amount`);

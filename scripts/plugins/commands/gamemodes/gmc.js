@@ -1,12 +1,12 @@
 import { CX } from "../../../API/CX";
 CX.Build(CX.BuildTypes["@command"], {
     data: new CX.command()
-        .setName('gmc')
-        .setDescription('Changes your or a players gamemode to creative')
-        .setCategory('gamemodes')
-        .setAdmin(true)
-        .firstArguments(['player'], false)
-        .addPlayerArgument('player', true, null, { self: true }, false),
+    .setName('gmc')
+    .setDescription('Changes your or a players gamemode to creative')
+    .setCategory('gamemodes')
+    .setAdmin(true)
+    .firstArguments(['player'], false)
+    .addPlayerArgument('player', [], true, null, { self: true }, false),
     executes(ctx) {
         ctx.execute((sender, args) => {
             if (!args.length) {

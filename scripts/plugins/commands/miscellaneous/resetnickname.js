@@ -8,7 +8,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setAdmin(true)
     .setAliases(['rnn', 'resetnn'])
     .firstArguments(['player'], true)
-    .addPlayerArgument('player', true, null, { self: true }),
+    .addPlayerArgument('player', [], true, null, { self: true }),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player) => {
             if (!player.chat.getNicknameTag) return sender.response.error(`§6${player.name} §cdosent have a nickname`);

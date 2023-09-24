@@ -9,8 +9,8 @@ CX.Build(CX.BuildTypes["@command"], {
     .setAliases(['?'])
     .setDescription('Provides you a list of commands or information about a command')
     .firstArguments(['page', 'command'], false)
-    .addAnyArgument('command', 1)
-    .addNumberArgument('page', [], { min: 0 }),
+    .addAnyArgument('command', [], 1)
+    .addNumberArgument('page', [], [], { min: 0 }),
     executes(ctx) {
         ctx.execute((_, args) => !args.length && ctx.forceValue('page', 1));
         ctx.executeArgument('command', (sender, val) => {
@@ -23,11 +23,11 @@ CX.Build(CX.BuildTypes["@command"], {
             hI += `§l§4Category:§c ${cmdList.category}\n`;
             if (cmdList.developers.length) hI += `§l§4Developer(s):§c ${cmdList.developers.join('§4 | §c')}\n`;
             let args = [];
-            Object.keys(cmdList.args).forEach((a) => {
-                if (cmdList.argNames[0].includes(a)) return;
-                args.push(a);
-            });
-            if (cmdList.argNames[0].length) hI += `§l§4Argument(s):§c ${cmdList.name} <${cmdList.argNames[0].join(' §4|§c ')}> <${args.join(' §4|§c ')}>\n`;
+            cmdList.usage.args.forEach(arg => {
+                if (arg.beforeArgs.length) args.push(`${config.prefix}${cmdList.name} <${arg.beforeArgs.join('> <')}> <${arg.name}>`)
+                else args.push(`${config.prefix}${cmdList.name} <${arg.name}>`)
+            })
+            if (cmdList.argNames[0].length) hI += `§l§4Usage:§4 [\n§c${args.join('\n')}\n§4]`;
             sender.response.send(`§4${hI}`, true, false);
         });
         ctx.executeArgument('page', (sender, page) => {

@@ -9,7 +9,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('general')
     .setAdmin(true)
     .firstArguments(['prefix'], false)
-    .addAnyArgument('prefix', 1),
+    .addAnyArgument('prefix', [], 1),
     executes(ctx) {
         ctx.execute((sender, args) => !args.length && sender.response.error('You must provide a prefix'));
         ctx.executeArgument('prefix', (sender, value) => {

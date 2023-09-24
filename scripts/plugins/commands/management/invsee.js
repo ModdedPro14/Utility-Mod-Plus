@@ -8,7 +8,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['player'], true)
-    .addPlayerArgument('player', true, null),
+    .addPlayerArgument('player', [], true, null),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player) => {
             const container = player.getComponent('inventory').container, equpiement = player.getComponent('equipment_inventory');

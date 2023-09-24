@@ -9,7 +9,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setDescription('Set a home')
     .setCategory('miscellaneous')
     .firstArguments(['name'], true)
-    .addAnyArgument('name', 1),
+    .addAnyArgument('name', [], 1),
     executes(ctx) {
         ctx.executeArgument('name', (sender, val) => {
             if (Databases.homes.has(`${sender.name}:${val}`)) return sender.response.error('That home already exists');

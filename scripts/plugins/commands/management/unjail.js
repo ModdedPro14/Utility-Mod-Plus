@@ -7,7 +7,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['player'], true)
-    .addPlayerArgument('player', true, null, { self: true }),
+    .addPlayerArgument('player', [], true, null, { self: true }),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player) => {
             if (!client.server.has('spawn')) return sender.response.error(`There has to be a spawn set to unjail §6${player.name}`);

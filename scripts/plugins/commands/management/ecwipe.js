@@ -7,7 +7,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setCategory('management')
     .setAdmin(true)
     .firstArguments(['player'], false)
-    .addPlayerArgument('player', true, null),
+    .addPlayerArgument('player', [], true, null),
     executes(ctx) {
         ctx.execute((sender, args) => !args.length && sender.response.error('You must enter a player name to wipe their ender chest'));
         ctx.executeArgument('player', (sender, player) => {
