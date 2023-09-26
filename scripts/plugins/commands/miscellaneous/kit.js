@@ -2,7 +2,7 @@ import { CX } from "../../../API/CX";
 import { Databases } from "../../../API/handlers/databases";
 import { EquipmentSlot } from "@minecraft/server";
 import config from "../../../config/main";
-import { ItemDB } from "../../../API/Item Database/main";
+import { ItemDB } from "../../../API/database/IDB";
 
 const kits = new ItemDB('kits');
 
@@ -56,12 +56,12 @@ CX.Build(CX.BuildTypes["@command"], {
                 itemCount++;
                 items.push(kits.writeItem(item));
             }
-            const equipment = sender.getComponent('equipment_inventory'), armor = {
-                offhand: kits.writeItem(equipment.getEquipment(EquipmentSlot.offhand)),
-                helmet: kits.writeItem(equipment.getEquipment(EquipmentSlot.head)),
-                chest: kits.writeItem(equipment.getEquipment(EquipmentSlot.chest)),
-                legs: kits.writeItem(equipment.getEquipment(EquipmentSlot.legs)),
-                feet: kits.writeItem(equipment.getEquipment(EquipmentSlot.feet))
+            const equipment = sender.getComponent('equippable'), armor = {
+                offhand: kits.writeItem(equipment.getEquipment(EquipmentSlot.Offhand)),
+                helmet: kits.writeItem(equipment.getEquipment(EquipmentSlot.Head)),
+                chest: kits.writeItem(equipment.getEquipment(EquipmentSlot.Chest)),
+                legs: kits.writeItem(equipment.getEquipment(EquipmentSlot.Legs)),
+                feet: kits.writeItem(equipment.getEquipment(EquipmentSlot.Feet))
             };
             if (!items.length && !armor.offhand && !armor.helmet && !armor.chest && !armor.legs && !armor.feet) return sender.response.error('There were no items to add to the kit');
             const data = {
@@ -79,22 +79,22 @@ CX.Build(CX.BuildTypes["@command"], {
         ctx.executeArgument('buy', (sender, _, args) => {
             if (!Databases.kit.has(args[0])) return sender.response.error('That kit dosent exist');
             const inventory = sender.getComponent('inventory').container;
-            const equipment = sender.getComponent('equipment_inventory');
+            const equipment = sender.getComponent('equippable');
             const Data = Databases.kit.read(args[0]);
             if (!args[0].includes(Data.name || Data.createdAt || Data.items)) return sender.response.error('That kit cant be bought');
             if (Data.permission !== "none" && (!sender.hasTag(Data.permission))) return sender.response.error('You dont have permission to buy this kit');
             if (sender.score.getScore(config.currency) < Data.price) return sender.response.error(`You need §6${CX.extra.parseNumber(Data.price - sender.score.getScore(config.currency))} §cmore to buy this item`);
             if (inventory.emptySlotsCount < Data.itemCount) return sender.response.error('You dont have enough space to buy this kit');
-            if (Data.armor.offhand && equipment.getEquipment(EquipmentSlot.offhand)) return sender.response.error('You must not have any offhand equipments');
-            if (Data.armor.helmet && equipment.getEquipment(EquipmentSlot.head)) return sender.response.error('You must not have any helmets equiped');
-            if (Data.armor.chest && equipment.getEquipment(EquipmentSlot.chest)) return sender.response.error('You cant must not have any chestplates equiped');
-            if (Data.armor.legs && equipment.getEquipment(EquipmentSlot.legs)) return sender.response.error('You must not have any leggings equiped');
-            if (Data.armor.feet && equipment.getEquipment(EquipmentSlot.feet)) return sender.response.error('You must not have any boots equiped');
-            if (Data.armor.offhand) equipment.setEquipment(EquipmentSlot.offhand, kits.readID(Data.armor.offhand));
-            if (Data.armor.helmet) equipment.setEquipment(EquipmentSlot.head, kits.readID(Data.armor.helmet));
-            if (Data.armor.chest) equipment.setEquipment(EquipmentSlot.chest, kits.readID(Data.armor.chest));
-            if (Data.armor.legs) equipment.setEquipment(EquipmentSlot.legs, kits.readID(Data.armor.legs));
-            if (Data.armor.feet) equipment.setEquipment(EquipmentSlot.feet, kits.readID(Data.armor.feet));
+            if (Data.armor.offhand && equipment.getEquipment(EquipmentSlot.Offhand)) return sender.response.error('You must not have any offhand equipments');
+            if (Data.armor.helmet && equipment.getEquipment(EquipmentSlot.Head)) return sender.response.error('You must not have any helmets equiped');
+            if (Data.armor.chest && equipment.getEquipment(EquipmentSlot.Chest)) return sender.response.error('You cant must not have any chestplates equiped');
+            if (Data.armor.legs && equipment.getEquipment(EquipmentSlot.Legs)) return sender.response.error('You must not have any leggings equiped');
+            if (Data.armor.feet && equipment.getEquipment(EquipmentSlot.Feet)) return sender.response.error('You must not have any boots equiped');
+            if (Data.armor.offhand) equipment.setEquipment(EquipmentSlot.Offhand, kits.readID(Data.armor.offhand));
+            if (Data.armor.helmet) equipment.setEquipment(EquipmentSlot.Head, kits.readID(Data.armor.helmet));
+            if (Data.armor.chest) equipment.setEquipment(EquipmentSlot.Chest, kits.readID(Data.armor.chest));
+            if (Data.armor.legs) equipment.setEquipment(EquipmentSlot.Legs, kits.readID(Data.armor.legs));
+            if (Data.armor.feet) equipment.setEquipment(EquipmentSlot.Feet, kits.readID(Data.armor.feet));
             Data.items.forEach((i) => inventory.addItem(kits.readID(i)));
             sender.response.send(`You have bought the kit §6${args[0]}`);
             sender.score.removeScore(config.currency, Data.price);

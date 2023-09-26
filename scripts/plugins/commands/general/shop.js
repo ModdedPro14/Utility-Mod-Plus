@@ -1,4 +1,4 @@
-import { ItemDB } from "../../../API/Item Database/main";
+import { ItemDB } from "../../../API/database/IDB";
 import { CX } from "../../../API/CX";
 import config from "../../../config/main";
 

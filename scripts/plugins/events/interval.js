@@ -134,12 +134,10 @@ system.runInterval(() => {
 });
 system.runInterval(() => {
     world.getAllPlayers().forEach(plr => {
-        Databases.auctionClaims.forEach((key, value) => {
-            if (key == plr.id) {
-                CX.scoreboard.add(plr, config.currency, value);
-                Databases.auctionClaims.delete(key);
-            }
-        });
+        if (Databases.auctionClaims.has(plr.id)) {
+            CX.scoreboard.add(plr, config.currency, Databases.auctionClaims.read(plr.id));
+            Databases.auctionClaims.delete(plr.id);
+        }
         if (CX.scoreboard.get(plr, 'pearlTimer') >= 1) CX.scoreboard.remove(plr, 'pearlTimer', 1);
         if (CX.scoreboard.get(plr, 'inCombat') >= 1) CX.scoreboard.remove(plr, 'inCombat', 1);
         if (CX.scoreboard.get(plr, 'sents') >= 1) CX.scoreboard.remove(plr, 'sents', 1);

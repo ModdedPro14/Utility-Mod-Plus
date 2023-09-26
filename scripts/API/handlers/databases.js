@@ -1,4 +1,4 @@
-import { Database } from "../database/Database";
+import { Database } from "../database/DB";
 
 class DBS {
     /**

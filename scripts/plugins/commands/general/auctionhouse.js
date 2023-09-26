@@ -1,6 +1,6 @@
 import { CX } from "../../../API/CX";
 import config from "../../../config/main";
-import { ItemDB } from "../../../API/Item Database/main";
+import { ItemDB } from "../../../API/database/IDB";
 import { Databases } from "../../../API/handlers/databases";
 
 const auctionItems = new ItemDB('auctions'), expiredAh = new ItemDB('expiredAuctions')
@@ -56,10 +56,10 @@ CX.Build(CX.BuildTypes["@command"], {
 })
 
 const allAuctions = (page, sender) => {
-    const form = new CX.chestForm('large');
+    const form = new CX.chestForm('large')
     const aAuctions = auctionItems.allIDs().sort((a, b) => a.data.date - b.data.date), pages = Math.ceil(aAuctions.length / 45)
-    form.setTitle(`Auctions Page: ${page}/${pages}`);
-    if (!auctionItems.allIDs().length) return (new CX.messageForm()
+    form.setTitle(`Auctions Page: ${page}/${pages}`)
+    if (!aAuctions.length) return (new CX.messageForm()
     .setTitle('No Auctions Available')
     .setBody('§cHmmm.. seems like theres no auctions to see, maybe add an auction using !ah sell <price>')
     .setButton2('§cClose')
@@ -110,14 +110,14 @@ const allAuctions = (page, sender) => {
                 .show(sender, (res) => {
                     if (res.canceled) return;
                     if (res.selection == 3) {
-                        if (sender.score.getScore(config.currency) < selection.price) return sender.response.error(`You do not have enough ${config.currency}§r§c§lto buy this item`);
+                        if (sender.score.getScore(config.currency) < selection.data.price) return sender.response.error(`You do not have enough ${config.currency}§r§c§lto buy this item`);
                         const inventory = sender.getComponent('inventory').container;
                         if (inventory.emptySlotsCount < 1) return sender.response.error('You do not have enough space to buy this item');
-                        sender.score.removeScore(config.currency, selection.price);
+                        sender.score.removeScore(config.currency, selection.data.price);
                         inventory.addItem(selection.item);
+                        sender.response.send(`You have succssfully bought the item ${selection.data.itemName}`);
+                        Databases.auctionClaims.write(selection.data.plrId, selection.data.price);
                         auctionItems.deleteID(selection.ID)
-                        sender.response.send(`You have succssfully bought the item ${selection.itemName}`);
-                        Databases.auctionClaims.write(selection.plrId, selection.price);
                     }
                 });
             }
@@ -125,9 +125,9 @@ const allAuctions = (page, sender) => {
     });
 }
 const myAuctions = (page, sender) => {
-    const form = new CX.chestForm('large');
+    const form = new CX.chestForm('large')
     const aAuctions = auctionItems.allIDs().filter(i => i.data.plrId == sender.id).sort((a, b) => a.data.date - b.data.date), pages = Math.ceil(aAuctions.length / 45)
-    form.setTitle(`My Auctions Page: ${page}/${pages}`);
+    form.setTitle(`My Auctions Page: ${page}/${pages}`)
     if (!aAuctions.length) return (new CX.messageForm()
     .setTitle('No Auctions Available')
     .setBody('§cHmmm.. seems like theres no auctions that you have made, maybe add an auction using !ah sell <price>')
@@ -178,9 +178,9 @@ const myAuctions = (page, sender) => {
     });
 }
 const expiredAuctions = (page, sender) => {
-    const form = new CX.chestForm('large');
+    const form = new CX.chestForm('large')
     const aAuctions = expiredAh.allIDs().filter(i => i.data.plrId == sender.id), pages = Math.ceil(aAuctions.length / 45)
-    form.setTitle(`Expired Auctions Page: ${page}/${pages}`);
+    form.setTitle(`Expired Auctions Page: ${page}/${pages}`)
     if (!aAuctions.length) return (new CX.messageForm()
     .setTitle('No Auctions Available')
     .setBody('§cHmmm.. seems like theres no auctions that you have expired yet, maybe add an auction using !ah sell <price>')
@@ -194,7 +194,7 @@ const expiredAuctions = (page, sender) => {
     const items = aAuctions.slice((page - 1) * 45, (page - 1) * 45 + 45)
     items.forEach((item, i) => {
         const data = CX.item.getItemData(item.item)
-        form.addButton(i, CX.item.getItemName(item.item, false), [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
+        form.addButton(i, CX.item.getItemName(item.item), [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
     })
     form.show(sender, (result) => {
         if (result.canceled) return
@@ -222,10 +222,10 @@ const expiredAuctions = (page, sender) => {
     });
 }
 const manageAuctions = (page, sender) => {
-    const form = new CX.chestForm('large');
+    const form = new CX.chestForm('large')
     const aAuctions = auctionItems.allIDs().sort((a, b) => a.data.date - b.data.date), pages = Math.ceil(aAuctions.length / 45)
-    form.setTitle(`Manage Auctions Page: ${page}/${pages}`);
-    if (!auctionItems.allIDs().length) return (new CX.messageForm()
+    form.setTitle(`Manage Auctions Page: ${page}/${pages}`)
+    if (!aAuctions.length) return (new CX.messageForm()
     .setTitle('No Auctions Available')
     .setBody('§cHmmm.. seems like theres no auctions to see')
     .setButton2('§cClose')
@@ -246,7 +246,7 @@ const manageAuctions = (page, sender) => {
             } catch {}
         } else {
             const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore.map(), `\n§7Seller: §6${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}`], data.typeId, data.amount, !data.enchantments.length ? false : true);
+            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Seller: §6${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}`], data.typeId, data.amount, !data.enchantments.length ? false : true);
         }
     })
     form.show(sender, (result) => {

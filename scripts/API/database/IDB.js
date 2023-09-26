@@ -1,6 +1,6 @@
 import { Vector, system, world } from "@minecraft/server";
 import { CX } from "../CX";
-import { Database } from "../database/Database";
+import { Database } from "./DB";
 
 export class ItemDB {
   /**
