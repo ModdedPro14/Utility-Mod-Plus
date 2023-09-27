@@ -60,7 +60,7 @@ export class ItemDB {
       if (!inv.getItem(i)) continue
       const item = inv.getItem(i)
       if (item.nameTag == id) {
-        item.nameTag = `§r${this.database.read(id).nameTag}`
+        item.nameTag = this.database.read(id).nameTag
         return item
       }
     }
