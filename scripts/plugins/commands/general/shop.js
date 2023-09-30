@@ -24,22 +24,32 @@ CX.Build(CX.BuildTypes["@command"], {
                 .addButton(27, '§cClose', ['§6Close this page'], 'minecraft:barrier')
                 .addButton(18, '§dManage Categories', ['§6Manage the created categories'], 'minecraft:amethyst_shard')
                 form.force(sender, (res) => {
+                    if (res.canceled) return
                     if (res.selection == 0) {
                         new CX.modalForm()
                         .setTitle('§6Create Category')
                         .addTextField('The name of the category:', 'Blocks')
                         .addTextField('The description of the category:', 'Blocks stuff')
                         .addTextField('The item of the category:', 'minecraft:stone')
+                        .addTextField('The permission tag of the category: (optional)', 'mvp')
                         .show(sender, (result) => {
+                            if (result.canceled) return
                             if (Databases.shopCategories.has(result.formValues[0])) return sender.response.error('That category already exists')
                             if (!ItemTypes.get(result.formValues[2])) return sender.response.error('Not a vaild item of the category')
                             Databases.shopCategories.write(result.formValues[0], {
                                 description: result.formValues[1],
-                                typeId: result.formValues[2]
+                                typeId: result.formValues[2],
+                                permission: result.formValues[3] ?? undefined
                             })
                             sender.response.send(`Successfully created the category: ${result.formValues[0]}`)
                         })
                     } else if (res.selection == 14) {
+                        if (!Databases.shopCategories.keys().length) return (new CX.messageForm()
+                        .setTitle('§cNo Shop Categories')
+                        .setBody('§4There must be atleast 1 category created to add an item!')
+                        .setButton2('§cClose')
+                        .setButton1('§aOk')
+                        .force(sender, (_) => { }, 220))
                         new CX.modalForm()
                         .setTitle('§eAdd An Item')
                         .addTextField('§6Price §c(Sells the item ur holding only)', "100", "0")
@@ -82,7 +92,7 @@ const shop = (sender, page, category = undefined) => {
         form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
         categories.forEach((v, i) => {
             const data = Databases.shopCategories.read(v)
-            form.addButton(i, v, [data.description], data.typeId, 1, true)
+            form.addButton(i, v, [data.description.replaceAll('\\n', '\n')], data.typeId, 1, true)
         })
         form.force(sender, (res) => {
             if (res.canceled) return
@@ -91,6 +101,7 @@ const shop = (sender, page, category = undefined) => {
             else if (res.selection <= categories.length) shop(sender, 1, categories[res.selection])
         }, 220)
     } else {
+        if (!sender.permission.hasPermission('admin') && !sender.hasTag(Databases.shopCategories.read(category)?.permission)) return sender.response.error('You do not have the permission to view this category')
         const aShopItems = shopItems.allIDs().filter((v) => v.data.category == category), pages = Math.ceil(aShopItems.length / 45), items = aShopItems.slice((page - 1) * 45, (page - 1) * 45 + 45)
         if (!aShopItems.length) return (new CX.messageForm()
         .setTitle('§cNo Shop Items')
@@ -99,7 +110,7 @@ const shop = (sender, page, category = undefined) => {
         .setButton1('§aOk')
         .force(sender, (_) => { }, 220))
         const form = new CX.chestForm('large')
-        .setTitle(`Shop ${category} page: ${page}/${pages}`)
+        .setTitle(`${category} page: ${page}/${pages}`)
         .addButton(49, '§cClose', ['§6Close this page'], 'textures/blocks/barrier');
         if (page < pages) form.addButton(51, '§aNext page', ['§6Shows the next page'], 'minecraft:arrow')
         if (page > 1) form.addButton(47, '§cPrevious page', ['§6Shows the previous page'], 'minecraft:arrow')
@@ -168,7 +179,7 @@ const manageCategories = (sender, page) => {
     form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
     categories.forEach((v, i) => {
         const data = Databases.shopCategories.read(v)
-        form.addButton(i, v, [data.description], data.typeId, 1, true)
+        form.addButton(i, v, [data.description.replaceAll('\\n', '\n')], data.typeId, 1, true)
     })
     form.force(sender, (res) => {
         if (res.canceled) return
@@ -183,9 +194,7 @@ const manageCategories = (sender, page) => {
             .show(sender, (result) => {
                 if (result.canceled) return
                 if (result.selection == 3) {
-                    shopItems.allIDs().filter(v => v.data.category == selection).forEach((v) => {
-                        shopItems.deleteID(v.ID)
-                    })
+                    shopItems.allIDs().filter(v => v.data.category == selection).forEach((v) => shopItems.deleteID(v.ID))
                     Databases.shopCategories.delete(selection)
                     sender.response.send(`Successfully deleted the category ${selection}`)
                 }
