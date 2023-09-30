@@ -61,6 +61,10 @@ class DBS {
          * Guis database
          */
         this.guis = new Database('guis')
+        /**
+         * Shop categories database
+         */
+        this.shopCategories = new Database('shopCategories')
     }
 }
 export const Databases = new DBS();
