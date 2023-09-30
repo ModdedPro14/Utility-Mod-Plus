@@ -17,11 +17,12 @@ CX.Build(CX.BuildTypes["@command"], {
             if (sender.permission.hasPermission('admin')) {
                 const form = new CX.chestForm('medium')
                 form.setTitle('Shop')
-                .addPattren('circle', '', [], 'textures/blocks/glass_black', [27, 0])
+                .addPattren('circle', '', [], 'textures/blocks/glass_black', [27, 0, 18])
                 .addButton(0, '§6Create Category', ['§6Creates a category in the shop §c(admin only)'], 'minecraft:nether_star', 1, true)
                 .addButton(14, '§eAdd Item', ['§6Add an item to the shop §c(admin only)'], 'minecraft:stick', 1, true)
                 .addButton(12, '§aShop', ['§6All items in the shop'], 'minecraft:golden_carrot', 1, true)
-                .addButton(27, '§cClose', ['§6Close this page'], 'minecraft:barrier');
+                .addButton(27, '§cClose', ['§6Close this page'], 'minecraft:barrier')
+                .addButton(18, '§dManage Categories', ['§6Manage the created categories'], 'minecraft:amethyst_shard')
                 form.force(sender, (res) => {
                     if (res.selection == 0) {
                         new CX.modalForm()
@@ -57,7 +58,8 @@ CX.Build(CX.BuildTypes["@command"], {
                             });
                             sender.response.send(`Successfully sold the item ${CX.item.getItemName(inventory.getItem(sender.selectedSlot), false)} for ${result.formValues[0]}`);
                         });
-                    } else if (res.selection == 12) shop(sender, 1)            
+                    } else if (res.selection == 18) manageCategories(sender, 1) 
+                    else if (res.selection == 12) shop(sender, 1)            
                 }, 220)
             } else shop(sender, 1)
         })
@@ -128,19 +130,66 @@ const shop = (sender, page, category = undefined) => {
                         }
                     });
                 } else {
-                    if (res.selection == 5) {
-                        sender.response.send(`You have succssfully removed the item ${selection.data.itemName}`);
-                        shopItems.deleteID(selection.ID)
-                    } else if (res.selection == 3) {
-                        if (sender.score.getScore(config.currency) < selection.data.price) return sender.response.error(`You do not have enough ${config.currency}§r§c§l to buy this item`);
-                        const inventory = sender.getComponent('inventory').container;
-                        if (inventory.emptySlotsCount < 1) return sender.response.error('You do not have enough space to buy this item');
-                        sender.score.removeScore(config.currency, selection.data.price);
-                        inventory.addItem(selection.item);
-                        sender.response.send(`You have succssfully bought the item ${selection.data.itemName}`);
-                    }
+                    new CX.chestForm('small')
+                    .setTitle(selection.data.itemName)
+                    .addButton(3, '§aBuy', ['§6Do you want to buy this item?'], 'textures/blocks/glass_lime')
+                    .addButton(5, '§cRemove', ['§6Remove this item'], 'minecraft:barrier')
+                    .show(sender, (res) => {
+                        if (res.selection == 5) {
+                            sender.response.send(`You have succssfully removed the item ${selection.data.itemName}`);
+                            shopItems.deleteID(selection.ID)
+                        } else if (res.selection == 3) {
+                            if (sender.score.getScore(config.currency) < selection.data.price) return sender.response.error(`You do not have enough ${config.currency}§r§c§l to buy this item`);
+                            const inventory = sender.getComponent('inventory').container;
+                            if (inventory.emptySlotsCount < 1) return sender.response.error('You do not have enough space to buy this item');
+                            sender.score.removeScore(config.currency, selection.data.price);
+                            inventory.addItem(selection.item);
+                            sender.response.send(`You have succssfully bought the item ${selection.data.itemName}`);
+                        }
+                    })
                 }
             }
         }, 220)
     }
+}
+const manageCategories = (sender, page) => {
+    const keys = Databases.shopCategories.keys(), pages = Math.ceil(keys.length / 45), categories = keys.slice((page - 1) * 45, (page - 1) * 45 + 45)
+    if (!keys.length) return (new CX.messageForm()
+    .setTitle('§cNo Shop Categories')
+    .setBody('§4There are no categories in the shop to show! There must be atleast 1 category to show!')
+    .setButton2('§cClose')
+    .setButton1('§aOk')
+    .force(sender, (_) => { }, 220))
+    const form = new CX.chestForm('large')
+    .setTitle(`Manage Categories page: ${page}/${pages}`)
+    .addButton(49, '§cClose', ['§6Close this page'], 'textures/blocks/barrier');
+    if (page < pages) form.addButton(51, '§aNext page', ['§6Shows the next page'], 'minecraft:arrow')
+    if (page > 1) form.addButton(47, '§cPrevious page', ['§6Shows the previous page'], 'minecraft:arrow')
+    form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
+    categories.forEach((v, i) => {
+        const data = Databases.shopCategories.read(v)
+        form.addButton(i, v, [data.description], data.typeId, 1, true)
+    })
+    form.force(sender, (res) => {
+        if (res.canceled) return
+        if (res.selection == 47 && page > 1) manageCategories(sender, page - 1)
+        else if (res.selection == 51 && page < pages) manageCategories(sender, page + 1)
+        else if (res.selection <= categories.length) {
+            const selection = categories[res.selection]
+            new CX.chestForm('small')
+            .setTitle(`${selection} Category`)
+            .addButton(3, '§cRemove Category', ['§6Removes this category'], 'textures/blocks/glass_red', 1)
+            .addButton(5, '§cClose', ['§6Close this page'], 'minecraft:barrier', 1)
+            .show(sender, (result) => {
+                if (result.canceled) return
+                if (result.selection == 3) {
+                    shopItems.allIDs().filter(v => v.data.category == selection).forEach((v) => {
+                        shopItems.deleteID(v.ID)
+                    })
+                    Databases.shopCategories.delete(selection)
+                    sender.response.send(`Successfully deleted the category ${selection}`)
+                }
+            })
+        }
+    }, 220)
 }
