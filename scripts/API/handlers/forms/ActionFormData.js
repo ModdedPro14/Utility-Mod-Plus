@@ -38,7 +38,7 @@ export class ActionForm {
     /**
      * Shows the action form
      * @param {any} player The player to show
-     * @param {any} callback Callback 
+     * @param {(result: { selection: number, canceled: boolean, cancelationReason: 'UserBusy' | 'UserClosed'}) => void} callback Callback 
      */
     show(player, callback) {
         this.form.show(player).then((res) => {
@@ -50,7 +50,7 @@ export class ActionForm {
     /**
      * Force show the action form
      * @param {any} player The player to force on 
-     * @param {any} callback Callback
+     * @param {(result: { selection: number, canceled: boolean, cancelationReason: 'UserBusy' | 'UserClosed'}) => void} callback Callback
      * @param {number} timeout Amount of ticks to wait before stopping 
      * @returns 
      */

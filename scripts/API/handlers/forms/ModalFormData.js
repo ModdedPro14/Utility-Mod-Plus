@@ -64,7 +64,7 @@ export class ModalForm {
     /**
      * Shows the modal form
      * @param {any} player The player to show too
-     * @param {any} callback Callback
+     * @param {(result: { formValues: any[], canceled: boolean, cancelationReason: 'UserBusy' | 'UserClosed'}) => void} callback Callback
      */
     show(player, callback) {
         this.form.show(player).then((res) => {
@@ -76,7 +76,7 @@ export class ModalForm {
     /**
      * Force show the modal form
      * @param {any} player The player to force show too
-     * @param {any} callback Callback
+     * @param {(result: { formValues: any[], canceled: boolean, cancelationReason: 'UserBusy' | 'UserClosed'}) => void} callback Callback
      * @param {number} timeout Amount of ticks to wait before stopping 
      * @returns 
      */

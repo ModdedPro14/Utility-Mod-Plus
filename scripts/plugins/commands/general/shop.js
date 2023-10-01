@@ -39,7 +39,7 @@ CX.Build(CX.BuildTypes["@command"], {
                             Databases.shopCategories.write(result.formValues[0], {
                                 description: result.formValues[1],
                                 typeId: result.formValues[2],
-                                permission: result.formValues[3] ?? undefined
+                                permission: result.formValues[3]
                             })
                             sender.response.send(`Successfully created the category: ${result.formValues[0]}`)
                         })
@@ -101,7 +101,7 @@ const shop = (sender, page, category = undefined) => {
             else if (res.selection <= categories.length) shop(sender, 1, categories[res.selection])
         }, 220)
     } else {
-        if (!sender.permission.hasPermission('admin') && !sender.hasTag(Databases.shopCategories.read(category)?.permission)) return sender.response.error('You do not have the permission to view this category')
+        if (Databases.shopCategories.read(category).permission && !sender.permission.hasPermission('admin') && !sender.hasTag(Databases.shopCategories.read(category).permission)) return sender.response.error('You do not have the permission to view this category')
         const aShopItems = shopItems.allIDs().filter((v) => v.data.category == category), pages = Math.ceil(aShopItems.length / 45), items = aShopItems.slice((page - 1) * 45, (page - 1) * 45 + 45)
         if (!aShopItems.length) return (new CX.messageForm()
         .setTitle('§cNo Shop Items')
@@ -190,13 +190,28 @@ const manageCategories = (sender, page) => {
             new CX.chestForm('small')
             .setTitle(`${selection} Category`)
             .addButton(3, '§cRemove Category', ['§6Removes this category'], 'textures/blocks/glass_red', 1)
-            .addButton(5, '§cClose', ['§6Close this page'], 'minecraft:barrier', 1)
+            .addButton(5, '§cEdit Category', ['§6Edit this category'], 'textures/blocks/glass_lime', 1)
             .show(sender, (result) => {
                 if (result.canceled) return
                 if (result.selection == 3) {
                     shopItems.allIDs().filter(v => v.data.category == selection).forEach((v) => shopItems.deleteID(v.ID))
                     Databases.shopCategories.delete(selection)
                     sender.response.send(`Successfully deleted the category ${selection}`)
+                } else if (result.selection == 5) {
+                    new CX.modalForm()
+                    .addTextField('The description of the category:', Databases.shopCategories.read(selection).description, Databases.shopCategories.read(selection).description)
+                    .addTextField('The item of the category:', Databases.shopCategories.read(selection).typeId, Databases.shopCategories.read(selection).typeId)
+                    .addTextField('The permission tag of the category: (optional)', Databases.shopCategories.read(selection).permission ?? 'mvp')
+                    .show(sender, (result) => {
+                        if (result.canceled) return
+                        Databases.shopCategories.delete(selection)
+                        Databases.shopCategories.write(selection, {
+                            description: result.formValues[0],
+                            typeId: result.formValues[1],
+                            permission: result.formValues[2] ?? undefined
+                        })
+                        sender.response.send(`Successfully edited the category: ${selection}`)
+                    })
                 }
             })
         }

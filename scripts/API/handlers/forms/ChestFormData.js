@@ -103,7 +103,7 @@ export class ChestForm {
     /**
      * Force show the chest form
      * @param {any} player The player to force show too
-     * @param {any} callback Callback
+     * @param {(result: { selection: number, canceled: boolean, cancelationReason: 'UserBusy' | 'UserClosed'}) => void} callback Callback
      * @param {number} timeout Amount of ticks to wait before stopping 
      * @returns 
      */
@@ -126,7 +126,7 @@ export class ChestForm {
     /**
      * Shows the chest form
      * @param {any} player The player to show too
-     * @param {any} callback Callback
+     * @param {(result: { selection: number, canceled: boolean, cancelationReason: 'UserBusy' | 'UserClosed'}) => void} callback Callback
      * @returns 
      */
     show(player, callback) {
