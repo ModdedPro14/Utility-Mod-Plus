@@ -9,6 +9,7 @@ import { ItemUseOn } from "./beforeItemUseOn.js";
 import { EntityHitEntity } from "./entityHitEntity.js";
 import { EntityHitBlock } from "./entityHitBlock.js";
 import { WorldInitialize } from "./worldInitialize.js";
+
 export const events = {
     BlockBreak,
     BlockPlace,

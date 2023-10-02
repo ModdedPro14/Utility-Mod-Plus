@@ -40,8 +40,7 @@ CX.Build(CX.BuildTypes["@command"], {
         ctx.executeArgument('delete', (sender) => {
             let entity = Array.from(sender.dimension.getEntities({ type: 'mod:ft', tags: ['ftlb'], maxDistance: 2, location: sender.management.Location() }))[0];
             if (!entity) return sender.response.error('Unable to locate a leaderboard within the radius of 2 blocks');
-            const obj = entity.getTags().find(tag => tag.startsWith('ft:')).replace('ft:', '');
-            sender.response.send(`Successfully removed a nearby leaderboard displaying the objective ${obj}`);
+            sender.response.send(`Successfully removed a nearby leaderboard displaying the objective ${entity.getTags().find(tag => tag.startsWith('ft:')).replace('ft:', '')}`);
             entity.runCommandAsync('kill @s');
         });
     }

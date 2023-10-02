@@ -4,6 +4,7 @@ import config, { playerRequests, log } from "../../config/main";
 import { Databases } from "../../API/handlers/databases";
 import { CX } from "../../API/CX";
 import { open } from "../commands/management/gui";
+import { Database } from "../../API/database/DB";
 
 Databases.customCmds.forEach((k, v) => {
     CX.Build(CX.BuildTypes["@command"], {
@@ -81,13 +82,13 @@ system.runInterval(() => {
 });
 system.runInterval(() => {
     Array.from(world.getDimension('overworld').getEntities({ type: 'mod:ft', tags: ['ftlb'] })).forEach(async (entity) => {
-        const objective = entity.getTags().find(t => t.startsWith('ft:')).replace('ft:', '');
+        const objective = entity.getTags().find(t => t.startsWith('ft:')).replace('ft:', ''), db = new Database(`LB:${objective}`)
         if (!objective || !world.scoreboard.getObjective(objective)) entity.nameTag = `§c§lObjective: ${objective} has no records`;
         let leaderboard = []
         world.getAllPlayers().forEach(p => {
-            if (!leaderboard.find(s => s.plr.id == p.id)) leaderboard.push({ plr: p, score: CX.scoreboard.get(p, objective), obj: objective })
+            db.write(p.id, { plr: { name: (CX.player.hasColor(p, 'name') ? CX.player.colorize(p.name, CX.player.getColor(p, 'name')) : p.name) }, score: CX.scoreboard.get(p, objective)})
         });
-        leaderboard = leaderboard.filter(o => o.obj == objective).sort((a, b) => b.score - a.score).map((s, i) => `§b#${++i} §r${CX.player.hasColor(s.plr, 'name') ? CX.player.colorize(s.plr.name, CX.player.getColor(s.plr, 'name')) : '§c' + s.plr.name} §r§e${!s.score ? 0 : CX.extra.parseNumber(s.score)}§r`)
+        leaderboard = db.values().sort((a, b) => b.score - a.score).map((s, i) => `§b#${++i} §c${s.plr.name} §r§e${!s.score ? 0 : CX.extra.parseNumber(s.score)}§r`)
         if (!leaderboard.length) return;
         leaderboard = leaderboard.slice(0, parseInt(entity?.getTags().find(t => t.startsWith('ftl:')).replace('ftl:', '')));
         leaderboard.unshift(entity?.getTags().find(t => t.startsWith('fth:')).replace('fth:', ''));
