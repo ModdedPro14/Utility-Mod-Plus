@@ -204,6 +204,7 @@ const manageCategories = (sender, page) => {
                     .addTextField('The permission tag of the category: (optional)', Databases.shopCategories.read(selection).permission ?? 'mvp')
                     .show(sender, (result) => {
                         if (result.canceled) return
+                        if (!ItemTypes.get(result.formValues[1])) return sender.response.error('Not a vaild item of the category')
                         Databases.shopCategories.delete(selection)
                         Databases.shopCategories.write(selection, {
                             description: result.formValues[0],
