@@ -17,6 +17,7 @@ CX.Build(CX.BuildTypes["@command"], {
             .addButton('General Settings\n§7[Click to show]')
             .addButton('Anti Cheat Settings\n§7[Click to show]')
             .addButton('Faction Settings\n§7[Click to show]')
+            .addButton('Vault Settings\n§7[Click to show]')
             .force(sender, (res) => {
                 if (res.canceled) return;
                 if (res.selection == 0) {
@@ -116,6 +117,18 @@ CX.Build(CX.BuildTypes["@command"], {
                         if (isNaN(result.formValues[3])) return sender.response.error('The amount you entered isnt a number');
                         CX.overRide('claimCost', result.formValues[3]);
                         sender.response.send('Successfully updated Faction settings data');
+                    });
+                } else if (res.selection == 3) {
+                    new CX.modalForm()
+                    .setTitle('Vault Settings')
+                    .addTextField('The cost of a vault page:', Databases.settings.read('vaultCost'), Databases.settings.read('vaultCost'))
+                    .addTextField('Max vault pages in a vault:', Databases.settings.read('vaultMaxPages'), Databases.settings.read('vaultMaxPages'))
+                    .show(sender, (result) => {
+                        if (result.canceled) return;
+                        if (isNaN(result.formValues[0] || isNaN(result.formValues[1]))) return sender.response.error('All data must be a number')
+                        CX.overRide('vaultCost', result.formValues[0])
+                        CX.overRide('vaultMaxPages', result.formValues[1])
+                        sender.response.send('Successfully updated Vault settings data');
                     });
                 }
             }, 220);

@@ -4,7 +4,7 @@ export const config = {
     trustTag: !Databases.settings.has('trustTag') ? Databases.settings.write('trustTag', 'trusted') && Databases.settings.read('trustTag') : Databases.settings.read('trustTag'),
     defaultRank: !Databases.settings.has('defaultRank') ? Databases.settings.write('defaultRank', '§6Member') && Databases.settings.read('defaultRank') : Databases.settings.read('defaultRank'),
     prefix: !Databases.settings.has('prefix') ? Databases.settings.write('prefix', '!') && Databases.settings.read('prefix') : Databases.settings.read('prefix'),
-    version: "U24",
+    version: "U25",
     discord: "https://discord.gg/U8P5NhKs2d",
     youtube: "https://www.youtube.com/@MP09234",
     omlet: "moddedpro234",
@@ -22,6 +22,8 @@ export const config = {
     betting: !Databases.settings.has('betting') ? Databases.settings.write('betting', true) && Databases.settings.read('betting') : Databases.settings.read('betting'),
     maxAuctions: !Databases.settings.has('maxAuctions') ? Databases.settings.write('maxAuctions', 3) && Databases.settings.read('maxAuctions') : Databases.settings.read('maxAuctions'),
     enderPearlT: !Databases.settings.has('enderPearlT') ? Databases.settings.write('enderPearlT', true) && Databases.settings.read('enderPearlT') : Databases.settings.read('enderPearlT'),
+    vaultCost: !Databases.settings.has('vaultCost') ? Databases.settings.write('vaultCost', 50000) && Databases.settings.read('vaultCost') : Databases.settings.read('vaultCost'),
+    vaultMaxPages: !Databases.settings.has('vaultMaxPages') ? Databases.settings.write('vaultMaxPages', 5) && Databases.settings.read('vaultMaxPages') : Databases.settings.read('vaultMaxPages'),
     chatFilteredWords: [
         "fuck",
         "ass",
@@ -87,6 +89,7 @@ export const config = {
                 bounty: true,
                 shop: true,
                 sell: true,
+                vault: true
             },
             gamemodes: {
                 gma: true,
