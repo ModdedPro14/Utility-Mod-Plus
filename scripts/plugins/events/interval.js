@@ -192,10 +192,10 @@ system.runInterval(() => {
             new CX.log({
                 reason: 'Fly Hacks',
                 translate: 'AntiCheat',
-                from: plr.name,
+                from: player.name,
                 warn: true
             })
-            plr.applyDamage(10)
+            player.applyDamage(10)
         }
         if (player.isGliding || player.getEffect("speed")) return
         const speed = Math.sqrt(player.getVelocity().x ** 2 + player.getVelocity().z ** 2) * 20 * 60 * 60 / 1609.34;  
@@ -232,4 +232,4 @@ system.runInterval(() => {
             e.runCommandAsync(`tp @s ~0 ~0 ~0`)
         }
     }) 
-})
+})                                                 

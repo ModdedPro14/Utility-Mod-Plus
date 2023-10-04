@@ -121,8 +121,8 @@ CX.Build(CX.BuildTypes["@command"], {
                 } else if (res.selection == 3) {
                     new CX.modalForm()
                     .setTitle('Vault Settings')
-                    .addTextField('The cost of a vault page:', Databases.settings.read('vaultCost'), Databases.settings.read('vaultCost'))
-                    .addTextField('Max vault pages in a vault:', Databases.settings.read('vaultMaxPages'), Databases.settings.read('vaultMaxPages'))
+                    .addTextField('The cost of a vault page:', `${Databases.settings.read('vaultCost')}`, `${Databases.settings.read('vaultCost')}`)
+                    .addTextField('Max vault pages in a vault:', `${Databases.settings.read('vaultMaxPages')}`, `${Databases.settings.read('vaultMaxPages')}`)
                     .show(sender, (result) => {
                         if (result.canceled) return;
                         if (isNaN(result.formValues[0] || isNaN(result.formValues[1]))) return sender.response.error('All data must be a number')
