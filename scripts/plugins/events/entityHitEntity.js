@@ -97,6 +97,8 @@ CX.Build(CX.BuildTypes["@event"], {
     executes(data) {
         if (!(data.damagingEntity instanceof Player)) return
         if (!data.hitEntity.hasTag('slapper')) return
-        data.damagingEntity.runCommandAsync(data.hitEntity.getTags().find(tag => tag.startsWith('cmd:')).split(':')[1]) 
+        data.hitEntity.getTags().filter(tag => tag.startsWith('cmd:')).forEach((c) => {
+            data.damagingEntity.runCommandAsync(c.split(':')[1]) 
+        })
     }
 })
