@@ -188,7 +188,7 @@ system.runInterval(() => {
 
 system.runInterval(() => {
     world.getPlayers({ excludeTags: [config.adminTag], excludeGameModes: [GameMode.creative, GameMode.spectator] }).forEach(player => {
-        if (player.isFlying) {
+        if (config.AntiCheat.fly && player.isFlying) {
             new CX.log({
                 reason: 'Fly Hacks',
                 translate: 'AntiCheat',
@@ -197,6 +197,7 @@ system.runInterval(() => {
             })
             player.applyDamage(10)
         }
+        if (!config.AntiCheat.speed) return
         if (player.isGliding || player.getEffect("speed")) return
         const speed = Math.sqrt(player.getVelocity().x ** 2 + player.getVelocity().z ** 2) * 20 * 60 * 60 / 1609.34;  
         if (speed > 150) {

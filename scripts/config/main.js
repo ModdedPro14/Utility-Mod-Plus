@@ -4,7 +4,7 @@ export const config = {
     trustTag: !Databases.settings.has('trustTag') ? Databases.settings.write('trustTag', 'trusted') && Databases.settings.read('trustTag') : Databases.settings.read('trustTag'),
     defaultRank: !Databases.settings.has('defaultRank') ? Databases.settings.write('defaultRank', '§6Member') && Databases.settings.read('defaultRank') : Databases.settings.read('defaultRank'),
     prefix: !Databases.settings.has('prefix') ? Databases.settings.write('prefix', '!') && Databases.settings.read('prefix') : Databases.settings.read('prefix'),
-    version: "U25 fix",
+    version: "U26",
     discord: "https://discord.gg/U8P5NhKs2d",
     youtube: "https://www.youtube.com/@MP09234",
     omlet: "moddedpro234",
@@ -64,7 +64,11 @@ export const config = {
         cbes: !Databases.settings.has('cbes') ? Databases.settings.write('cbes', true) && Databases.settings.read('cbes') : Databases.settings.read('cbes'),
         nuker: !Databases.settings.has('nuker') ? Databases.settings.write('nuker', true) && Databases.settings.read('nuker') : Databases.settings.read('nuker'),
         illegalEnchantments: !Databases.settings.has('illegalEnchantments') ? Databases.settings.write('illegalEnchantments', true) && Databases.settings.read('illegalEnchantments') : Databases.settings.read('illegalEnchantments'),
-        AAC: !Databases.settings.has('AAC') ? Databases.settings.write('AAC', true) && Databases.settings.read('AAC') : Databases.settings.read('AAC')
+        AAC: !Databases.settings.has('AAC') ? Databases.settings.write('AAC', true) && Databases.settings.read('AAC') : Databases.settings.read('AAC'),
+        AKA: !Databases.settings.has('AKA') ? Databases.settings.write('AKA', true) && Databases.settings.read('AKA') : Databases.settings.read('AKA'),
+        speed: !Databases.settings.has('speed') ? Databases.settings.write('speed', true) && Databases.settings.read('speed') : Databases.settings.read('speed'),
+        fly: !Databases.settings.has('fly') ? Databases.settings.write('fly', true) && Databases.settings.read('fly') : Databases.settings.read('fly'),
+        scaffold: !Databases.settings.has('scaffold') ? Databases.settings.write('scaffold', true) && Databases.settings.read('scaffold') : Databases.settings.read('scaffold')
     },
     plugins: {
         commands: {

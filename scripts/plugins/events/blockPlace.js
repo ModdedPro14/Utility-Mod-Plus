@@ -36,6 +36,7 @@ const log = new Map()
 CX.Build(CX.BuildTypes["@event"], {
     data: 'BlockPlace',
     executes(interaction, data) {
+        if (!config.AntiCheat.scaffold) return
         if (interaction.hasTag(config.adminTag) || !world.getPlayers({ excludeGameModes: [GameMode.creative], name: interaction.name }).length) return;
         const currentTime = Date.now();
         const playerAction = log.get(`${interaction.id}-checkBlocks`) || [];

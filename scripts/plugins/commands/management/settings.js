@@ -61,10 +61,14 @@ CX.Build(CX.BuildTypes["@command"], {
                 } else if (res.selection == 1) {
                     new CX.modalForm()
                     .setTitle('Anti Cheat Settings')
-                    .addToggle("CBE's", Databases.settings.read('cbes'))
-                    .addToggle('Nuker', Databases.settings.read('nuker'))
-                    .addToggle('Illegal Enchantments', Databases.settings.read('illegalEnchantments'))
+                    .addToggle("Anti CBE's", Databases.settings.read('cbes'))
+                    .addToggle('Anti Nuker', Databases.settings.read('nuker'))
+                    .addToggle('Anti Illegal Enchantments', Databases.settings.read('illegalEnchantments'))
                     .addToggle('Anti Auto Clicker', Databases.settings.read('AAC'))
+                    .addToggle('Anti Kill Aura', Databases.settings.read('AKA'))
+                    .addToggle('Anti Speed', Databases.settings.read('speed'))
+                    .addToggle('Anti Fly', Databases.settings.read('fly'))
+                    .addToggle('Anti Scaffold', Databases.settings.read('scaffold'))
                     .addDropDown('CBE\'s that cant be used from anyone: §c(Select to remove)', ['None', ...Databases.settings.read('allCbes')])
                     .addDropDown('CBE\'s that can only be used by trusted people: §c(Select to remove)', ['None', ...Databases.settings.read('trustedCbes')])
                     .addTextField('Add a CBE to all CBE\'s: §c(Only blocks)', 'None')
@@ -73,30 +77,34 @@ CX.Build(CX.BuildTypes["@command"], {
                         if (result.canceled) return;
                         CX.overRide('cbes', result.formValues[0], 'AntiCheat');
                         CX.overRide('nuker', result.formValues[1], 'AntiCheat');
-                        CX.overRide('illegalEnchantments', result.formValues[2], 'AntiCheat');
+                        CX.overRide('illegalEnchantments', result.formValues[2], 'AntiCheat')
                         CX.overRide('AAC', result.formValues[3], 'AntiCheat')
-                        if (!result.formValues[4] == 'None') {
+                        CX.overRide('AKA', result.formValues[4], 'AntiCheat');
+                        CX.overRide('speed', result.formValues[5], 'AntiCheat');
+                        CX.overRide('fly', result.formValues[6], 'AntiCheat');
+                        CX.overRide('scaffold', result.formValues[7], 'AntiCheat');
+                        if (!result.formValues[8] == 'None') {
                             const cbes = Databases.settings.read('allCbes');
-                            cbes.splice(cbes.indexOf(cbes[result.formValues[4] - 1]), cbes.indexOf(cbes[result.formValues[4] - 1]));
+                            cbes.splice(cbes.indexOf(cbes[result.formValues[8] - 1]), cbes.indexOf(cbes[result.formValues[8] - 1]));
                             CX.overRide('allCbes', cbes);
                         }
-                        if (!result.formValues[5] == 'None') {
+                        if (!result.formValues[9] == 'None') {
                             const Tcbes = Databases.settings.read('trustedCbes');
-                            Tcbes.splice(Tcbes.indexOf(Tcbes[result.formValues[5] - 1]), Tcbes.indexOf(Tcbes[result.formValues[5] - 1]));
+                            Tcbes.splice(Tcbes.indexOf(Tcbes[result.formValues[9] - 1]), Tcbes.indexOf(Tcbes[result.formValues[9] - 1]));
                             CX.overRide('trustedCbes', Tcbes);
                         }
-                        if (result.formValues[6]) {
-                            if (typeof ItemTypes.get(result.formValues[6]) == 'undefined') return sender.response.error('The cbe you tried to add was invalid');
-                            if (Databases.settings.read('allCbes').includes(result.formValues[6].replace('minecraft:', ''))) return sender.response.error('That cbe already exists in the list');
+                        if (result.formValues[10]) {
+                            if (typeof ItemTypes.get(result.formValues[10]) == 'undefined') return sender.response.error('The cbe you tried to add was invalid');
+                            if (Databases.settings.read('allCbes').includes(result.formValues[10].replace('minecraft:', ''))) return sender.response.error('That cbe already exists in the list');
                             const cbes = Databases.settings.read('allCbes');
-                            cbes.push(result.formValues[6].replace('minecraft:', ''));
+                            cbes.push(result.formValues[10].replace('minecraft:', ''));
                             CX.overRide('allCbes', cbes);
                         }
-                        if (result.formValues[7]) {
-                            if (typeof ItemTypes.get(result.formValues[7]) == 'undefined') return sender.response.error('The cbe you tried to add was invalid');
-                            if (Databases.settings.read('trustedCbes').includes(result.formValues[7].replace('minecraft:', ''))) return sender.response.error('That cbe already exists in the list');
+                        if (result.formValues[11]) {
+                            if (typeof ItemTypes.get(result.formValues[11]) == 'undefined') return sender.response.error('The cbe you tried to add was invalid');
+                            if (Databases.settings.read('trustedCbes').includes(result.formValues[11].replace('minecraft:', ''))) return sender.response.error('That cbe already exists in the list');
                             const Tcbes = Databases.settings.read('trustedCbes');
-                            Tcbes.push(result.formValues[7].replace('minecraft:', ''));
+                            Tcbes.push(result.formValues[11].replace('minecraft:', ''));
                             CX.overRide('trustedCbes', Tcbes);
                         }
                         sender.response.send('Successfully updated Anti Cheat settings data');

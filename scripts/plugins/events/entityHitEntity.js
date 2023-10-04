@@ -72,6 +72,7 @@ CX.Build(CX.BuildTypes["@event"], {
                 data.damagingEntity.kill()
             }
         }
+        if (!config.AntiCheat.AKA) return
         if (AKA(data.damagingEntity, data.hitEntity)) {
             new CX.log({
                 reason: 'Kill Aura',
