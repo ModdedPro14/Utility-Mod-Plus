@@ -97,6 +97,7 @@ const allAuctions = (page, sender) => {
                 .show(sender, (res) => {
                     if (res.canceled) return;
                     if (res.selection == 3) {
+                        if (!auctionItems.has(selection.ID)) return sender.response.error('That item dosent exist in the auction house anymore')
                         const inventory = sender.getComponent('inventory').container;
                         if (inventory.emptySlotsCount < 1) return sender.response.error('You do not have enough space to remove this item');
                         inventory.addItem(selection.item);
@@ -104,12 +105,12 @@ const allAuctions = (page, sender) => {
                         sender.response.send(`You have succssfully removed the item ${selection.data.itemName}`);
                     }
                 });
-            }
-            else {
+            } else {
                 form.addButton(3, '§aPurchase', ['§6Do You want to buy this item?'], 'textures/blocks/glass_lime')
                 .show(sender, (res) => {
                     if (res.canceled) return;
                     if (res.selection == 3) {
+                        if (!auctionItems.has(selection.ID)) return sender.response.error('That item dosent exist in the auction house anymore')
                         if (sender.score.getScore(config.currency) < selection.data.price) return sender.response.error(`You do not have enough ${config.currency}§r§c§lto buy this item`);
                         const inventory = sender.getComponent('inventory').container;
                         if (inventory.emptySlotsCount < 1) return sender.response.error('You do not have enough space to buy this item');
@@ -166,6 +167,7 @@ const myAuctions = (page, sender) => {
                 .show(sender, (res) => {
                     if (res.canceled) return;
                     if (res.selection == 3) {
+                        if (!auctionItems.has(selection.ID)) return sender.response.error('That item dosent exist in the auction house anymore')
                         const inventory = sender.getComponent('inventory').container;
                         if (inventory.emptySlotsCount < 1) return sender.response.error('You do not have enough space to remove this item');
                         inventory.addItem(selection.item);
@@ -262,6 +264,7 @@ const manageAuctions = (page, sender) => {
             .show(sender, (res) => {
                 if (res.canceled) return;
                 if (res.selection == 3) {
+                    if (!auctionItems.has(selection.ID)) return sender.response.error('That item dosent exist in the auction house anymore')
                     const inventory = sender.getComponent('inventory').container;
                     if (inventory.emptySlotsCount < 1) return sender.response.error('You do not have enough space to remove this item');
                     inventory.addItem(selection.item);

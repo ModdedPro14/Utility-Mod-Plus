@@ -86,6 +86,7 @@ const vault = (sender, page, id) => {
             .show(sender, (result) => {
                 if (result.canceled) return
                 if (result.selection == 3) {
+                    if (id && !vaultItems.has(selection.ID)) return sender.response.error('That item dosent exist in the vault anymore') 
                     const inventory = sender.getComponent('inventory').container;
                     if (inventory.emptySlotsCount < 1) return sender.response.error('You do not have enough space to take this item out of the vault');
                     inventory.addItem(selection.item)
