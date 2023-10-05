@@ -44,7 +44,7 @@ CX.Build(CX.BuildTypes["@event"], {
     executes(data) {
         if (data.interaction.permission.hasPermission('admin') && data.interaction.gamemode.getGamemode() == 'creative')
             return;
-        const block = data.interaction?.dimension?.getBlock(data.interaction.management?.viewedBlock());
+        const block = data.interaction?.dimension?.getBlock(data.interaction.management?.viewedBlock()) ?? undefined
         const chunk = [~~((block.location.x + 1) / 16), ~~((block.location.z + 1) / 16)];
         if (!Databases.claims.has(`${chunk[0]}_${chunk[1]}`))
             return;

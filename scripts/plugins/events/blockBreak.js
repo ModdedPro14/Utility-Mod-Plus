@@ -5,6 +5,7 @@ import config from "../../config/main";
 import { Area } from "../../API/handlers/protect";
 import { Capitator } from "../../API/handlers/capitator";
 import { Databases } from "../../API/handlers/databases";
+import { system } from "@minecraft/server";
 const log = new PlayerLog();
 const IMPOSSIBLE_BREAK_TIME = 70;
 CX.Build(CX.BuildTypes['@event'], {
@@ -61,11 +62,9 @@ CX.Build(CX.BuildTypes["@event"], {
     }
 });
 CX.Build(CX.BuildTypes["@event"], {
-    data: 'BlockBreak',
-    executes(interaction, data) {
-        if (config.treeCapitator && interaction.getComponent('inventory').container.getItem(interaction.selectedSlot)?.typeId.includes('_axe') && (data.brokenBlockPermutation.hasTag("log") || (data.brokenBlockPermutation.type.id.includes("_log") && !data.brokenBlockPermutation.type.id.includes("stripped_"))))
-            new Capitator(data.dimension, data.block.location, "log");
-        if (config.veinMiner && interaction.getComponent('inventory').container.getItem(interaction.selectedSlot)?.typeId.endsWith('pickaxe') && data.brokenBlockPermutation.type.id.includes("_ore"))
-            new Capitator(data.dimension, data.block.location, "ore");
+    data: 'AfterBlockBreak',
+    executes(_, data) {
+        if (config.treeCapitator && data.itemStackBeforeBreak?.typeId.endsWith('axe') && (data.brokenBlockPermutation.hasTag("log") || (data.brokenBlockPermutation.type.id.includes("_log") && !data.brokenBlockPermutation.type.id.includes("stripped_")))) new Capitator(data.dimension, data.block.location, "log");
+        if (config.veinMiner && data.itemStackBeforeBreak?.typeId.endsWith('pickaxe') && data.brokenBlockPermutation.type.id.includes("_ore")) new Capitator(data.dimension, data.block.location, "ore");
     }
 });

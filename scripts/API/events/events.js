@@ -9,6 +9,8 @@ import { ItemUseOn } from "./beforeItemUseOn.js";
 import { EntityHitEntity } from "./entityHitEntity.js";
 import { EntityHitBlock } from "./entityHitBlock.js";
 import { WorldInitialize } from "./worldInitialize.js";
+import { AfterBlockBreak } from "./afterBlockBreak.js";
+import { AfterBlockPlace } from "./afterBlockPlace.js";
 
 export const events = {
     BlockBreak,
@@ -21,5 +23,7 @@ export const events = {
     ProjectileHitEntity,
     ItemUseOn,
     EntityHitBlock,
-    WorldInitialize
+    WorldInitialize,
+    AfterBlockBreak,
+    AfterBlockPlace
 };
