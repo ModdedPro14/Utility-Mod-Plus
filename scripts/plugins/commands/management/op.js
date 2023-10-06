@@ -9,7 +9,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .firstArguments(['add', 'remove'], true)
     .addDynamicArgument('add', [], 'add', 'player')
     .addDynamicArgument('remove', [], 'remove', 'player')
-    .addPlayerArgument('player', ['add | remove'], true, null, { self: true }),
+    .addPlayerArgument('player', [{ name: '<add | remove>', type: 'dyn'}], true, null, { self: true }),
     executes(ctx) {
         ctx.executeArgument('add', (sender, _, args) => {
             const player = args[0];

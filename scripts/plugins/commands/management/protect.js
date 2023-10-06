@@ -12,10 +12,10 @@ CX.Build(CX.BuildTypes["@command"], {
     .addDynamicArgument('set', [], 'set', 'area')
     .addDynamicArgument('delete', [], 'delete', 'name')
     .addDynamicArgument('list', [], 'list')
-    .addAnyArgument('name', ['create | delete'], 1)
+    .addAnyArgument('name', [{ name: '<create | delete>', type: 'dyn'}], 1)
     .addAnyArgument('area', [], 1, null, ['pos1', 'pos2'])
-    .addDynamicArgument('pos1', ['set', 'area'], 'pos1')
-    .addDynamicArgument('pos2', ['set', 'area'], 'pos2'),
+    .addDynamicArgument('pos1', [{ name: 'set', type: 'dyn'}, { name: 'area', type: 'any'}], 'pos1')
+    .addDynamicArgument('pos2', [{ name: 'set', type: 'dyn'}, { name: 'area', type: 'any'}], 'pos2'),
     executes(ctx) {
         ctx.executeArgument('create', (sender, _, args) => {
             if (Databases.areas.has(args[0])) return sender.response.error('That area name already exists');

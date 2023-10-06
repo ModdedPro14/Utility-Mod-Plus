@@ -23,9 +23,14 @@ CX.Build(CX.BuildTypes["@command"], {
             hI += `§l§4Category:§c ${cmdList.category}\n`;
             if (cmdList.developers.length) hI += `§l§4Developer(s):§c ${cmdList.developers.join('§4 | §c')}\n`;
             let args = [];
-            cmdList.usage.args.forEach(arg => {
-                if (arg.beforeArgs.length) args.push(`${config.prefix}${cmdList.name} <${arg.beforeArgs.join('> <')}> <${arg.name}>`)
-                else args.push(`${config.prefix}${cmdList.name} <${arg.name}>`)
+            cmdList.usage.forEach(arg => {
+                if (arg.type == 'dyn') {
+                    if (arg.beforeArgs.length) args.push(`${config.prefix}${cmdList.name} ${arg.beforeArgs.map((barg) => barg.type == 'dyn' ? barg.name : `<${barg.name}: ${barg.type}>`).join(' ')} ${arg.name}`)
+                    else args.push(`${config.prefix}${cmdList.name} ${arg.name}`)
+                } else {
+                    if (arg.beforeArgs.length) args.push(`${config.prefix}${cmdList.name} ${arg.beforeArgs.map((barg) => barg.type == 'dyn' ? barg.name : `<${barg.name}: ${barg.type}>`).join(' ')} <${arg.name}: ${arg.type}>`)
+                    else args.push(`${config.prefix}${cmdList.name} <${arg.name}: ${arg.type}>`)
+                }
             })
             if (cmdList.argNames[0].length) hI += `§l§4Usage:§4 [\n§c${args.join('\n')}\n§4]`;
             sender.response.send(`§4${hI}`, true, false);

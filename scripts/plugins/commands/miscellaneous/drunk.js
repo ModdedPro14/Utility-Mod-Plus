@@ -8,7 +8,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setAdmin(true)
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, 'amount', { self: true })
-    .addNumberArgument('amount', ['player']),
+    .addNumberArgument('amount', [{ name: 'player', type: 'player'}]),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player, args) => {
             const amount = args[0];

@@ -9,7 +9,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .firstArguments(['set'], true)
     .addDynamicArgument('set',  [], 'set', 'name')
     .addPlayerArgument('name', [], true, 'amount', { self: false })
-    .addNumberArgument('amount', ['set', 'name']),
+    .addNumberArgument('amount', [{ name: 'set', type: 'dyn'}, { name: 'name', type: 'player'}]),
     executes(ctx) {
         ctx.executeArgument('set', (sender, _, args) => {
             if (args[1] > sender.score.getScore(config.currency)) return sender.response.error(`You do not have enough ${config.currency}`);

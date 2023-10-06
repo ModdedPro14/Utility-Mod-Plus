@@ -11,7 +11,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .addDynamicArgument('create', [], 'create', 'warp')
     .addDynamicArgument('delete', [], 'delete', 'warp')
     .addDynamicArgument('list', [], 'list')
-    .addAnyArgument('warp', ['create | delete'], 1)
+    .addAnyArgument('warp', [{ name: '<create | delete>', type: 'dyn'}], 1)
     .addAnyArgument('name', [], 1),
     executes(ctx) {
         ctx.executeArgument('name', (sender, val) => {

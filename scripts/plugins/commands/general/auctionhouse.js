@@ -13,7 +13,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setAliases(['ah'])
     .firstArguments(['sell'], false)
     .addDynamicArgument('sell', [], 'sell', 'price')
-    .addNumberArgument('price', ['sell']),
+    .addNumberArgument('price', [{ name: 'sell', type: 'dyn' }]),
     executes(ctx) {
         ctx.execute((sender, args) => {
             if (args.length) return;

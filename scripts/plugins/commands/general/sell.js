@@ -15,8 +15,8 @@ CX.Build(CX.BuildTypes["@command"], {
     .addDynamicArgument('remove', [], 'remove', 'item')
     .addDynamicArgument('list', [], 'list')
     .addAnyArgument('itemName', [], 1, null, 'amount')
-    .addNumberArgument('amount',  ['add' ,'item'])
-    .addAnyArgument('item', ['remove'], 1),
+    .addNumberArgument('amount',  [{ name: 'add', type: 'dyn'}, { name: 'item', type: 'any'}])
+    .addAnyArgument('item', [{ name: 'remove', type: 'dyn'}], 1),
     executes(ctx) {
         ctx.executeArgument('add', (sender, _, args) => {
             if (!sender.permission.hasPermission('admin')) return sender.response.error('You do not have permission to use this arguement');

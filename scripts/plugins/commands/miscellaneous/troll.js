@@ -8,14 +8,14 @@ CX.Build(CX.BuildTypes["@command"], {
     .setAdmin(true)
     .firstArguments(['player'], false)
     .addPlayerArgument('player', [], true, ['creeper', 'explode', 'cave', 'hurt', 'fire', 'fly', 'enderman', 'slownessScreen'], { self: true })
-    .addDynamicArgument('creeper', ['player'], 'creeper')
-    .addDynamicArgument('explode', ['player'], 'explode')
-    .addDynamicArgument('cave', ['player'], 'cave')
-    .addDynamicArgument('hurt', ['player'], 'hurt')
-    .addDynamicArgument('fire', ['player'], 'fire')
-    .addDynamicArgument('fly', ['player'], 'fly')
-    .addDynamicArgument('enderman', ['player'], 'enderman')
-    .addDynamicArgument('slownessScreen', ['player'], 'slownessScreen'),
+    .addDynamicArgument('creeper', [{ name: 'player', type: 'player'}], 'creeper')
+    .addDynamicArgument('explode', [{ name: 'player', type: 'player'}], 'explode')
+    .addDynamicArgument('cave', [{ name: 'player', type: 'player'}], 'cave')
+    .addDynamicArgument('hurt', [{ name: 'player', type: 'player'}], 'hurt')
+    .addDynamicArgument('fire', [{ name: 'player', type: 'player'}], 'fire')
+    .addDynamicArgument('fly', [{ name: 'player', type: 'player'}], 'fly')
+    .addDynamicArgument('enderman', [{ name: 'player', type: 'player'}], 'enderman')
+    .addDynamicArgument('slownessScreen', [{ name: 'player', type: 'player'}], 'slownessScreen'),
     executes(ctx) {
         ctx.execute((sender, args) => !args.length && sender.response.error('Avalible trolls: creeper/explode/cave/hurt/fire/fly/enderman/slownessScreen'));
         ctx.executeArgument('player', (sender, player, args) => {

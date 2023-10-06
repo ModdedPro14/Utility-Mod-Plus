@@ -19,9 +19,7 @@ export class Commands {
             argNames: [[], false],
             args: {},
             cb: {},
-            usage: {
-                args: []
-            }
+            usage: []
         };
     }
     /**
@@ -223,7 +221,7 @@ export class Commands {
      * @param {any} needValue If the value is needed
      * @param {any} length Length
      * @param {any} needNextArgs NeedNextArgs
-     * @param {any[]?} beforeArgs The arguments before this argument
+     * @param {{ name: string, type: 'dyn' | 'number' | 'player' | 'any'}[]?} beforeArgs The arguments before this argument
      * @returns 
      */
     addDynamicArgument(name, beforeArgs, value, nextArgs, needValue, length, needNextArgs) {
@@ -238,7 +236,7 @@ export class Commands {
                 na: na,
                 nn: na.length ? needNextArgs ?? Boolean(na?.length) : false,
         }});
-        if (!nextArgs?.length) this.info.usage.args.push({ name: name, beforeArgs: beforeArgs ?? [] })
+        if (!nextArgs?.length) this.info.usage.push({ name: name, beforeArgs: beforeArgs ?? [], type: 'dyn' })
         return this;
     }
     /**
@@ -247,7 +245,7 @@ export class Commands {
      * @param {any} nextArgs Nextargs
      * @param {any} data Data
      * @param {any} needNextArgs NeedNextArgs
-     * @param {any[]?} beforeArgs The arguments before this argument
+     * @param {{ name: string, type: 'dyn' | 'number' | 'player' | 'any'}[]?} beforeArgs The arguments before this argument
      * @returns 
      */
     addNumberArgument(name, beforeArgs, nextArgs, data, needNextArgs) {
@@ -263,7 +261,7 @@ export class Commands {
                 na: na,
                 nn: na.length ? needNextArgs ?? Boolean(na?.length) : false
         }});
-        if (!nextArgs?.length) this.info.usage.args.push({ name: name, beforeArgs: beforeArgs ?? [] })
+        if (!nextArgs?.length) this.info.usage.push({ name: name, beforeArgs: beforeArgs ?? [], type: 'number' })
         return this;
     }
     /**
@@ -273,7 +271,7 @@ export class Commands {
      * @param {any} nextArgs Nextargs
      * @param {any} data Data
      * @param {any} needNextArg NeedNextArgs
-     * @param {any[]?} beforeArgs The arguments before this argument
+     * @param {{ name: string, type: 'dyn' | 'number' | 'player' | 'any'}[]?} beforeArgs The arguments before this argument
      * @returns 
      */
     addPlayerArgument(name, beforeArgs, online, nextArgs, data, needNextArg) {
@@ -287,7 +285,7 @@ export class Commands {
                 na: na,
                 nn: na.length ? needNextArg ?? Boolean(na?.length) : false
         }});
-        if (!nextArgs?.length) this.info.usage.args.push({ name: name, beforeArgs: beforeArgs ?? [] })
+        if (!nextArgs?.length) this.info.usage.push({ name: name, beforeArgs: beforeArgs ?? [], type: 'player' })
         return this;
     }
     /**
@@ -297,7 +295,7 @@ export class Commands {
      * @param {any} filter The filter of the argument
      * @param {any} nextArgs Nextargs
      * @param {any} needNextArg NeedNextArgs
-     * @param {any[]?} beforeArgs The arguments before this argument
+     * @param {{ name: string, type: 'dyn' | 'number' | 'player' | 'any'}[]?} beforeArgs The arguments before this argument
      * @returns 
      */
     addAnyArgument(name, beforeArgs, length, filter, nextArgs, needNextArg) {
@@ -311,7 +309,7 @@ export class Commands {
                 na: na,
                 nn: na.length ? needNextArg ?? Boolean(na?.length) : false,
         }});
-        if (!nextArgs?.length) this.info.usage.args.push({ name: name, beforeArgs: beforeArgs ?? [] })
+        if (!nextArgs?.length) this.info.usage.push({ name: name, beforeArgs: beforeArgs ?? [], type: 'any' })
         return this;
     }
     /**

@@ -19,10 +19,10 @@ CX.Build(CX.BuildTypes["@command"], {
     .addDynamicArgument('view', [], 'view', 'name')
     .addDynamicArgument('reset', [], 'reset', 'name')
     .addDynamicArgument('list', [], 'list')
-    .addAnyArgument('name', ['create | remove | buy | view | reset'], 1)
+    .addAnyArgument('name', [{ name: '<create | remove | buy | view | reset>', type: 'dyn'}], 1)
     .addAnyArgument('kit', [], 1, {}, 'permission')
     .addAnyArgument('permission', [], 1, {}, 'price')
-    .addNumberArgument('price', ['set', 'kit', 'permission']),
+    .addNumberArgument('price', [{ name: 'set', type: 'dyn'}, { name: 'kit', type: 'any'}, { name: 'permission', type: 'any'}]),
     executes(ctx) {
         ctx.execute((sender) => sender.management.jailed && sender.response.error('You cant use this command while your jailed'));
         ctx.executeArgument('create', (sender, _, args) => {

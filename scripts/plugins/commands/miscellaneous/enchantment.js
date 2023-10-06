@@ -14,8 +14,8 @@ CX.Build(CX.BuildTypes["@command"], {
     .addDynamicArgument('list', [], 'list')
     .addDynamicArgument('view', [], 'view', 'enchantment')
     .addAnyArgument('name', [], 1, null, 'level')
-    .addAnyArgument('enchantment', ['delete | view'], 1)
-    .addNumberArgument('level', ['apply', 'name']),
+    .addAnyArgument('enchantment', [{ name: '<delete | view>', type: 'dyn'}], 1)
+    .addNumberArgument('level', [{ name: 'apply', type: 'dyn'}, { name: 'name', type: 'any'}]),
     executes(ctx) {
         ctx.executeArgument('create', (sender) => {
             sender.response.send('Close the chat in 10 secondes');

@@ -10,7 +10,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .addDynamicArgument('setcolor', [], 'setcolor', 'player')
     .addPlayerArgument('player', [], true, 'name/chat')
     .addAnyArgument('name/chat', [], 1, {}, 'color')
-    .addDynamicArgument('color', ['setcolor', 'player', 'name | chat'], ['darkRed', 'red', 'orange', 'yellow', 'darkYellow', 'darkGreen', 'green', 'blue', 'lightBlue', 'aquaBlue', 'purple', 'magenta', 'pink', 'black', 'rainbow', 'default']),
+    .addDynamicArgument('color', [{ name: 'setcolor', type: 'dyn'}, { name: 'player', type: 'player'}, { name: '<name | chat>', type: 'dyn'}], ['darkRed', 'red', 'orange', 'yellow', 'darkYellow', 'darkGreen', 'green', 'blue', 'lightBlue', 'aquaBlue', 'purple', 'magenta', 'pink', 'black', 'rainbow', 'default']),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player, args) => {
             if (!['name', 'chat'].includes(args[0])) return sender.response.error('The last agument must be either name or chat');

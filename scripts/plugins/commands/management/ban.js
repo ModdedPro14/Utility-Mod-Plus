@@ -9,7 +9,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setAdmin(true)
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, 'reason', { self: false }, true)
-    .addAnyArgument('reason', ['player'], 1),
+    .addAnyArgument('reason', [{ name: 'player', type: 'player'}], 1),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player, args) => {
             if (player.permission.hasPermission('admin')) return sender.response.error('You cant ban a staff member');

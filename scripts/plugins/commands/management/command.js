@@ -13,7 +13,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .firstArguments(['create', 'delete'], true)
     .addDynamicArgument('create', [], 'create')
     .addDynamicArgument('delete', [], 'delete', 'command')
-    .addAnyArgument('command', ['delete'], 1),
+    .addAnyArgument('command', [{ name: 'delete', type: 'dyn'}], 1),
     executes(ctx) {
         ctx.executeArgument('create', (sender) => {
             sender.response.send('Close the chat within 10 secondes');

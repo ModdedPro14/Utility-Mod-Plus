@@ -12,7 +12,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .addDynamicArgument('create', [], 'create', 'objective')
     .addDynamicArgument('delete', [], 'delete')
     .addAnyArgument('objective', [], 1, null, 'length')
-    .addNumberArgument('length', ['create', 'objective']),
+    .addNumberArgument('length', [{ name: 'create', type: 'dyn'}, { name: 'objective', type: 'any'}]),
     executes(ctx) {
         ctx.executeArgument('create', (sender, _, args) => {
             sender.runCommandAsync(`scoreboard objectives add "${args[0]}" dummy`);

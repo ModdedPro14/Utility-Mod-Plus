@@ -1,5 +1,4 @@
 import { CX } from "../../../API/CX";
-import { ItemTypes } from "@minecraft/server";
 
 CX.Build(CX.BuildTypes["@command"], {
     data: new CX.command()
@@ -10,7 +9,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .firstArguments(['item'], true)
     .addAnyArgument('item', [], 1, {}, 'amount', false)
     .addNumberArgument('amount', [], 'player', {}, false)
-    .addPlayerArgument('player', ['item', 'amount'], true, null, { self: true }),
+    .addPlayerArgument('player', [{ name: 'item', type: 'any'}, { name: 'amount', type: 'number'}], true, null, { self: true }),
     executes(ctx) {
         ctx.executeArgument('item', (sender, val, args) => {
             let amount = args[0];

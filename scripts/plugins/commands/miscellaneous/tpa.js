@@ -10,7 +10,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .addDynamicArgument('accept', [], 'accept', 'player', true)
     .addDynamicArgument('send', [], 'send', 'player')
     .addDynamicArgument('decline', [], 'decline', 'player', true)
-    .addPlayerArgument('player', ['accept | send | decline'], true, null, { self: false }),
+    .addPlayerArgument('player', [{ name: '<accept | send | decline>', type: 'dyn'}], true, null, { self: false }),
     executes(ctx) {
         ctx.executeArgument('accept', (sender, _, args) => {
             if (sender.score.getScore('inCombat') > 0) return sender.response.error(`You are in combat, you must wait ${sender.score.getScore('inCombat')}s before using this command`);

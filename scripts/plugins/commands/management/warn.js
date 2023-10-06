@@ -8,7 +8,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setAdmin(true)
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, 'reason', { self: false })
-    .addAnyArgument('reason', ['player'], 1),
+    .addAnyArgument('reason', [{ name: 'player', type: 'player'}], 1),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player, args) => {
             sender.response.send(`§cYou have warned:\nPlayer: ${player.name}\n§cReason: ${args[0]}`, true, false);

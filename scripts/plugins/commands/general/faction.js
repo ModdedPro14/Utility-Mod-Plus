@@ -25,8 +25,8 @@ CX.Build(CX.BuildTypes["@command"], {
     .addDynamicArgument('chat', [], 'chat', null)
     .addDynamicArgument('claim', [], 'claim', null)
     .addDynamicArgument('unclaim', [], 'unclaim')
-    .addPlayerArgument('player', ['kick | invite'], true, null, { self: false })
-    .addAnyArgument('name', ['create | view'], 1),
+    .addPlayerArgument('player', [{ name: '<kick | invite>', type: 'dyn'}], true, null, { self: false })
+    .addAnyArgument('name', [{ name: '<create | view>', type: 'dyn'}], 1),
     executes(ctx) {
         ctx.execute((sender, args) => !args.length && sender.response.error('You must choose between create/list/view/leave/decline/accept/invite/delete/kick'));
         ctx.executeArgument('create', (sender, _, args) => {

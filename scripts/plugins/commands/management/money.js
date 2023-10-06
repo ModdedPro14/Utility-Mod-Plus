@@ -13,8 +13,8 @@ CX.Build(CX.BuildTypes["@command"], {
     .addDynamicArgument('remove', [], 'remove', 'player')
     .addDynamicArgument('reset', [], 'reset', 'plr')
     .addPlayerArgument('player', [], true, 'amount', { self: true }, false)
-    .addPlayerArgument('plr', ['reset'], true, null, { self: true })
-    .addNumberArgument('amount', ['set | add | remove', 'player']),
+    .addPlayerArgument('plr', [{ name: 'reset', type: 'dyn'}], true, null, { self: true })
+    .addNumberArgument('amount', [{ name: '<set | add | remove>', type: 'dyn'}, { name: 'player', type: 'player'}]),
     executes(ctx) {
         ctx.executeArgument('set', (sender, _, args) => {
             const player = args[0];

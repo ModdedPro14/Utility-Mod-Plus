@@ -10,8 +10,8 @@ CX.Build(CX.BuildTypes["@command"], {
     .addPlayerArgument('player', [], true, ['add', 'remove', 'removeAll'])
     .addDynamicArgument('add', [], 'add', 'rank')
     .addDynamicArgument('remove', [], 'remove', 'rank')
-    .addDynamicArgument('removeAll', ['player'], 'removeAll', null)
-    .addAnyArgument('rank', ['player', 'add | remove'], 1),
+    .addDynamicArgument('removeAll', [{ name: 'player', type: 'player'}], 'removeAll', null)
+    .addAnyArgument('rank', [{ name: 'player', type: 'player'}, { name: '<add | remove>', type: 'dyn'}], 1),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player, args) => {
             if (args[0] == 'add') {

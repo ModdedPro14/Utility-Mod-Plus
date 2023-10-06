@@ -8,7 +8,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setAdmin(true)
     .firstArguments(['player'], false)
     .addPlayerArgument('player', [], true, 'amount')
-    .addNumberArgument('amount', ['player'], null, { min: 0 }),
+    .addNumberArgument('amount', [{ name: 'player', type: 'player'}], null, { min: 0 }),
     executes(ctx) {
         ctx.executeArgument('player', (sender, player, args) => {
             if (player.name == sender.name) return sender.response.error('You cant slap yourself');
