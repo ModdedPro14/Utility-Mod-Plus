@@ -133,7 +133,8 @@ export const config = {
                 text: true,
                 command: true,
                 gui: true,
-                slapper: true
+                slapper: true,
+                crates: true
             },
             miscellaneous: {
                 drunk: true,
@@ -175,6 +176,7 @@ export const config = {
             blockBreak: true,
             entityHitEntity: true,
             entityHitBlock: true,
+            dataDrivenEntityTriggerEvent: true
         }
     },
     allCbes: !Databases.settings.has('allCbes') ? Databases.settings.write('allCbes', [

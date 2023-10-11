@@ -11,6 +11,7 @@ import { EntityHitBlock } from "./entityHitBlock.js";
 import { WorldInitialize } from "./worldInitialize.js";
 import { AfterBlockBreak } from "./afterBlockBreak.js";
 import { AfterBlockPlace } from "./afterBlockPlace.js";
+import { DataDrivenEntityTriggerEvent } from "./dataDrivenEntityTriggerEvent.js";
 
 export const events = {
     BlockBreak,
@@ -25,5 +26,6 @@ export const events = {
     EntityHitBlock,
     WorldInitialize,
     AfterBlockBreak,
-    AfterBlockPlace
+    AfterBlockPlace,
+    DataDrivenEntityTriggerEvent
 };

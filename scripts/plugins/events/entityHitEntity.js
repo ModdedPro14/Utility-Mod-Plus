@@ -2,6 +2,9 @@ import { CX } from "../../API/CX";
 import { Player, EquipmentSlot } from "@minecraft/server";
 import { Databases } from "../../API/handlers/databases";
 import config, { log } from "../../config/main";
+import { ItemDB } from "../../API/database/IDB";
+
+const crates = new ItemDB('crates')
 
 CX.Build(CX.BuildTypes["@event"], {
     data: 'EntityHitEntity',
@@ -100,6 +103,45 @@ CX.Build(CX.BuildTypes["@event"], {
         if (!data.hitEntity.hasTag('slapper')) return
         data.hitEntity.getTags().filter(tag => tag.startsWith('cmd:')).forEach((c) => {
             data.damagingEntity.runCommandAsync(c.split(':')[1]) 
+        })
+    }
+})
+
+CX.Build(CX.BuildTypes["@event"], {
+    data: 'EntityHitEntity',
+    executes(data) {
+        if (!data.damagingEntity instanceof Player) return
+        const damagingEntity = CX.player.convert(data.damagingEntity)
+        if (!data.hitEntity.typeId == 'mod:crate') return
+        const form = new CX.chestForm('large')
+        .setTitle('Crate')
+        const items = crates.allIDs().filter(i => i.data.id == data.hitEntity.getTags().find(tag => tag.startsWith('ID:')).substring('ID:'.length))
+        if (!items.length) return (new CX.messageForm()
+        .setTitle('No rewards')
+        .setBody('§cHmmm.. seems like there are no rewards in this crate')
+        .setButton2('§cClose')
+        .setButton1('§aOk')
+        .show(damagingEntity))
+        items.forEach((item, i) => {
+            const data = CX.item.getItemData(item.item)
+            form.addButton(i, CX.item.getItemName(item.item), [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Chance: §6${item.data.chance}%`], data.typeId, data.amount, !data.enchantments.length ? false : true);
+        })
+        form.show(damagingEntity, (res) => {
+            if (res.canceled) return
+            const selection = items[res.selection]
+            if (damagingEntity.permission.hasPermission('admin')) {
+                new CX.chestForm('small')
+                .setTitle(`${CX.item.getItemName(selection.item)} Reward`)
+                .addButton(5, '§cCancel', ['§6Cancel'], 'textures/blocks/glass_red')
+                .addButton(3, '§aRemove Reward', ['§6Do You want to remove this reward?'], 'textures/blocks/glass_lime')
+                .show(damagingEntity, (result) => {
+                    if (result.canceled) return
+                    if (result.selection == 3) {
+                        crates.deleteID(selection.ID)
+                        damagingEntity.response.send('Successfully removed reward')
+                    }
+                })
+            }
         })
     }
 })
