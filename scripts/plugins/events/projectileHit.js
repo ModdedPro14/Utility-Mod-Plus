@@ -8,3 +8,10 @@ CX.Build(CX.BuildTypes["@event"], {
         }
     }
 });
+
+CX.Build(CX.BuildTypes["@event"], {
+    data: 'ProjectileHitEntity',
+    executes(_, data) {
+        if (data.getEntityHit()?.entity.typeId == 'mod:crate') data.getEntityHit()?.entity.teleport(data.getEntityHit()?.entity.location, { dimension: data.getEntityHit()?.entity.dimension })
+    }
+})

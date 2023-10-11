@@ -3,7 +3,7 @@
     "minecraft:entity": {
         "description": {
             "identifier": "mod:crate",
-            "is_spawnable": true,
+            "is_spawnable": false,
             "is_summonable": true,
             "is_experimental": true,
             "scripts": {
@@ -607,7 +607,6 @@
             "minecraft:nameable": {
                 "alwaysShow": true
             },
-            "minecraft:fire_immune": true,
             "minecraft:collision_box": {
                 "width": 0,
                 "height": 1
@@ -625,14 +624,14 @@
                     }
                 ]
             },
+            "minecraft:friction_modifier": {
+                "value": 300
+            },
             "minecraft:variant": {
                 "value": 0
             },
             "minecraft:movement": {
                 "value": 0
-            },
-            "minecraft:friction_modifier": {
-                "value": 300
             },
             "minecraft:pushable": {
                 "is_pushable": false,
@@ -643,11 +642,16 @@
                 "has_gravity": false
             },
             "minecraft:damage_sensor": {
-                "triggers": [
-                    {
-                        "deals_damage": false
-                    }
-                ]
+                "triggers": {
+                  "cause": "all",
+                  "deals_damage": false
+                }
+            },
+            "minecraft:fire_immune": true,
+            "minecraft:tameable": true,
+            "minecraft:health": {
+                "value": 999999,
+                "min": 1
             }
         },
         "events": {

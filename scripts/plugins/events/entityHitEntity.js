@@ -112,7 +112,7 @@ CX.Build(CX.BuildTypes["@event"], {
     executes(data) {
         if (!data.damagingEntity instanceof Player) return
         const damagingEntity = CX.player.convert(data.damagingEntity)
-        if (!data.hitEntity.typeId == 'mod:crate') return
+        if (data.hitEntity.typeId !== 'mod:crate') return
         const form = new CX.chestForm('large')
         .setTitle('Crate')
         const items = crates.allIDs().filter(i => i.data.id == data.hitEntity.getTags().find(tag => tag.startsWith('ID:')).substring('ID:'.length))

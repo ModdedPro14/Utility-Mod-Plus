@@ -43,19 +43,10 @@ CX.Build(CX.BuildTypes["@event"], {
             for (let player of world.getPlayers({ tags: ['opener'] })) {
               entity.addTag(`opener:${player.name}`)
               player.runCommandAsync(`tag @s remove opener`)
-              const inv = player.getComponent('inventory').container, key = getTag(entity, 'key')
-              for (let i = 0; i < inv.size; i++) {
-                const item = inv.getItem(i)
-                if (!item) continue;
-                if (item.typeId == `mod:key${key}`) {
-                  if (item.amount == 1) return inv.setItem(i)
-                  else item.amount -= item.amount
-                  inv.setItem(i, item)
-                }
-              }
+              player.getComponent('inventory').container.setItem(player.selectedSlot)
               break
             }
-          }, 1)
+          })
         }
       }
     })
