@@ -69,6 +69,9 @@ export class factions {
             name: name,
             createdAt: new Date().toLocaleString(),
             owner: owner,
+            allies: [],
+            enemies: [],
+            home: undefined
         });
     }
     /**
@@ -104,7 +107,7 @@ export class factions {
      */
     newClaim(owner, claimArea) {
         Databases.claims.write(claimArea, { owner: owner.name, faction: this.getPlayersFaction(owner) });
-        owner.score.removeScore(config.currency, config.claimCost);
+        owner.score.removeScore(config.currency, Number(config.claimCost));
     }
     /**
      * Deletes a claim

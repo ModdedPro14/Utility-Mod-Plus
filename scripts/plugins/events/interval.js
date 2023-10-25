@@ -30,6 +30,7 @@ if (!world.scoreboard.getObjective(config.currency))world.scoreboard.addObjectiv
 if (!world.scoreboard.getObjective('pearlTimer')) world.scoreboard.addObjective('pearlTimer', '');
 if (!world.scoreboard.getObjective('inCombat')) world.scoreboard.addObjective('inCombat', '');
 if (!world.scoreboard.getObjective('sents')) world.scoreboard.addObjective('sents', '');
+if (!world.scoreboard.getObjective('kills')) world.scoreboard.addObjective('kills', '');
 
 system.runInterval(() => {
     if (config.itemNamesDisplay)

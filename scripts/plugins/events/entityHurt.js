@@ -29,3 +29,14 @@ CX.Build(CX.BuildTypes['@event'], {
         });
     }
 });
+
+CX.Build(CX.BuildTypes['@event'], {
+    data: 'EntityHurt',
+    executes(data) {
+        const died = data.hurtEntity;
+        const damager = data.damageSource.damagingEntity;
+        if (!died instanceof Player && !damager instanceof Player) return;
+        if (damager && !died.getComponent('health').currentValue <= 0) return;
+        CX.scoreboard.add(damager, 'kills', 1)
+    }
+});

@@ -1,8 +1,7 @@
-import { world } from "@minecraft/server";
+import { Player, world } from "@minecraft/server";
 import { CX } from "../../../API/CX";
-import config from "../../../config/main";
-import { Area } from "../../../API/handlers/protect";
 import { Databases } from "../../../API/handlers/databases";
+import { Area } from "../../../API/handlers/protect";
 
 const playerRequest = {};
 
@@ -12,21 +11,30 @@ CX.Build(CX.BuildTypes["@command"], {
     .setDescription('Create a faction and invite players')
     .setCategory('general')
     .setAliases(['fac'])
-    .firstArguments(['create', 'list', 'view', 'delete', 'kick', 'leave', 'invite', 'decline', 'accept', 'chat', 'claim', 'unclaim'], false)
+    .firstArguments(['create', 'list', 'view', 'disband', 'kick', 'leave', 'invite', 'decline', 'accept', 'chat', 'ally', 'enemy', 'allies', 'enemies', 'top', 'sethome', 'home', 'removehome', 'claim', 'unclaim'], false)
     .addDynamicArgument('create', [], 'create', 'name')
     .addDynamicArgument('list', [], 'list', null)
     .addDynamicArgument('view', [], 'view', 'name')
-    .addDynamicArgument('delete', [], 'delete', null)
+    .addDynamicArgument('disband', [], 'disband', null)
     .addDynamicArgument('kick', [], 'kick', 'player')
     .addDynamicArgument('leave', [], 'leave', null)
     .addDynamicArgument('invite', [], 'invite', 'player')
     .addDynamicArgument('decline', [], 'decline', null)
     .addDynamicArgument('accept', [], 'accept', null)
     .addDynamicArgument('chat', [], 'chat', null)
+    .addDynamicArgument('ally', [], 'ally', 'faction')
+    .addDynamicArgument('enemy', [], 'enemy', 'faction')
+    .addDynamicArgument('allies', [], 'allies', null)
+    .addDynamicArgument('enemies', [], 'enemies', null)
+    .addDynamicArgument('top', [], 'top', null)
+    .addDynamicArgument('sethome', [], 'sethome', null)
+    .addDynamicArgument('home', [], 'home', null)
+    .addDynamicArgument('removehome', [], 'removehome', null)
     .addDynamicArgument('claim', [], 'claim', null)
     .addDynamicArgument('unclaim', [], 'unclaim')
     .addPlayerArgument('player', [{ name: '<kick | invite>', type: 'dyn'}], true, null, { self: false })
-    .addAnyArgument('name', [{ name: '<create | view>', type: 'dyn'}], 1),
+    .addAnyArgument('name', [{ name: '<create | view>', type: 'dyn'}], 1)
+    .addAnyArgument('faction', [{ name: '<ally | enemy>', type: 'dyn' }], 1),
     executes(ctx) {
         ctx.execute((sender, args) => !args.length && sender.response.error('You must choose between create/list/view/leave/decline/accept/invite/delete/kick'));
         ctx.executeArgument('create', (sender, _, args) => {
@@ -58,13 +66,10 @@ CX.Build(CX.BuildTypes["@command"], {
             sender.response.send(`You have left the faction §6${CX.factions.getPlayersFaction(sender)}`);
             sender.removeTag(`faction-${CX.factions.getPlayersFaction(sender)}`);
         });
-        ctx.executeArgument('delete', (sender) => {
+        ctx.executeArgument('disband', (sender) => {
             if (!CX.factions.isInFaction(sender)) return sender.response.error('You arent in a faction');
-            if (!CX.factions.isFactionOwner(sender)) return sender.response.error('You cant delete this faction');
-            sender.response.send(`You have deleted the faction §6${CX.factions.getPlayersFaction(sender)}`);
-            Databases.claims.forEach((key, value) => {
-                if (value.owner == sender.name) Databases.claims.delete(key);
-            });
+            if (!CX.factions.isFactionOwner(sender)) return sender.response.error('You cant disband this faction');
+            sender.response.send(`You have disbanded the faction §6${CX.factions.getPlayersFaction(sender)}`);
             Databases.factions.delete(CX.factions.getPlayersOwnerFaction(sender));
             sender.removeTag(`factionOwner:${CX.factions.getPlayersOwnerFaction(sender)}`);
             sender.removeTag(`faction-${CX.factions.getPlayersFaction(sender)}`);
@@ -120,6 +125,141 @@ CX.Build(CX.BuildTypes["@command"], {
                 sender.response.send('You have joined your factions chat');
             }
         });
+        ctx.executeArgument('ally', (sender, _, args) => {
+            if (!CX.factions.isFactionOwner(sender)) return sender.response.error('You arent the faction owner to add an ally');
+            if (!args[0]) return sender.response.error('You must type a factions name to add as an ally')
+            const faction = CX.factions.getPlayersFactionWithNoColors(sender)
+            if (faction == args[0]) return sender.response.error('You cant add your own faction as an ally')
+            if (!Databases.factions.has(args[0])) return sender.response.error('You must type in a an actual faction')
+            if (Databases.factions.read(faction).enemies.includes(args[0])) return sender.response.error('You cant add this faction as an ally since its an enemy')
+            if (Databases.factions.read(faction).allies.includes(args[0])) {
+                const data = Databases.factions.read(faction)
+                data.allies.forEach((f, i) => {
+                    if (f == args[0]) data.allies.splice(i) 
+                })
+                Databases.factions.write(data.name, {
+                    name: data.name,
+                    createdAt: data.createdAt,
+                    owner: data.owner,
+                    allies: data.allies,
+                    enemies: data.enemies,
+                    home: data.home
+                });
+                sender.response.send(`Successfully removed ${args[0]} from the allies`)
+            } else {
+                const data = Databases.factions.read(faction)
+                data.allies.push(args[0])
+                Databases.factions.write(data.name, {
+                    name: data.name,
+                    createdAt: data.createdAt,
+                    owner: data.owner,
+                    allies: data.allies,
+                    enemies: data.enemies,
+                    home: data.home
+                });
+                sender.response.send(`Successfully added ${args[0]} as an ally`)
+            }
+        })
+        ctx.executeArgument('enemy', (sender, _, args) => {
+            if (!CX.factions.isFactionOwner(sender)) return sender.response.error('You arent the faction owner to add an enemy');
+            if (!args[0]) return sender.response.error('You must type a factions name to add as an enemy')
+            const faction = CX.factions.getPlayersFactionWithNoColors(sender)
+            if (faction == args[0]) return sender.response.error('You cant add your own faction as an enemy')
+            if (!Databases.factions.has(args[0])) return sender.response.error('You must type in a an actual faction')
+            if (Databases.factions.read(faction).allies.includes(args[0])) return sender.response.error('You cant add this faction as an enemy since its an ally')
+            if (Databases.factions.read(faction).enemies.includes(args[0])) {
+                const data = Databases.factions.read(faction)
+                data.enemies.splice(data.allies.indexOf(args[0]), data.allies.indexOf(args[0]))
+                Databases.factions.write(data.name, {
+                    name: data.name,
+                    createdAt: data.createdAt,
+                    owner: data.owner,
+                    allies: data.allies,
+                    enemies: data.enemies,
+                    home: data.home
+                });
+                sender.response.send(`Successfully removed ${args[0]} from the enemies`)
+            } else {
+                const data = Databases.factions.read(faction)
+                data.enemies.push(args[0])
+                Databases.factions.write(data.name, {
+                    name: data.name,
+                    createdAt: data.createdAt,
+                    owner: data.owner,
+                    allies: data.allies,
+                    enemies: data.enemies,
+                    home: data.home
+                });
+                sender.response.send(`Successfully added ${args[0]} as an enemy`)
+            }
+        })
+        ctx.executeArgument('enemies', (sender) => {
+            if (!CX.factions.isInFaction(sender)) return sender.response.error('You are not in a faction')
+            const enemies = []
+            for (const fac of Databases.factions.read(CX.factions.getPlayersFactionWithNoColors(sender)).enemies) enemies.push(fac)
+            if (!enemies.length) return sender.response.error('There are no enemies that are in your faction')
+            sender.response.send(`§c----------------\nFaction Enemies:\n${enemies.map(f => `${f}`).join('\n')}\n§c----------------`, true, false);
+        })
+        ctx.executeArgument('allies', (sender) => {
+            if (!CX.factions.isInFaction(sender)) return sender.response.error('You are not in a faction')
+            const allies = []
+            for (const fac of Databases.factions.read(CX.factions.getPlayersFactionWithNoColors(sender)).allies) allies.push(fac)
+            if (!allies.length) return sender.response.error('There are no allies that are in your faction')
+            sender.response.send(`§c----------------\nFaction Allies:\n${allies.map(f => `${f}`).join('\n')}\n§c----------------`, true, false);
+        })
+        ctx.executeArgument('top', (sender) => {
+            const facs = []
+            let lb = []
+            for (const fac of Databases.factions.values()) facs.push(fac)
+            if (!facs.length) return sender.response.error('There are no factions that have been created yet')
+            facs.forEach((fac) => {
+                let kills = 0
+                world.scoreboard.getObjective('kills').getParticipants().forEach((p) => {
+                    if (!p.getEntity() instanceof Player) return
+                    if (CX.factions.getPlayersFactionWithNoColors(p.getEntity()) == fac.name) kills += CX.scoreboard.get(p.getEntity(), 'kills')
+                })
+                lb.push({ fac: fac.name, owner: fac.owner, kills: kills })
+            })
+            lb = lb.sort((a, b) => b.kills - a.kills).map((s, i) => `§b#${++i} §c${s.fac} - Owner: ${s.owner}`)
+            if (!lb.length) return sender.response.error('There are no top factions yet')
+            lb = lb.slice(0, 5);
+            sender.response.send(`§c----------------\nTop Factions:\n${lb.join('\n')}\n§c----------------`, true, false);
+        })
+        ctx.executeArgument('sethome', (sender) => {
+            if (!CX.factions.isFactionOwner(sender)) return sender.response.error('You arent the faction owner to set the home of the faction');
+            const data = Databases.factions.read(CX.factions.getPlayersFactionWithNoColors(sender))
+            if (data.home) return sender.response.error('The home of the faction is already set')
+            Databases.factions.write(data.name, {
+                name: data.name,
+                createdAt: data.createdAt,
+                owner: data.owner,
+                allies: data.allies,
+                enemies: data.enemies,
+                home: { location: sender.location, dimension: sender.dimension.id }
+            });
+            sender.response.send('Successfully set the home of the faction at your location')
+        })
+        ctx.executeArgument('home', (sender) => {
+            if (!CX.factions.isInFaction(sender)) return sender.response.error('You are not in any faction')
+            const data = Databases.factions.read(CX.factions.getPlayersFactionWithNoColors(sender))
+            if (!data.home) return sender.response.error('The faction does not have a home set yet')
+            sender.teleport(data.home.location, { dimension: world.getDimension(data.home.dimension) })
+            sender.response.send('You have been teleported to your factions home')
+        })
+        ctx.executeArgument('removehome', (sender) => {
+            if (!CX.factions.isFactionOwner(sender)) return sender.response.error('You arent the faction owner to remove the home of the faction');
+            const data = Databases.factions.read(CX.factions.getPlayersFactionWithNoColors(sender))
+            if (!data.home) return sender.response.error('There isnt a home set for the faction')
+            Databases.factions.write(data.name, {
+                name: data.name,
+                createdAt: data.createdAt,
+                owner: data.owner,
+                allies: data.allies,
+                enemies: data.enemies,
+                home: undefined
+            });
+            sender.response.send('Successfully removed the factions home')
+        })
         ctx.executeArgument('claim', (sender) => {
             if (!config.claims) return sender.response.error('Claims arent enabled in this server');
             if (!CX.factions.isInFaction(sender)) return sender.response.error('You arent even in a faction');
