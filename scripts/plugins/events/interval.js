@@ -81,7 +81,7 @@ system.runInterval(() => {
     });
 });
 system.runInterval(() => {
-    Array.from(world.getDimension('overworld').getEntities({ type: 'mod:ft', tags: ['ftlb'] })).forEach(async (entity) => {
+    Array.from(world.getDimension('overworld').getEntities({ type: 'mod:ft', tags: ['ftlb'] })).forEach((entity) => {
         const objective = entity.getTags().find(t => t.startsWith('ft:')).replace('ft:', ''), db = new Database(`LB:${objective}`)
         if (!objective || !world.scoreboard.getObjective(objective)) entity.nameTag = `§c§lObjective: ${objective} has no records`;
         let leaderboard = []
@@ -92,7 +92,7 @@ system.runInterval(() => {
         if (!leaderboard.length) return;
         leaderboard = leaderboard.slice(0, parseInt(entity?.getTags().find(t => t.startsWith('ftl:')).replace('ftl:', '')));
         leaderboard.unshift(entity?.getTags().find(t => t.startsWith('fth:')).replace('fth:', ''));
-        entity.nameTag = leaderboard.join('\n');
+        entity.nameTag = leaderboard.join('\n')
     });
 }, 20);
 system.runInterval(() => {

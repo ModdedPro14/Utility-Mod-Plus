@@ -6,6 +6,7 @@ import { Area } from "../../API/handlers/protect";
 import { Capitator } from "../../API/handlers/capitator";
 import { Databases } from "../../API/handlers/databases";
 import { system } from "@minecraft/server";
+
 const log = new PlayerLog();
 const IMPOSSIBLE_BREAK_TIME = 70;
 CX.Build(CX.BuildTypes['@event'], {
@@ -32,7 +33,9 @@ CX.Build(CX.BuildTypes['@event'], {
             reason: 'nuker',
             warn: false
         });
-        interaction.kill()
+        system.run(() => {
+            interaction.kill()
+        })
     }
 });
 CX.Build(CX.BuildTypes["@event"], {
@@ -56,7 +59,9 @@ CX.Build(CX.BuildTypes["@event"], {
         if (area.isInArea) {
             if (interaction.permission.hasPermission('admin'))
                 return;
-            interaction.response.error('You cannot break blocks here');
+            system.run(() => {
+                interaction.response.error('You cannot break blocks here');
+            })
             data.cancel = true
         }
     }
