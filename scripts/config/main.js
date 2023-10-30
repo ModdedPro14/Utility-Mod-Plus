@@ -24,6 +24,7 @@ export const config = {
     enderPearlT: !Databases.settings.has('enderPearlT') ? Databases.settings.write('enderPearlT', true) && Databases.settings.read('enderPearlT') : Databases.settings.read('enderPearlT'),
     vaultCost: !Databases.settings.has('vaultCost') ? Databases.settings.write('vaultCost', 50000) && Databases.settings.read('vaultCost') : Databases.settings.read('vaultCost'),
     vaultMaxPages: !Databases.settings.has('vaultMaxPages') ? Databases.settings.write('vaultMaxPages', 5) && Databases.settings.read('vaultMaxPages') : Databases.settings.read('vaultMaxPages'),
+    factionHomes: !Databases.settings.has('factionHomes') ? Databases.settings.write('factionHomes', true) && Databases.settings.read('factionHomes') : Databases.settings.read('factionHomes'),
     chatFilteredWords: [
         "fuck",
         "ass",
@@ -161,7 +162,9 @@ export const config = {
                 home: true,
                 delhome: true,
                 homelist: true,
-                bet: true
+                bet: true,
+                balancetop: true,
+                nightvision: true
             }
         },
         events: {
@@ -176,7 +179,8 @@ export const config = {
             blockBreak: true,
             entityHitEntity: true,
             entityHitBlock: true,
-            dataDrivenEntityTriggerEvent: true
+            dataDrivenEntityTriggerEvent: true,
+            playerInteractWithEntity: true
         }
     },
     allCbes: !Databases.settings.has('allCbes') ? Databases.settings.write('allCbes', [

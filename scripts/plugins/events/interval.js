@@ -107,7 +107,7 @@ system.runInterval(() => {
 });
 system.runInterval(() => {
     world.getAllPlayers().forEach((player) => {
-        if (CX.factions.isInFaction(player) && !Databases.factions.has(CX.factions.getPlayersFactionWithNoColors(player))) {
+        if (CX.factions.isInFaction(player) && !Databases.factions.has(CX.factions.getPlayersFaction(player))) {
             player.removeTag(`faction-${CX.factions.getPlayersFaction(player)}`);
         }
         if (player.hasTag('inCombat') && CX.scoreboard.get(player, 'inCombat') == 0) {

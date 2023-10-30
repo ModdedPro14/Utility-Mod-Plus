@@ -12,6 +12,7 @@ import { WorldInitialize } from "./worldInitialize.js";
 import { AfterBlockBreak } from "./afterBlockBreak.js";
 import { AfterBlockPlace } from "./afterBlockPlace.js";
 import { DataDrivenEntityTriggerEvent } from "./dataDrivenEntityTriggerEvent.js";
+import { PlayerInteractWithEntity } from "./playerInteractWithEntity.js";
 
 export const events = {
     BlockBreak,
@@ -27,5 +28,6 @@ export const events = {
     WorldInitialize,
     AfterBlockBreak,
     AfterBlockPlace,
-    DataDrivenEntityTriggerEvent
+    DataDrivenEntityTriggerEvent,
+    PlayerInteractWithEntity
 };

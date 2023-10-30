@@ -18,31 +18,25 @@ CX.Build(CX.BuildTypes["@command"], {
         ctx.executeArgument('create', (sender) => {
             sender.response.send('Close the chat within 10 secondes')
             new CX.modalForm()
-            .setTitle('Create a gui')
-            .addDropDown('Select the gui type:', ['actionForm'])
-            .force(sender, (res) => {
-                if (res.formValues[0] == 'actionForm') {
-                    new CX.modalForm()
-                    .setTitle('Create an action form')
-                    .addTextField('Title:', 'something')
-                    .addTextField('Body (optional):', 'some gui')
-                    .addTextField('Item to open (optional):', 'minecraft:diamond')
-                    .addTextField('Base command (optional):', 'say wow')
-                    .show(sender, (result) => {
-                        if (Databases.guis.has(result.formValues[0])) return sender.response.error('A gui with that name already exists')
-                        if (!result.formValues[0]) return sender.response.error('The form must have a title')
-                        if (result.formValues[2] && !ItemTypes.get(result.formValues[2])) return sender.response.error('The item u entered isnt valid')
-                        Databases.guis.write(result.formValues[0], {
-                            type: 'actionForm',
-                            title: result.formValues[0],
-                            body: result.formValues[1] ?? undefined,
-                            item: result.formValues[2] ?? undefined,
-                            cmd: result.formValues[3] ?? undefined,
-                            buttons: []
-                        })
-                        sender.response.send(`Gui successfully created with the name: ${result.formValues[0]}`)
-                    })
-                } 
+            .setTitle('Create an action form')
+            .addTextField('Title:', 'something')
+            .addTextField('Body (optional):', 'some gui')
+            .addTextField('Item to open (optional):', 'minecraft:diamond')
+            .addTextField('Base command (optional):', 'say wow')
+            .force(sender, (result) => {
+                if (result.canceled) return
+                if (Databases.guis.has(result.formValues[0])) return sender.response.error('A gui with that name already exists')
+                if (!result.formValues[0]) return sender.response.error('The form must have a title')
+                if (result.formValues[2] && !ItemTypes.get(result.formValues[2])) return sender.response.error('The item u entered isnt valid')
+                Databases.guis.write(result.formValues[0], {
+                    type: 'actionForm',
+                    title: result.formValues[0],
+                    body: result.formValues[1] ?? undefined,
+                    item: result.formValues[2] ?? undefined,
+                    cmd: result.formValues[3] ?? undefined,
+                    buttons: []
+                })
+                sender.response.send(`Gui successfully created with the name: ${result.formValues[0]}`)
             }, 220)
         })
         ctx.executeArgument('open', (sender, _, args) => {

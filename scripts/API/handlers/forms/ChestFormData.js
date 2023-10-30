@@ -2,7 +2,7 @@ import { ActionFormData } from '@minecraft/server-ui';
 import { system } from '@minecraft/server';
 import { typeIdToID } from "./typeIds.js";
 
-const number_of_1_16_100_items = 0;
+const number_of_1_16_100_items = 10;
 const sizes = {
     small: [`§c§h§e§s§t§s§m§a§l§l§r`, 8],
     medium: [`§c§h§e§s§t§m§e§d§i§u§m§r`, 27],

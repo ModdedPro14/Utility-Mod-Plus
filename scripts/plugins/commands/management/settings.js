@@ -114,16 +114,18 @@ CX.Build(CX.BuildTypes["@command"], {
                     .setTitle('Faction Settings')
                     .addToggle('Claims', Databases.settings.read('claims'))
                     .addToggle('Allows others to use doors, switches etc. in claims', Databases.settings.read('toggleAblePermissions'))
+                    .addToggle('Faction homes', Databases.settings.read('factionHomes'))
                     .addTextField('The raduis from spawn for claims: §c(Only numbers)', 'None')
                     .addTextField('The cost of a claim: §c(Only numbers)', 'None')
                     .show(sender, (result) => {
                         if (result.canceled) return;
                         CX.overRide('claims', result.formValues[0]);
                         CX.overRide('toggleAblePermissions', result.formValues[1]);
-                        if (isNaN(result.formValues[2])) return sender.response.error('The amount you entered isnt a number');
-                        CX.overRide('spawnRaduis', result.formValues[2]);
+                        CX.overRide('factionHomes', result.formValues[2])
                         if (isNaN(result.formValues[3])) return sender.response.error('The amount you entered isnt a number');
-                        CX.overRide('claimCost', result.formValues[3]);
+                        CX.overRide('spawnRaduis', result.formValues[3]);
+                        if (isNaN(result.formValues[4])) return sender.response.error('The amount you entered isnt a number');
+                        CX.overRide('claimCost', result.formValues[4]);
                         sender.response.send('Successfully updated Faction settings data');
                     });
                 } else if (res.selection == 3) {

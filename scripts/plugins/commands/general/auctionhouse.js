@@ -45,7 +45,7 @@ CX.Build(CX.BuildTypes["@command"], {
             auctionItems.writeItem(inventory.getItem(sender.selectedSlot), {
                 creator: sender.name,
                 price: args[0],
-                itemName: CX.item.getItemName(inventory.getItem(sender.selectedSlot), false),
+                itemName: CX.item.getItemName(inventory.getItem(sender.selectedSlot)),
                 plrId: sender.id,
                 date: Date.now(),
                 expires: (new Date().getTime() + (48 * 3.6e+6)).toString(16)

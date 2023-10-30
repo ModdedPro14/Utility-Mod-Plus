@@ -50,16 +50,6 @@ export class factions {
         return factionName;
     }
     /**
-     * Gets the players faction without the first color
-     * @param {any} player The player
-     * @returns 
-     */
-    getPlayersFactionWithNoColors(player) {
-        const factionTag = player.getTags().find(tag => tag.startsWith(`${factionPrefix}§a`));
-        const factionName = factionTag?.replace(`${factionPrefix}§a`, '');
-        return factionName;
-    }
-    /**
      * Creates a new faction
      * @param {any} name The name of the faction 
      * @param {any} owner The owner of the faction 
@@ -71,7 +61,13 @@ export class factions {
             owner: owner,
             allies: [],
             enemies: [],
-            home: undefined
+            home: undefined,
+            bank: {
+                total: 0,
+                withdrawPerDay: 100,
+                withrdawlTimeOut: 24,
+                timedOutMembers: []
+            }
         });
     }
     /**

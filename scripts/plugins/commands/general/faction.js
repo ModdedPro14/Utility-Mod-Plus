@@ -2,6 +2,8 @@ import { Player, world } from "@minecraft/server";
 import { CX } from "../../../API/CX";
 import { Databases } from "../../../API/handlers/databases";
 import { Area } from "../../../API/handlers/protect";
+import config from "../../../config/main";
+import { ModalForm } from "../../../API/handlers/forms/ModalFormData";
 
 const playerRequest = {};
 
@@ -11,7 +13,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setDescription('Create a faction and invite players')
     .setCategory('general')
     .setAliases(['fac'])
-    .firstArguments(['create', 'list', 'view', 'disband', 'kick', 'leave', 'invite', 'decline', 'accept', 'chat', 'ally', 'enemy', 'allies', 'enemies', 'top', 'sethome', 'home', 'removehome', 'claim', 'unclaim'], false)
+    .firstArguments(['create', 'list', 'view', 'disband', 'kick', 'leave', 'invite', 'decline', 'accept', 'chat', 'ally', 'enemy', 'allies', 'enemies', 'top', 'sethome', 'home', 'removehome', 'claim', 'unclaim', 'bank'], false)
     .addDynamicArgument('create', [], 'create', 'name')
     .addDynamicArgument('list', [], 'list', null)
     .addDynamicArgument('view', [], 'view', 'name')
@@ -32,6 +34,12 @@ CX.Build(CX.BuildTypes["@command"], {
     .addDynamicArgument('removehome', [], 'removehome', null)
     .addDynamicArgument('claim', [], 'claim', null)
     .addDynamicArgument('unclaim', [], 'unclaim')
+    .addDynamicArgument('bank', [], 'bank', ['withdraw', 'total', 'deposit', 'settings'])
+    .addDynamicArgument('withdraw', [], 'withdraw', ['amount'])
+    .addDynamicArgument('total', [{ type: 'dyn', name: 'bank' }], 'total')
+    .addDynamicArgument('deposit', [], 'deposit', ['amount'])
+    .addDynamicArgument('settings', [{ type: 'dyn', name: 'bank' }], 'settings')
+    .addNumberArgument('amount', [{ type: 'dyn', name: 'bank' }, { type: 'dyn', name: '<withdraw | deposit>'}])
     .addPlayerArgument('player', [{ name: '<kick | invite>', type: 'dyn'}], true, null, { self: false })
     .addAnyArgument('name', [{ name: '<create | view>', type: 'dyn'}], 1)
     .addAnyArgument('faction', [{ name: '<ally | enemy>', type: 'dyn' }], 1),
@@ -45,7 +53,7 @@ CX.Build(CX.BuildTypes["@command"], {
             CX.factions.newFaction(args[0], sender.name);
             sender.response.send(`Successfully created the faction §6${args[0]}`);
             sender.addTag(`factionOwner:${args[0]}`);
-            sender.addTag(`faction-§a${args[0]}`);
+            sender.addTag(`faction-${args[0]}`);
         });
         ctx.executeArgument('list', (sender) => {
             const facs = []
@@ -128,7 +136,7 @@ CX.Build(CX.BuildTypes["@command"], {
         ctx.executeArgument('ally', (sender, _, args) => {
             if (!CX.factions.isFactionOwner(sender)) return sender.response.error('You arent the faction owner to add an ally');
             if (!args[0]) return sender.response.error('You must type a factions name to add as an ally')
-            const faction = CX.factions.getPlayersFactionWithNoColors(sender)
+            const faction = CX.factions.getPlayersFaction(sender)
             if (faction == args[0]) return sender.response.error('You cant add your own faction as an ally')
             if (!Databases.factions.has(args[0])) return sender.response.error('You must type in a an actual faction')
             if (Databases.factions.read(faction).enemies.includes(args[0])) return sender.response.error('You cant add this faction as an ally since its an enemy')
@@ -143,7 +151,13 @@ CX.Build(CX.BuildTypes["@command"], {
                     owner: data.owner,
                     allies: data.allies,
                     enemies: data.enemies,
-                    home: data.home
+                    home: data.home,
+                    bank: {
+                        total: data.bank.total,
+                        withdrawPerDay: data.bank.withdrawPerDay,
+                        withrdawlTimeOut: data.bank.withrdawlTimeOut,
+                        timedOutMembers: data.bank.timedOutMembers
+                    }
                 });
                 sender.response.send(`Successfully removed ${args[0]} from the allies`)
             } else {
@@ -155,7 +169,13 @@ CX.Build(CX.BuildTypes["@command"], {
                     owner: data.owner,
                     allies: data.allies,
                     enemies: data.enemies,
-                    home: data.home
+                    home: data.home,
+                    bank: {
+                        total: data.bank.total,
+                        withdrawPerDay: data.bank.withdrawPerDay,
+                        withrdawlTimeOut: data.bank.withrdawlTimeOut,
+                        timedOutMembers: data.bank.timedOutMembers
+                    }
                 });
                 sender.response.send(`Successfully added ${args[0]} as an ally`)
             }
@@ -163,7 +183,7 @@ CX.Build(CX.BuildTypes["@command"], {
         ctx.executeArgument('enemy', (sender, _, args) => {
             if (!CX.factions.isFactionOwner(sender)) return sender.response.error('You arent the faction owner to add an enemy');
             if (!args[0]) return sender.response.error('You must type a factions name to add as an enemy')
-            const faction = CX.factions.getPlayersFactionWithNoColors(sender)
+            const faction = CX.factions.getPlayersFaction(sender)
             if (faction == args[0]) return sender.response.error('You cant add your own faction as an enemy')
             if (!Databases.factions.has(args[0])) return sender.response.error('You must type in a an actual faction')
             if (Databases.factions.read(faction).allies.includes(args[0])) return sender.response.error('You cant add this faction as an enemy since its an ally')
@@ -176,7 +196,13 @@ CX.Build(CX.BuildTypes["@command"], {
                     owner: data.owner,
                     allies: data.allies,
                     enemies: data.enemies,
-                    home: data.home
+                    home: data.home,
+                    bank: {
+                        total: data.bank.total,
+                        withdrawPerDay: data.bank.withdrawPerDay,
+                        withrdawlTimeOut: data.bank.withrdawlTimeOut,
+                        timedOutMembers: data.bank.timedOutMembers
+                    }
                 });
                 sender.response.send(`Successfully removed ${args[0]} from the enemies`)
             } else {
@@ -188,7 +214,13 @@ CX.Build(CX.BuildTypes["@command"], {
                     owner: data.owner,
                     allies: data.allies,
                     enemies: data.enemies,
-                    home: data.home
+                    home: data.home,
+                    bank: {
+                        total: data.bank.total,
+                        withdrawPerDay: data.bank.withdrawPerDay,
+                        withrdawlTimeOut: data.bank.withrdawlTimeOut,
+                        timedOutMembers: data.bank.timedOutMembers
+                    }
                 });
                 sender.response.send(`Successfully added ${args[0]} as an enemy`)
             }
@@ -196,14 +228,14 @@ CX.Build(CX.BuildTypes["@command"], {
         ctx.executeArgument('enemies', (sender) => {
             if (!CX.factions.isInFaction(sender)) return sender.response.error('You are not in a faction')
             const enemies = []
-            for (const fac of Databases.factions.read(CX.factions.getPlayersFactionWithNoColors(sender)).enemies) enemies.push(fac)
+            for (const fac of Databases.factions.read(CX.factions.getPlayersFaction(sender)).enemies) enemies.push(fac)
             if (!enemies.length) return sender.response.error('There are no enemies that are in your faction')
             sender.response.send(`§c----------------\nFaction Enemies:\n${enemies.map(f => `${f}`).join('\n')}\n§c----------------`, true, false);
         })
         ctx.executeArgument('allies', (sender) => {
             if (!CX.factions.isInFaction(sender)) return sender.response.error('You are not in a faction')
             const allies = []
-            for (const fac of Databases.factions.read(CX.factions.getPlayersFactionWithNoColors(sender)).allies) allies.push(fac)
+            for (const fac of Databases.factions.read(CX.factions.getPlayersFaction(sender)).allies) allies.push(fac)
             if (!allies.length) return sender.response.error('There are no allies that are in your faction')
             sender.response.send(`§c----------------\nFaction Allies:\n${allies.map(f => `${f}`).join('\n')}\n§c----------------`, true, false);
         })
@@ -216,7 +248,7 @@ CX.Build(CX.BuildTypes["@command"], {
                 let kills = 0
                 world.scoreboard.getObjective('kills').getParticipants().forEach((p) => {
                     if (!p.getEntity() instanceof Player) return
-                    if (CX.factions.getPlayersFactionWithNoColors(p.getEntity()) == fac.name) kills += CX.scoreboard.get(p.getEntity(), 'kills')
+                    if (CX.factions.getPlayersFaction(p.getEntity()) == fac.name) kills += CX.scoreboard.get(p.getEntity(), 'kills')
                 })
                 lb.push({ fac: fac.name, owner: fac.owner, kills: kills })
             })
@@ -226,8 +258,9 @@ CX.Build(CX.BuildTypes["@command"], {
             sender.response.send(`§c----------------\nTop Factions:\n${lb.join('\n')}\n§c----------------`, true, false);
         })
         ctx.executeArgument('sethome', (sender) => {
+            if (!config.factionHomes) return sender.response.error('Faction homes arent enabled in this server')
             if (!CX.factions.isFactionOwner(sender)) return sender.response.error('You arent the faction owner to set the home of the faction');
-            const data = Databases.factions.read(CX.factions.getPlayersFactionWithNoColors(sender))
+            const data = Databases.factions.read(CX.factions.getPlayersFaction(sender))
             if (data.home) return sender.response.error('The home of the faction is already set')
             Databases.factions.write(data.name, {
                 name: data.name,
@@ -235,20 +268,28 @@ CX.Build(CX.BuildTypes["@command"], {
                 owner: data.owner,
                 allies: data.allies,
                 enemies: data.enemies,
-                home: { location: sender.location, dimension: sender.dimension.id }
+                home: { location: sender.location, dimension: sender.dimension.id },
+                bank: {
+                    total: data.bank.total,
+                    withdrawPerDay: data.bank.withdrawPerDay,
+                    withrdawlTimeOut: data.bank.withrdawlTimeOut,
+                    timedOutMembers: data.bank.timedOutMembers
+                }
             });
             sender.response.send('Successfully set the home of the faction at your location')
         })
         ctx.executeArgument('home', (sender) => {
+            if (!config.factionHomes) return sender.response.error('Faction homes arent enabled in this server')
             if (!CX.factions.isInFaction(sender)) return sender.response.error('You are not in any faction')
-            const data = Databases.factions.read(CX.factions.getPlayersFactionWithNoColors(sender))
+            const data = Databases.factions.read(CX.factions.getPlayersFaction(sender))
             if (!data.home) return sender.response.error('The faction does not have a home set yet')
             sender.teleport(data.home.location, { dimension: world.getDimension(data.home.dimension) })
             sender.response.send('You have been teleported to your factions home')
         })
         ctx.executeArgument('removehome', (sender) => {
+            if (!config.factionHomes) return sender.response.error('Faction homes arent enabled in this server')
             if (!CX.factions.isFactionOwner(sender)) return sender.response.error('You arent the faction owner to remove the home of the faction');
-            const data = Databases.factions.read(CX.factions.getPlayersFactionWithNoColors(sender))
+            const data = Databases.factions.read(CX.factions.getPlayersFaction(sender))
             if (!data.home) return sender.response.error('There isnt a home set for the faction')
             Databases.factions.write(data.name, {
                 name: data.name,
@@ -256,7 +297,13 @@ CX.Build(CX.BuildTypes["@command"], {
                 owner: data.owner,
                 allies: data.allies,
                 enemies: data.enemies,
-                home: undefined
+                home: undefined,
+                bank: {
+                    total: data.bank.total,
+                    withdrawPerDay: data.bank.withdrawPerDay,
+                    withrdawlTimeOut: data.bank.withrdawlTimeOut,
+                    timedOutMembers: data.bank.timedOutMembers
+                }
             });
             sender.response.send('Successfully removed the factions home')
         })
@@ -284,5 +331,123 @@ CX.Build(CX.BuildTypes["@command"], {
             CX.factions.unclaim(`${chunk[0]}_${chunk[1]}`);
             sender.response.send('Successfully unclaimed this chunk');
         });
+        ctx.executeArgument('withdraw', (sender, _, args) => {
+            if (!CX.factions.isInFaction(sender)) return sender.response.error('You are not in a faction')
+            const data = Databases.factions.read(CX.factions.getPlayersFaction(sender))
+            for (let i = 0; i < data.bank.timedOutMembers.length; i++) {
+                let dta = data.bank.timedOutMembers[i]
+                if (dta.id == sender.id) {
+                    if ((parseInt(dta.expires, 16)) < Date.now()) data.bank.timedOutMembers.splice(i, i)
+                    else return sender.response.error(`You must wait: ${CX.extra.parseTime(parseInt(dta.expires, 16) - new Date().getTime())}, before withdrawing again`)
+                }
+            }
+            if (args[0] > data.bank.withdrawPerDay) return sender.response.error(`You cannot withdraw over ${data.bank.withdrawPerDay}`)
+            if (data.bank.total < args[0]) return sender.response.error('The ban dosent have enough balance to withdraw that amount')
+            sender.score.addScore(config.currency, args[0])
+            sender.response.send(`You have withdrawed ${args[0]} from your factions bank`)
+            if (!CX.factions.isFactionOwner(sender)) data.bank.timedOutMembers.push({ id: sender.id, expires: (new Date().getTime() + (data.bank.withrdawlTimeOut * 3.6e+6)).toString(16) })
+            Databases.factions.write(data.name, {
+                name: data.name,
+                createdAt: data.createdAt,
+                owner: data.owner,
+                allies: data.allies,
+                enemies: data.enemies,
+                home: data.home,
+                bank: {
+                    total: data.bank.total - args[0],
+                    withdrawPerDay: data.bank.withdrawPerDay,
+                    withrdawlTimeOut: data.bank.withrdawlTimeOut,
+                    timedOutMembers: data.bank.timedOutMembers
+                }
+            });
+        })
+        ctx.executeArgument('total', (sender) => {
+            if (!CX.factions.isInFaction(sender)) return sender.response.error('You are not in a faction')
+            sender.response.send(`Bank Balanace: $${CX.extra.parseNumber(Databases.factions.read(CX.factions.getPlayersFaction(sender)).bank.total)}`)
+        })
+        ctx.executeArgument('deposit', (sender, _, args) => {
+            if (!CX.factions.isInFaction(sender)) return sender.response.error('You are not in a faction')
+            if (!CX.factions.isFactionOwner(sender)) return sender.response.error('Your not the faction owner to deposit to the bank');
+            const data = Databases.factions.read(CX.factions.getPlayersFaction(sender))
+            if (args[0] > sender.score.getScore(config.currency)) return sender.response.error(`You do not have enough ${config.currency} to deposit to the bank`)
+            Databases.factions.write(data.name, {
+                name: data.name,
+                createdAt: data.createdAt,
+                owner: data.owner,
+                allies: data.allies,
+                enemies: data.enemies,
+                home: data.home,
+                bank: {
+                    total: data.bank.total + args[0],
+                    withdrawPerDay: data.bank.withdrawPerDay,
+                    withrdawlTimeOut: data.bank.withrdawlTimeOut,
+                    timedOutMembers: data.bank.timedOutMembers
+                }
+            });
+            sender.score.removeScore(config.currency, args[0])
+            sender.response.send(`You have deposited ${CX.extra.parseNumber(args[0])} to the bank`)
+        })
+        ctx.executeArgument('settings', (sender) => {
+            if (!CX.factions.isInFaction(sender)) return sender.response.error('You are not in a faction')
+            if (!CX.factions.isFactionOwner(sender)) return sender.response.error('Your not the faction owner to edit the bank settings');
+            const data = Databases.factions.read(CX.factions.getPlayersFaction(sender))
+            sender.response.send('Close the chat within 10 seconds')
+            new CX.modalForm()
+            .setTitle('Faction Bank Settings')
+            .addTextField('The amount that the player can withdraw each time:', `${100}`, `${data.bank.withdrawPerDay}`)
+            .addDropDown(`The timeout of the withdrawl once a member withdraws: (current: ${data.bank.withrdawlTimeOut} hours)`, ['None', '24 hours', '48 hours'])
+            .force(sender, (res) => {
+                if (res.canceled) return
+                if (isNaN(res.formValues[0])) return sender.response.error('The amount must be a number')
+                if (res.formValues[0] < 100) return sender.response.error('The amount cant be less than 100')
+                if (res.formValues[1] == 1) {
+                    Databases.factions.write(data.name, {
+                        name: data.name,
+                        createdAt: data.createdAt,
+                        owner: data.owner,
+                        allies: data.allies,
+                        enemies: data.enemies,
+                        home: data.home,
+                        bank: {
+                            total: data.bank.total,
+                            withdrawPerDay: Number(res.formValues[0]),
+                            withrdawlTimeOut: 24,
+                            timedOutMembers: data.bank.timedOutMembers
+                        }
+                    });
+                } else if (res.formValues[1] == 2) {
+                    Databases.factions.write(data.name, {
+                        name: data.name,
+                        createdAt: data.createdAt,
+                        owner: data.owner,
+                        allies: data.allies,
+                        enemies: data.enemies,
+                        home: data.home,
+                        bank: {
+                            total: data.bank.total,
+                            withdrawPerDay: Number(res.formValues[0]),
+                            withrdawlTimeOut: 48,
+                            timedOutMembers: data.bank.timedOutMembers
+                        }
+                    });
+                } else {
+                    Databases.factions.write(data.name, {
+                        name: data.name,
+                        createdAt: data.createdAt,
+                        owner: data.owner,
+                        allies: data.allies,
+                        enemies: data.enemies,
+                        home: data.home,
+                        bank: {
+                            total: data.bank.total,
+                            withdrawPerDay: Number(res.formValues[0]),
+                            withrdawlTimeOut: data.bank.withrdawlTimeOut,
+                            timedOutMembers: data.bank.timedOutMembers
+                        }
+                    });
+                }
+                sender.response.send('Successfully edited the factions bank settings')
+            }, 220)
+        })
     }
 });

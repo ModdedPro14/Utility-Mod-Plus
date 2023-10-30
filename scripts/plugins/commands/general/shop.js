@@ -63,7 +63,7 @@ CX.Build(CX.BuildTypes["@command"], {
                             if (config.allCbes.includes(inventory.getItem(sender.selectedSlot).typeId.replace('mincraft:'))) return sender.response.error('You cannot add that item to the shop');
                             shopItems.writeItem(inventory.getItem(sender.selectedSlot), {
                                 price: result.formValues[0],
-                                itemName: CX.item.getItemName(inventory.getItem(sender.selectedSlot), false),
+                                itemName: CX.item.getItemName(inventory.getItem(sender.selectedSlot)),
                                 category: Databases.shopCategories.keys()[result.formValues[1]]
                             });
                             sender.response.send(`Successfully sold the item ${CX.item.getItemName(inventory.getItem(sender.selectedSlot), false)} for ${result.formValues[0]}`);
