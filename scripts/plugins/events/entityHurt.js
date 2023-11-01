@@ -14,6 +14,15 @@ CX.Build(CX.BuildTypes['@event'], {
     executes(data) {
         const died = data.hurtEntity;
         const damager = data.damageSource.damagingEntity;
+        if (died instanceof Player && damager instanceof Player) {
+            const hitEntity = CX.player.convert(died), damagingEntity = CX.player.convert(damager)
+            if (damagingEntity.score.getScore('inCombat') < 1) damagingEntity.onScreenDisplay.setActionBar('§cYou are now in combat');
+            damagingEntity.addTag('inCombat');
+            damagingEntity.score.setScore('inCombat', 10);
+            if (hitEntity.score.getScore('inCombat') < 1) hitEntity.onScreenDisplay.setActionBar('§cYou are now in combat');
+            hitEntity.addTag('inCombat');
+            hitEntity.score.setScore('inCombat', 10);
+        }
         if (!died instanceof Player && !damager instanceof Player)
             return;
         if (damager && !died.getComponent('health').currentValue <= 0)

@@ -4,15 +4,15 @@
 
   "header": {
 
-    "name": "§6§lUtility Mod Plus",
+    "name": "§6§lUtility Mod Plus S2",
 
-    "description": "§9§lWhat is Utility Mod +, Utility Mod + is a paid version of Utility Mod it helps you to protect your server and make it look cooler. \n§bMade By: mp09",
+    "description": "§e§lWhat is Utility Mod +, Utility Mod + is a paid version of Utility Mod it helps you to protect your server and make it look cooler. \n§bMade By: mp09",
 
     "min_engine_version": [1, 20, 0],
 
-    "uuid": "446aba03-afa1-4f71-a5b7-9397ae487b51",
+    "uuid": "c9580c86-2b10-44ae-bf37-cd9c329d8cbc",
 
-    "version": [33, 0, 0]
+    "version": [1, 0, 0]
 
   },
 

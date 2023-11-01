@@ -9,16 +9,6 @@ const crates = new ItemDB('crates')
 CX.Build(CX.BuildTypes["@event"], {
     data: 'EntityHitEntity',
     executes(data) {
-        if (data.damagingEntity instanceof Player && data.hitEntity instanceof Player) {
-            const hitEntity = CX.player.convert(data.hitEntity), damagingEntity = CX.player.convert(data.damagingEntity)
-            if (hitEntity.gamemode.getGamemode() == 'creative' || hitEntity.gamemode.getGamemode() == 'spectator' || damagingEntity.gamemode.getGamemode() == 'creative' || damagingEntity.gamemode.getGamemode() == 'spectator') return
-            if (damagingEntity.score.getScore('inCombat') < 1) damagingEntity.onScreenDisplay.setActionBar('§cYou are now in combat');
-            damagingEntity.addTag('inCombat');
-            damagingEntity.score.setScore('inCombat', 10);
-            if (hitEntity.score.getScore('inCombat') < 1) hitEntity.onScreenDisplay.setActionBar('§cYou are now in combat');
-            hitEntity.addTag('inCombat');
-            hitEntity.score.setScore('inCombat', 10);
-        }
         const tools = ['sword', 'pickaxe', 'shovel', 'hoe', 'axe'];
         Databases.enchantments.forEach((_, info) => {
             if (info.event == 'OnHit') {

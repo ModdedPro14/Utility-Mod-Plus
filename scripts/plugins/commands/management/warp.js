@@ -16,6 +16,7 @@ CX.Build(CX.BuildTypes["@command"], {
     executes(ctx) {
         ctx.executeArgument('name', (sender, val) => {
             if (!Databases.warps.has(val)) return sender.response.error('That warp dosent exist');
+            if (sender.score.getScore('inCombat') > 0) return sender.response.error(`You are in combat, you must wait ${sender.score.getScore('inCombat')}s before using this command`);
             if (sender.management.jailed) return sender.response.error('You cant use this command while your jailed');
             sender.teleport(Databases.warps.read(val).location, { dimension: world.getDimension(Databases.warps.read(val).dimension) });
             sender.response.send(`You have been teleported to the warp: ${val}`);

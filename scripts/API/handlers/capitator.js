@@ -19,10 +19,10 @@ class Capitator {
         for (let i = 0; i < blocks.length; i++) {
             const newBlock = dimension.getBlock(blocks[i]);
             if (newBlock.type.id.endsWith('_ore')) {
-                let item;
-                if (newBlock.type.id.replace('_ore', '').replace('deepslate_', '').replace('lit_', '') == 'minecraft:lapis') item = 'minecraft:lapis_lazuli';
-                else if (newBlock.type.id.replace('_ore', '').replace('deepslate_', '').replace('lit_', '') == 'minecraft:iron' || newBlock.type.id.replace('_ore', '').replace('deepslate_', '').replace('lit_', '') == 'minecraft:gold' || newBlock.type.id.replace('_ore', '').replace('deepslate_', '').replace('lit_', '') == 'minecraft:copper') item = 'minecraft:raw_' + newBlock.type.id.replace('_ore', '').replace('deepslate_', '').replace('lit_', '').split('minecraft:')[1];
-                else item = newBlock.type.id.replace('_ore', '').replace('deepslate_', '').replace('lit_', '');
+                let item;         
+                if (newBlock.type.id.replace('_ore', '').replace('deepslate_', '') == 'minecraft:iron' || newBlock.type.id.replace('_ore', '').replace('deepslate_', '') == 'minecraft:gold' || newBlock.type.id.replace('_ore', '').replace('deepslate_', '') == 'minecraft:copper') item = 'minecraft:raw_' + newBlock.type.id.replace('_ore', '').replace('deepslate_', '').split('minecraft:')[1];
+                else item = newBlock.type.id.replace('_ore', '').replace('deepslate_', '');
+                if (item == 'minecraft:lit_redstone' || item == 'minecraft:lapis' || item == 'minecraft:redstone') return;
                 dimension.spawnItem(new ItemStack(item), blocks[i]);
                 newBlock.setType('air');
             } else {
