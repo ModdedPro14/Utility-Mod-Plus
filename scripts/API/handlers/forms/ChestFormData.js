@@ -1,8 +1,8 @@
 import { ActionFormData } from '@minecraft/server-ui';
-import { system, ItemTypes } from '@minecraft/server';
+import { system, ItemTypes, BlockTypes } from '@minecraft/server';
 import { typeIdToID } from "./typeIds.js";
 
-const number_of_1_16_100_items = ItemTypes.getAll().filter((v) => !v.id.startsWith('minecraft:')).length - 1;
+const number_of_1_16_100_items = ItemTypes.getAll().filter(item => !item.id.startsWith("minecraft:") && !item.id.endsWith("spawn_egg") && !BlockTypes.get(item.id)).length;
 const sizes = {
     small: [`§c§h§e§s§t§s§m§a§l§l§r`, 8],
     medium: [`§c§h§e§s§t§m§e§d§i§u§m§r`, 27],
