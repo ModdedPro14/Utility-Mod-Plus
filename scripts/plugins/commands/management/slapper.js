@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('slapper')
     .setDescription('A npc slapper command')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['create', 'edit', 'remove'], true)
     .addDynamicArgument('create', [], 'create')
     .addDynamicArgument('edit', [], 'edit')

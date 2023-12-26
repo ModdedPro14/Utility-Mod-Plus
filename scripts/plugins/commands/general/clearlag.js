@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('clearlag')
     .setDescription('clears the lag')
     .setCategory('general')
-    .setAdmin(true),
+    .setPermissions({ admin: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             sender.runCommandAsync('kill @e[type=item]');

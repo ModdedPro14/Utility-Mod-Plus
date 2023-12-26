@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('logs')
     .setDescription('Provides you with logs that have been made')
     .setCategory('management')
-    .setAdmin(true),
+    .setPermissions({ admin: true, mod: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             sender.response.send('Close the chat within 10 secondes');

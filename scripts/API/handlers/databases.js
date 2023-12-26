@@ -69,6 +69,26 @@ class DBS {
          * Vaults database
          */
         this.vaults = new Database('vaults')
+        /**
+         * Reports database
+         */
+        this.reports = new Database('reports')
+        /** 
+         * Report settings database
+         */
+        this.reportSettings = new Database('reportSettings')
+        /**
+         * Registrations database
+         */
+        this.registrations = new Database('registrations')
+        /**
+         * Mails database
+         */
+        this.mails = new Database('mails')
+        /** 
+         * Players database
+         */
+        this.players = new Database('players')
     }
 }
 export const Databases = new DBS();

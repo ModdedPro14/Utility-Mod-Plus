@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('repair')
     .setDescription('Repair the item your holding')
     .setCategory('miscellaneous')
-    .setAdmin(true),
+    .setPermissions({ admin: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             const inventory = sender.getComponent('inventory').container;

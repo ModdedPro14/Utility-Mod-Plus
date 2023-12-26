@@ -7,6 +7,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('home')
     .setDescription('Teleport to a home you set')
     .setCategory('miscellaneous')
+    .setAliases(['h'])
     .firstArguments(['name'], true)
     .addAnyArgument('name', [], 1),
     executes(ctx) {

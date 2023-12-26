@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('staffchat')
     .setDescription('Enter or leave the staff chat')
     .setCategory('management')
-    .setAdmin(true),
+    .setPermissions({ admin: true, mod: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             if (sender.chat.inStaffChat) {

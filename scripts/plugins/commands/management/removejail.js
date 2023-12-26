@@ -8,7 +8,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('removejail')
     .setDescription('Removes the current jail location')
     .setCategory('management')
-    .setAdmin(true),
+    .setPermissions({ admin: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             if (!Databases.server.has('jail')) return sender.response.error('There isnt a jail set');

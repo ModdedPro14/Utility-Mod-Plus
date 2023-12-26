@@ -8,7 +8,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('command')
     .setDescription('Create and manage custom commands')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .setAliases(['cmd'])
     .firstArguments(['create', 'delete'], true)
     .addDynamicArgument('create', [], 'create')

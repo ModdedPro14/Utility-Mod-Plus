@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('drunk')
     .setDescription('Make someones screen go crazy')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, 'amount', { self: true })
     .addNumberArgument('amount', [{ name: 'player', type: 'player'}]),

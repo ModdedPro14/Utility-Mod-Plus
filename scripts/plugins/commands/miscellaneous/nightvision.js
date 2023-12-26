@@ -4,7 +4,7 @@ CX.Build(CX.BuildTypes["@command"], {
     data: new CX.command()
     .setName('nightvision')
     .setDescription('Give nightvision to yourself or another player')
-    .setAdmin(true)
+    .setPermissions({ admin: true, mod: true })
     .setCategory('miscellaneous')
     .setAliases(['nv'])
     .firstArguments(['player'], false)

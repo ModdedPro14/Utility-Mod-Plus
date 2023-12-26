@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('ban')
     .setDescription('Ban a player from the server')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true, mod: true })
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, 'reason', { self: false }, true)
     .addAnyArgument('reason', [{ name: 'player', type: 'player'}], 1),

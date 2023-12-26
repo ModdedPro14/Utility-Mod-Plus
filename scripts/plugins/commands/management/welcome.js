@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('welcome')
     .setDescription('Setup a welcome screen to ur server')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['message', 'remove'], true)
     .addDynamicArgument('remove', [], 'remove')
     .addAnyArgument('message', [], 1),

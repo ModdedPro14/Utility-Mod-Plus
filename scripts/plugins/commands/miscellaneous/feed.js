@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('feed')
     .setDescription('Regain your or a players hunger')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, null, { self: true }),
     executes(ctx) {

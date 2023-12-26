@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('enchantment')
     .setDescription('A custom enchantment system')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['create', 'apply', 'delete', 'list', 'view'])
     .addDynamicArgument('create', [], 'create')
     .addDynamicArgument('apply', [], 'apply', 'name')

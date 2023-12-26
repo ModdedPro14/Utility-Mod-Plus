@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('heal')
     .setDescription('Heal your or someones health')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, null, { self: true }),
     executes(ctx) {

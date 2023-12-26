@@ -31,6 +31,7 @@ CX.Build(CX.BuildTypes["@event"], {
         const player = CX.player.convert(data.damagingEntity);
         const area = Area.as(player, [data.hitBlock.location.x, data.hitBlock.location.z]);
         if (area.isInArea) {
+            if (area.permissions.break) return
             if (player.permission.hasPermission('admin'))
                 return;
             player.response.error('You cannot break blocks here');

@@ -11,9 +11,11 @@ CX.Build(CX.BuildTypes["@command"], {
     .setDescription('An auction house')
     .setCategory('general')
     .setAliases(['ah'])
-    .firstArguments(['sell'], false)
+    .firstArguments(['sell', 'search'], false)
     .addDynamicArgument('sell', [], 'sell', 'price')
-    .addNumberArgument('price', [{ name: 'sell', type: 'dyn' }]),
+    .addDynamicArgument('search', [], 'search', ['name'])
+    .addNumberArgument('price', [{ name: 'sell', type: 'dyn' }])
+    .addAnyArgument('name', [{ name: 'search', type: 'dyn' }], 1),
     executes(ctx) {
         ctx.execute((sender, args) => {
             if (args.length) return;
@@ -52,6 +54,11 @@ CX.Build(CX.BuildTypes["@command"], {
             })
             inventory.setItem(sender.selectedSlot);
         });
+        ctx.executeArgument('search', (sender, _, args) => {
+            if (!auctionItems.allIDs().find((v) => v.data.creator == args[0])) return sender.response.error(`There were no auctions by the seller: ${args[0]}`)
+            sender.response.send('Close the chat in 10 seconds')
+            search(1, sender, auctionItems.allIDs().find((v) => v.data.creator == args[0]).data.plrId, args[0])
+        })
     }
 })
 
@@ -274,4 +281,68 @@ const manageAuctions = (page, sender) => {
             })
         }
     });
+}
+const search = (page, sender, id, name) => {
+    const form = new CX.chestForm('large')
+    const aAuctions = auctionItems.allIDs().filter((v) => v.data.plrId == id).sort((a, b) => a.data.date - b.data.date), pages = Math.ceil(aAuctions.length / 45)
+    form.setTitle(`${name} Auctions ${page}/${pages}`)
+    form.addButton(49, '§cClose', ['§6Close this page'], 'textures/blocks/barrier');
+    if (page < pages) form.addButton(51, '§aNext page', ['§6Shows the next page'], 'minecraft:arrow')
+    if (page > 1) form.addButton(47, '§cPrevious page', ['§6Shows the previous page'], 'minecraft:arrow')
+    form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
+    const items = aAuctions.slice((page - 1) * 45, (page - 1) * 45 + 45)
+    items.forEach((item, i) => {
+        if ((parseInt(item.data.expires, 16)) < Date.now()) {
+            try {
+                expiredAh.writeItem(item.item, {
+                    plrId: item.data.plrId
+                })
+                auctionItems.deleteID(item.ID)
+            } catch {}
+        } else {
+            const data = CX.item.getItemData(item.item)
+            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Seller: §6${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}`], data.typeId, data.amount, !data.enchantments.length ? false : true);
+        }
+    })
+    form.force(sender, (result) => {
+        if (result.canceled) return
+        if (result.selection == 51 && page < pages) search(page + 1, sender, id, name)
+        else if (result.selection == 47 && page > 1) search(page - 1, sender, id, name)
+        else if (result.selection <= items.length) {
+            const selection = items[result.selection]
+            const form = new CX.chestForm('small')
+            .setTitle(selection.data.itemName + ` Seller: ${selection.data.plrId == sender.id ? '§eYou' : selection.data.creator}`)
+            .addButton(5, '§cCancel', ['§6Cancel Purchase'], 'textures/blocks/glass_red');
+            if (selection.data.plrId == sender.id) {
+                form.addButton(3, '§cRemove Auction', ['§6Do You want to remove this item?'], 'textures/blocks/barrier')
+                .show(sender, (res) => {
+                    if (res.canceled) return;
+                    if (res.selection == 3) {
+                        if (!auctionItems.has(selection.ID)) return sender.response.error('That item dosent exist in the auction house anymore')
+                        const inventory = sender.getComponent('inventory').container;
+                        if (inventory.emptySlotsCount < 1) return sender.response.error('You do not have enough space to remove this item');
+                        inventory.addItem(selection.item);
+                        auctionItems.deleteID(selection.ID)
+                        sender.response.send(`You have succssfully removed the item ${selection.data.itemName}`);
+                    }
+                });
+            } else {
+                form.addButton(3, '§aPurchase', ['§6Do You want to buy this item?'], 'textures/blocks/glass_lime')
+                .show(sender, (res) => {
+                    if (res.canceled) return;
+                    if (res.selection == 3) {
+                        if (!auctionItems.has(selection.ID)) return sender.response.error('That item dosent exist in the auction house anymore')
+                        if (sender.score.getScore(config.currency) < selection.data.price) return sender.response.error(`You do not have enough ${config.currency}§r§c§lto buy this item`);
+                        const inventory = sender.getComponent('inventory').container;
+                        if (inventory.emptySlotsCount < 1) return sender.response.error('You do not have enough space to buy this item');
+                        sender.score.removeScore(config.currency, selection.data.price);
+                        inventory.addItem(selection.item);
+                        sender.response.send(`You have succssfully bought the item ${selection.data.itemName}`);
+                        Databases.auctionClaims.write(selection.data.plrId, selection.data.price);
+                        auctionItems.deleteID(selection.ID)
+                    }
+                });
+            }
+        }
+    }, 220);
 }

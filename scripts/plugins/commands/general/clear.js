@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('clear')
     .setDescription('Clears the chat')
     .setCategory('general')
-    .setAdmin(true),
+    .setPermissions({ admin: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             for (const plr of world.getPlayers()) {

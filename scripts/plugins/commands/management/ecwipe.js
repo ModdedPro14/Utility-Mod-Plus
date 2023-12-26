@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('ecwipe')
     .setDescription('Wipe a players ender chest')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['player'], false)
     .addPlayerArgument('player', [], true, null),
     executes(ctx) {

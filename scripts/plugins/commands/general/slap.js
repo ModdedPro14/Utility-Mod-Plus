@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('slap')
     .setDescription('Damges the player you chose with the amount you chose')
     .setCategory('general')
-    .setAdmin(true)
+    .setPermissions({ admin: true, mod: true })
     .firstArguments(['player'], false)
     .addPlayerArgument('player', [], true, 'amount')
     .addNumberArgument('amount', [{ name: 'player', type: 'player'}], null, { min: 0 }),

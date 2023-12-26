@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('resetnickname')
     .setDescription('Set a players name back to the original')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .setAliases(['rnn', 'resetnn'])
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, null, { self: true }),

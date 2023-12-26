@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('invsee')
     .setDescription('See a players inventory')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, null, { self: false }),
     executes(ctx) {

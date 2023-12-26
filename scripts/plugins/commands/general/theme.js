@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('theme')
     .setDescription('Set the color of your name or chat')
     .setCategory('general')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['setcolor'], true)
     .addDynamicArgument('setcolor', [], 'setcolor', 'player')
     .addPlayerArgument('player', [], true, 'name/chat')

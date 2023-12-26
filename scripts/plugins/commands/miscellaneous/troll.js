@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('troll')
     .setDescription('Troll someone')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['player'], false)
     .addPlayerArgument('player', [], true, ['creeper', 'explode', 'cave', 'hurt', 'fire', 'fly', 'enderman', 'slownessScreen'], { self: true })
     .addDynamicArgument('creeper', [{ name: 'player', type: 'player'}], 'creeper')

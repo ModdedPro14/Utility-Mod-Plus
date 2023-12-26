@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('unban')
     .setDescription('Unban a player')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['player'], true)
     .addAnyArgument('player', [], 1),
     executes(ctx) {

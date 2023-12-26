@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('i')
     .setDescription('Works just like the give command')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['item'], true)
     .addAnyArgument('item', [], 1, {}, 'amount', false)
     .addNumberArgument('amount', [], 'player', {}, false)

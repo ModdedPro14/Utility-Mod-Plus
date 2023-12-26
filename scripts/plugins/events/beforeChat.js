@@ -2,6 +2,7 @@ import { system, world } from "@minecraft/server";
 import config from "../../config/main.js";
 import { CX } from "../../API/CX.js";
 import { Commands } from "../../API/handlers/command.js";
+
 CX.Build(CX.BuildTypes['@event'], {
     data: 'Chat',
     executes(player, data) {
@@ -9,6 +10,7 @@ CX.Build(CX.BuildTypes['@event'], {
         const sender = player;
         data.cancel();
         if (!message.startsWith(config.prefix)) {
+            if (config.login && !sender.hasTag('logged')) return
             system.run(() => {
                 if (sender.chat.muted && !sender.permission.hasPermission('admin'))
                     return sender.response.error('You can\'t send messages since your muted');
@@ -48,6 +50,7 @@ CX.Build(CX.BuildTypes['@event'], {
             system.run(() => {
                 if (!cmdData)
                     return sender.response.error(`Unknown command: ${message.substring(config.prefix.length).match(/[\S]+/g)?.[0] ?? []}. Please check that the command exists and that you have permission to use it.`);
+                if (config.login && !sender.hasTag('logged') && !(cmdData.name == 'login' || cmdData.name == 'register')) return
                 new CX.log({
                     from: sender.name,
                     translate: 'command',

@@ -13,7 +13,8 @@ class Area {
             const isInArea = data[0] >= Math.min(area.pos1.x, area.pos2.x) && data[0] <= Math.max(area.pos1.x, area.pos2.x) && data[1] >= Math.min(area.pos1.z, area.pos2.z) && data[1] <= Math.max(area.pos1.z, area.pos2.z);
             if (isInArea)
                 return {
-                    isInArea
+                    isInArea,
+                    permissions: area.permissions
                 };
         }
         return {

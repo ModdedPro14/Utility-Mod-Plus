@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('money')
     .setDescription(`Manage a players ${config.currency}`)
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['set', 'add', 'remove', 'reset'], true)
     .addDynamicArgument('set', [], 'set', 'player')
     .addDynamicArgument('add', [], 'add', 'player')

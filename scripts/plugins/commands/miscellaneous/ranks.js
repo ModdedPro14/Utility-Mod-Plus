@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('rank')
     .setDescription('Manage a players ranks')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, ['add', 'remove', 'removeAll'])
     .addDynamicArgument('add', [], 'add', 'rank')

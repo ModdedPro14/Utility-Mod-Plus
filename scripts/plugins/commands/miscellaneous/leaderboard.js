@@ -7,7 +7,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setDescription('A better way of showing scoreboard objectives')
     .setCategory('miscellaneous')
     .setAliases(['lb'])
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['create', 'delete'], true)
     .addDynamicArgument('create', [], 'create', 'objective')
     .addDynamicArgument('delete', [], 'delete')

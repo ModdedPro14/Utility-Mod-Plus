@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('text')
     .setDescription('Set a floating text at your position')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['text', 'remove'], true)
     .addDynamicArgument('remove', [], 'remove')
     .addAnyArgument('text', [], 1),

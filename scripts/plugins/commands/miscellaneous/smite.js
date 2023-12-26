@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('smite')
     .setDescription('Smite someone')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true, mod: true })
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, null, { self: false }),
     executes(ctx) {

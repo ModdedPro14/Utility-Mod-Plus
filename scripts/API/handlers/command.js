@@ -12,7 +12,10 @@ export class Commands {
         this.info = {
             name: '',
             category: 'uncategorized',
-            admin: false,
+            permissions: { 
+                admin: false, 
+                mod: false 
+            },
             aliases: [],
             description: 'No description',
             developers: ["MP09"],
@@ -69,7 +72,9 @@ export class Commands {
      * @returns 
      */
     runCommand(command, sender, args, msg) {
-        if (command.admin && !sender.permission.hasPermission('admin'))
+        if (command.permissions.mod && !sender.permission.hasPermission('mod') && !sender.permission.hasPermission('admin')) 
+            return sender.response.error(`Unknown command: ${msg.substring(config.prefix.length).match(/[\S]+/g)?.[0] ?? []}. Please check that the command exists and that you have permission to use it.`);
+        else if (command.permissions.admin && !sender.permission.hasPermission('admin') && !command.permissions.mod)
             return sender.response.error(`Unknown command: ${msg.substring(config.prefix.length).match(/[\S]+/g)?.[0] ?? []}. Please check that the command exists and that you have permission to use it.`);
         if (!command.argNames[0].length && args.length)
             return sender.response.error(`The command has no arguments, try removing ${args[args.length - 1]}`);
@@ -144,12 +149,12 @@ export class Commands {
         return this;
     }
     /**
-     * Sets the admin permission of the command
-     * @param {boolean} admin The admin
+     * Sets the command permissions
+     * @param {{ admin: boolean | false, mod: boolean | false}} permission The permissions for the command
      * @returns 
      */
-    setAdmin(admin = false) {
-        this.info.admin = admin;
+    setPermissions(permission = { admin: false, mod: false }) {
+        this.info.permissions = permission;
         return this;
     }
     /**
@@ -330,7 +335,7 @@ export class Commands {
         Commands.registeredCommands.push({
             name: command.info.name.toLowerCase().split(' ')[0],
             category: command.info.category[0].toUpperCase() + command.info.category.slice(1).toLowerCase(),
-            admin: command.info.admin,
+            permissions: command.info.permissions,
             aliases: command.info.aliases,
             description: command.info.description,
             developers: command.info.developers,

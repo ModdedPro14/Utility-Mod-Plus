@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('broadcast')
     .setDescription('Send a message to the entire server')
     .setCategory('general')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['message'], false)
     .addAnyArgument('message', [], 1),
     executes(ctx) {

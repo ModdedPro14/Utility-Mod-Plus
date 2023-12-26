@@ -16,7 +16,8 @@ CX.Build(CX.BuildTypes["@command"], {
         ctx.executeArgument('command', (sender, val) => {
             const cmdList = Commands.registeredCommands.find(c => c.name === val || c.aliases?.includes(val));
             if (!cmdList) return sender.response.error(`Cant find the command ${val}`);
-            if (cmdList && cmdList.admin && !sender.permission.hasPermission('admin')) return sender.response.error(`Cant find the command ${val}`);
+            if (cmdList.permissions.mod && !sender.permission.hasPermission('mod') && !sender.permission.hasPermission('admin')) return sender.response.error(`Cant find the command ${val}`);
+            else if (cmdList.permissions.admin && !sender.permission.hasPermission('admin') && !cmdList.permissions.mod) return sender.response.error(`Cant find the command ${val}`);
             let hI = `§l§4Command: §c${cmdList.name}\n`;
             if (cmdList.description.length) hI += `§4Description:§c ${cmdList.description}\n`;
             if (cmdList.aliases.length) hI += `§l§4Aliases:§c ${cmdList.aliases.join(`§4, §c`)}\n`;
@@ -36,7 +37,7 @@ CX.Build(CX.BuildTypes["@command"], {
             sender.response.send(`§4${hI}`, true, false);
         });
         ctx.executeArgument('page', (sender, page) => {
-            const cmdList = Commands.registeredCommands.filter(c => sender.permission.hasPermission('admin') ? true : !c.admin);
+            const cmdList = Commands.registeredCommands.filter(c => sender.permission.hasPermission('admin') ? true : sender.permission.hasPermission('mod') ? c.permissions.mod + !c.permissions.admin : !c.permissions.admin);
             const commandList = new Array(Math.ceil(cmdList.length / 35)).fill(0).map(_ => cmdList.splice(0, 35)), help = [], categoryHold = [];
             if (!commandList[page - 1]?.[0]) return sender.response.error('Unable to find this page');
             for (const command of commandList[page - 1]) {

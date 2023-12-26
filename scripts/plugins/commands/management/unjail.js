@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('unjail')
     .setDescription('Unjail a player')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, null, { self: true }),
     executes(ctx) {

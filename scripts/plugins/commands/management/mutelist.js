@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('mutelist')
     .setDescription('Provides you a list of online muted players')
     .setCategory('management')
-    .setAdmin(true),
+    .setPermissions({ admin: true, mod: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             let theText = "§cMuted Players:\n";

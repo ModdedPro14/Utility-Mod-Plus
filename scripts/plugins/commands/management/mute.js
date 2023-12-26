@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('mute')
     .setDescription('Mute a player in the server')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true, mod: true })
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, 'reason', { self: false })
     .addAnyArgument('reason', [{ name: 'player', type: 'player'}], 1),

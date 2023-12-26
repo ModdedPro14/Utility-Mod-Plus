@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('freeze')
     .setDescription('Freezes a player')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true, mod: true })
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, null, { self: false }),
     executes(ctx) {

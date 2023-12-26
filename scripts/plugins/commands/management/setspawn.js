@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('setspawn')
     .setDescription('Set the spawn location at the location your on')
     .setCategory('management')
-    .setAdmin(true),
+    .setPermissions({ admin: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             if (Databases.server.has('spawn')) return sender.response.error('The spawn is already set');

@@ -234,6 +234,8 @@ class Player {
     hasPermission(plr, permission) {
         if (permission == 'admin')
             return Boolean(plr.hasTag(config.adminTag));
+        else if (permission == 'mod') 
+            return Boolean(plr.hasTag(config.modTag))
         else if (permission == 'trusted')
             return Boolean(plr.hasTag(config.trustTag));
         else

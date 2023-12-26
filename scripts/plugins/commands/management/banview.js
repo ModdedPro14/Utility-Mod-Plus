@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('banview')
     .setDescription('Provides you with info abut a banned player')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true, mod: true })
     .firstArguments(['player'], true)
     .addAnyArgument('player', [], 1),
     executes(ctx) {

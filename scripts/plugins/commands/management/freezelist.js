@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes['@command'], {
     .setName('freezelist')
     .setDescription('Provides you a list of frozen players')
     .setCategory('management')
-    .setAdmin(true),
+    .setPermissions({ admin: true, mod: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             let theText = "§cFreezed Players:\n";

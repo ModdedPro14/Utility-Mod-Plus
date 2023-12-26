@@ -7,7 +7,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('gui')
     .setDescription('Create or manage custom guis')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['create', 'delete', 'open', 'edit'], true)
     .addDynamicArgument('create', [], 'create')
     .addDynamicArgument('delete', [], 'delete', 'name')

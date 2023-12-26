@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('op')
     .setDescription('Manage a players permission')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['add', 'remove'], true)
     .addDynamicArgument('add', [], 'add', 'player')
     .addDynamicArgument('remove', [], 'remove', 'player')

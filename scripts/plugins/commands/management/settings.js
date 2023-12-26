@@ -7,7 +7,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('settings')
     .setDescription('Edit the files config without going thorugh the config file')
     .setCategory('management')
-    .setAdmin(true),
+    .setPermissions({ admin: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             sender.response.send('Close the chat within 10 secondes');
@@ -18,12 +18,14 @@ CX.Build(CX.BuildTypes["@command"], {
             .addButton('Anti Cheat Settings\n§7[Click to show]')
             .addButton('Faction Settings\n§7[Click to show]')
             .addButton('Vault Settings\n§7[Click to show]')
+            .addButton('Report Settings\n§7[Click to show]')
             .force(sender, (res) => {
                 if (res.canceled) return;
                 if (res.selection == 0) {
                     new CX.modalForm()
                     .setTitle('General Settings')
                     .addTextField('Admin Tag:', `${Databases.settings.read('adminTag')}`, `${Databases.settings.read('adminTag')}`)
+                    .addTextField('Mod Tag', `${Databases.settings.read('modTag')}`, `${Databases.settings.read('modTag')}`)
                     .addTextField('Trust Tag:', `${Databases.settings.read('trustTag')}`, `${Databases.settings.read('trustTag')}`)
                     .addTextField('Default Rank:', `${Databases.settings.read('defaultRank')}`, `${Databases.settings.read('defaultRank')}`)
                     .addTextField('Command Prefix:', `${Databases.settings.read('prefix')}`, `${Databases.settings.read('prefix')}`)
@@ -37,25 +39,28 @@ CX.Build(CX.BuildTypes["@command"], {
                     .addToggle('Vein Miner', Databases.settings.read('veinMiner'))
                     .addToggle('Betting System', Databases.settings.read('betting'))
                     .addToggle('Ender Pearl Timer', Databases.settings.read('enderPearlT'))
+                    .addToggle('Login/register system', Databases.settings.read('login'))
                     .show(sender, (result) => {
                         if (result.canceled) return;
                         if (result.formValues[0] == result.formValues[1]) return sender.response.error('The trust tag cant be the same as the admin tag');
                         if (result.formValues[3].startsWith('/')) return sender.response.error('The command prefix cant be a /');
                         if (result.formValues[3].trim() == '') return sender.response.error('The prefix cant be nothing');
                         CX.overRide('adminTag', result.formValues[0]);
-                        CX.overRide('trustTag', result.formValues[1]);
-                        CX.overRide('defaultRank', result.formValues[2]);
-                        if (result.formValues[3]) CX.overRide('prefix', result.formValues[3]);
-                        CX.overRide('chatStyle', result.formValues[4]);
-                        CX.overRide('currency', result.formValues[5]);
-                        CX.overRide('maxAuctions', result.formValues[6]);
-                        CX.overRide('ranks', result.formValues[7]);
-                        CX.overRide('itemNamesDisplay', result.formValues[8]);
-                        CX.overRide('damageIndicators', result.formValues[9]);
-                        CX.overRide('treeCapitator', result.formValues[10]);
-                        CX.overRide('veinMiner', result.formValues[11]);
-                        CX.overRide('betting', result.formValues[12]);
-                        CX.overRide('enderPearlT', result.formValues[13])
+                        CX.overRide('modTag', result.formValues[1])
+                        CX.overRide('trustTag', result.formValues[2]);
+                        CX.overRide('defaultRank', result.formValues[3]);
+                        if (result.formValues[4]) CX.overRide('prefix', result.formValues[4]);
+                        CX.overRide('chatStyle', result.formValues[5]);
+                        CX.overRide('currency', result.formValues[6]);
+                        CX.overRide('maxAuctions', result.formValues[7]);
+                        CX.overRide('ranks', result.formValues[8]);
+                        CX.overRide('itemNamesDisplay', result.formValues[9]);
+                        CX.overRide('damageIndicators', result.formValues[10]);
+                        CX.overRide('treeCapitator', result.formValues[11]);
+                        CX.overRide('veinMiner', result.formValues[12]);
+                        CX.overRide('betting', result.formValues[13]);
+                        CX.overRide('enderPearlT', result.formValues[14])
+                        CX.overRide('login', result.formValues[15])
                         sender.response.send('Successfully updated general settings data');
                     });
                 } else if (res.selection == 1) {
@@ -140,6 +145,19 @@ CX.Build(CX.BuildTypes["@command"], {
                         CX.overRide('vaultMaxPages', result.formValues[1])
                         sender.response.send('Successfully updated Vault settings data');
                     });
+                } else if (res.selection == 4) {
+                    new CX.modalForm()
+                    .setTitle('Report Settings')
+                    .addTextField('Add report reason:', 'Hacking..')
+                    .addDropDown('Remove a report reason:', ['None', ...Databases.reportSettings.values()])
+                    .show(sender, (result) => {
+                        if (result.canceled) return
+                        const reasons = ['None', ...Databases.reportSettings.keys()]
+                        if (Databases.reportSettings.has(result.formValues[0])) return sender.response.error('That report reason already exists')
+                        if (result.formValues[0]) Databases.reportSettings.write(result.formValues[0], result.formValues[0])
+                        if (reasons[result.formValues[1]] != 'None') Databases.reportSettings.delete(reasons[result.formValues[1]])
+                        sender.response.send('Successfully edited the Report Settings')
+                    })
                 }
             }, 220);
         });

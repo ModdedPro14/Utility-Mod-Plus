@@ -116,6 +116,7 @@ system.runInterval(() => {
         }
         const area = Area.as(player, [player.location.x, player.location.z]);
         if (area.isInArea) {
+            if (area.permissions.pvp) return
             if (player.hasTag(config.adminTag))
                 return;
             player.addEffect('weakness', 1, { showParticles: false, amplifier: 255 });
@@ -215,6 +216,15 @@ system.runInterval(() => {
 
 system.runInterval(() => {
     world.getAllPlayers().forEach(player => {
+        if (!player.hasTag('logged')) {
+            player.addEffect('weakness', 2, { amplifier: 255, showParticles: false })
+            player.addEffect('mining_fatigue', 2, { amplifier: 255, showParticles: false })
+            player.addEffect('darkness', 2, { amplifier: 10, showParticles: false })
+            player.addEffect('resistance', 2, { amplifier: 255, showParticles: false })
+            player.addEffect('regeneration', 2, { amplifier: 255, showParticles: false })
+            player.addEffect('absorption', 2, { amplifier: 255, showParticles: false })
+            player.addEffect('fire_resistance', 2, { amplifier: 255, showParticles: false })
+        }
         if (!player.hasTag(config.adminTag)) {
             try {
                 log.set(player, log.get(player).map(e => e - 1).filter(e => e !== 0))

@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('speed')
     .setDescription('Gives you speed boost of the amount you put')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true, mod: true })
     .firstArguments(['amount'], true)
     .addNumberArgument('amount'),
     executes(ctx) {

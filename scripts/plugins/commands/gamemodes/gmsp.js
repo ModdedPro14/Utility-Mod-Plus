@@ -4,7 +4,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('gmsp')
     .setDescription('Changes your or a players gamemode to spectator')
     .setCategory('gamemodes')
-    .setAdmin(true)
+    .setPermissions({ admin: true, mod: true })
     .firstArguments(['player'], false)
     .addPlayerArgument('player', [], true, null, { self: true }, false),
     executes(ctx) {

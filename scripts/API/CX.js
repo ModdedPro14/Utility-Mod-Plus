@@ -102,7 +102,7 @@ class cx {
     }
     /**
      * Builds an BuildType
-     * @param {BuildTypes} BuildType The build type
+     * @param {CX.BuildTypes} BuildType The build type
      * @param {{ data: any, executes: (any: BuildTypeExecution) => void}} callback The callback
      */
     Build(BuildType, callback) {

@@ -7,7 +7,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('prefix')
     .setDescription('Change the current prefix of the commands')
     .setCategory('general')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['prefix'], false)
     .addAnyArgument('prefix', [], 1),
     executes(ctx) {

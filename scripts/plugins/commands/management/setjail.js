@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('setjail')
     .setDescription('Set the jail location at the location your on')
     .setCategory('management')
-    .setAdmin(true),
+    .setPermissions({ admin: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             if (Databases.server.has('jail')) return sender.response.error('The jail is already set');

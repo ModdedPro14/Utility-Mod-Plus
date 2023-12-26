@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('nickname')
     .setDescription('Set the name of a player')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, 'name')
     .addAnyArgument('name', [{ name: 'player', type: 'player'}], 1),

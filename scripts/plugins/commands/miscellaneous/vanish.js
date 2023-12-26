@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('vanish')
     .setDescription('Makes you invisible to others')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .setAliases(['v']),
     executes(ctx) {
         ctx.execute((sender) => {

@@ -4,7 +4,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('gmc')
     .setDescription('Changes your or a players gamemode to creative')
     .setCategory('gamemodes')
-    .setAdmin(true)
+    .setPermissions({ admin: true, mod: true })
     .firstArguments(['player'], false)
     .addPlayerArgument('player', [], true, null, { self: true }, false),
     executes(ctx) {

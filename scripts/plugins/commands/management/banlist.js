@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('banlist')
     .setDescription('Provides you a list of banned players')
     .setCategory('management')
-    .setAdmin(true),
+    .setPermissions({ admin: true, mod: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             const bans = []

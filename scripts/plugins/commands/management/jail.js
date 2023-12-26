@@ -6,7 +6,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('jail')
     .setDescription('Jail a player')
     .setCategory('management')
-    .setAdmin(true)
+    .setPermissions({ admin: true, mod: true })
     .firstArguments(['player'], true)
     .addPlayerArgument('player', [], true, null, { self: false }),
     executes(ctx) {

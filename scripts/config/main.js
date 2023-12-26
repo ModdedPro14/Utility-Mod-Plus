@@ -1,10 +1,11 @@
 import { Databases } from "../API/handlers/databases";
 export const config = {
     adminTag: !Databases.settings.has('adminTag') ? Databases.settings.write('adminTag', 'skummeh') && Databases.settings.read('adminTag') : Databases.settings.read('adminTag'),
+    modTag: !Databases.settings.has('modTag') ? Databases.settings.write('modTag', 'mod') && Databases.settings.read('modTag') : Databases.settings.read('modTag'),
     trustTag: !Databases.settings.has('trustTag') ? Databases.settings.write('trustTag', 'trusted') && Databases.settings.read('trustTag') : Databases.settings.read('trustTag'),
     defaultRank: !Databases.settings.has('defaultRank') ? Databases.settings.write('defaultRank', '§6Member') && Databases.settings.read('defaultRank') : Databases.settings.read('defaultRank'),
     prefix: !Databases.settings.has('prefix') ? Databases.settings.write('prefix', '!') && Databases.settings.read('prefix') : Databases.settings.read('prefix'),
-    version: "S2 U1",
+    version: "S2 U2",
     discord: "https://discord.gg/U8P5NhKs2d",
     youtube: "https://www.youtube.com/@MP09234",
     omlet: "moddedpro234",
@@ -25,6 +26,7 @@ export const config = {
     vaultCost: !Databases.settings.has('vaultCost') ? Databases.settings.write('vaultCost', 50000) && Databases.settings.read('vaultCost') : Databases.settings.read('vaultCost'),
     vaultMaxPages: !Databases.settings.has('vaultMaxPages') ? Databases.settings.write('vaultMaxPages', 5) && Databases.settings.read('vaultMaxPages') : Databases.settings.read('vaultMaxPages'),
     factionHomes: !Databases.settings.has('factionHomes') ? Databases.settings.write('factionHomes', true) && Databases.settings.read('factionHomes') : Databases.settings.read('factionHomes'),
+    login: !Databases.settings.has('login') ? Databases.settings.write('login', false) && Databases.settings.read('login') : Databases.settings.read('login'),
     chatFilteredWords: [
         "fuck",
         "ass",
@@ -94,7 +96,10 @@ export const config = {
                 bounty: true,
                 shop: true,
                 sell: true,
-                vault: true
+                vault: true,
+                login: true,
+                register: true,
+                mail: true
             },
             gamemodes: {
                 gma: true,
@@ -135,7 +140,9 @@ export const config = {
                 command: true,
                 gui: true,
                 slapper: true,
-                crates: true
+                crates: true,
+                report: true,
+                reports: true
             },
             miscellaneous: {
                 drunk: true,
@@ -180,7 +187,8 @@ export const config = {
             entityHitEntity: true,
             entityHitBlock: true,
             dataDrivenEntityTriggerEvent: true,
-            playerInteractWithEntity: true
+            playerInteractWithEntity: true,
+            playerInteractWithBlock: true
         }
     },
     allCbes: !Databases.settings.has('allCbes') ? Databases.settings.write('allCbes', [

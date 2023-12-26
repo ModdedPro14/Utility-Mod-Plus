@@ -7,7 +7,7 @@ CX.Build(CX.BuildTypes["@command"], {
     data: new CX.command()
     .setName('crates')
     .setDescription('Crates system command')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .setCategory('management')
     .firstArguments(['create', 'addReward', 'remove'], true)
     .addDynamicArgument('create', [], 'create')

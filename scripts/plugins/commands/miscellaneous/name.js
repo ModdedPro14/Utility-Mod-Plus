@@ -5,7 +5,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('name')
     .setDescription('Set the name of the item your holding')
     .setCategory('miscellaneous')
-    .setAdmin(true)
+    .setPermissions({ admin: true })
     .firstArguments(['name'], true)
     .addAnyArgument('name', [], 1),
     executes(ctx) {

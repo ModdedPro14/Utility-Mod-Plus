@@ -23,6 +23,7 @@ CX.Build(CX.BuildTypes["@event"], {
     executes(interaction, data) {
         const area = Area.as(interaction, [data.block.location.x, data.block.location.z]);
         if (area.isInArea) {
+            if (area.permissions.build) return
             if (interaction.permission.hasPermission('admin'))
                 return;
             data.interaction.response.error('You cannot place blocks here');

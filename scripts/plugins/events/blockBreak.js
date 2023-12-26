@@ -57,6 +57,7 @@ CX.Build(CX.BuildTypes["@event"], {
     executes(interaction, data) {
         const area = Area.as(interaction, [data.block.location.x, data.block.location.z]);
         if (area.isInArea) {
+            if (area.permissions.break) return
             if (interaction.permission.hasPermission('admin'))
                 return;
             system.run(() => {

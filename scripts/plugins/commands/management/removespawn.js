@@ -8,7 +8,7 @@ CX.Build(CX.BuildTypes["@command"], {
     .setName('removespawn')
     .setDescription('Remove the current spawn location')
     .setCategory('management')
-    .setAdmin(true),
+    .setPermissions({ admin: true }),
     executes(ctx) {
         ctx.execute((sender) => {
             if (!Databases.server.has('spawn')) return sender.response.error('There isnt a spawn set');
