@@ -188,35 +188,39 @@ system.runInterval(() => {
     });
 });
 
+const locations = [];
+
 system.runInterval(() => {
     world.getPlayers({ excludeTags: [config.adminTag], excludeGameModes: [GameMode.creative, GameMode.spectator] }).forEach(player => {
-        if (config.AntiCheat.fly && player.isFlying) {
+        if (player.isFlying) {
             new CX.log({
                 reason: 'Fly Hacks',
-                translate: 'AntiCheat',
-                from: player.name,
-                warn: true
+                from: player.name
             })
             player.applyDamage(10)
         }
-        if (!config.AntiCheat.speed) return
+        if (!locations.find(l => l.id === player.id)) return locations.push({ id: player.id, location: player.location, dim: player.dimension.id });
+        const saved = locations.find(l => l.id === player.id);
+        locations.splice(locations.indexOf(saved), 1);
+        locations.push({ id: player.id, location: player.location, dim: player.dimension.id });
         if (player.isGliding || player.getEffect("speed")) return
         const speed = Math.sqrt(player.getVelocity().x ** 2 + player.getVelocity().z ** 2) * 20 * 60 * 60 / 1609.34;  
         if (speed > 150) {
+            if (!player.dimension.getBlock(player.location) || !world.getDimension(saved.dim).getBlock(saved.location)) return
             new CX.log({
-                reason: 'Speed Hacks',
-                translate: 'AntiCheat',
-                from: player.name,
-                warn: true
+                reason: 'Speed Hacks/Teleport Hacks',
+                from: player.name
             })
-            player.applyDamage(10);
+            locations.splice(locations.indexOf(locations.find(l => l.id === player.id), 1));
+            locations.push({ id: player.id, location: saved.location, dim: saved.dim });
+            player.teleport(saved.location, { dimension: world.getDimension(saved.dim) });
         }
     });
 });
 
 system.runInterval(() => {
     world.getAllPlayers().forEach(player => {
-        if (!player.hasTag('logged')) {
+        if (config.login && !player.hasTag('logged')) {
             player.addEffect('weakness', 2, { amplifier: 255, showParticles: false })
             player.addEffect('mining_fatigue', 2, { amplifier: 255, showParticles: false })
             player.addEffect('darkness', 2, { amplifier: 10, showParticles: false })

@@ -9,29 +9,21 @@ import { system } from "@minecraft/server";
 
 const log = new PlayerLog();
 const IMPOSSIBLE_BREAK_TIME = 70;
+
 CX.Build(CX.BuildTypes['@event'], {
     data: 'BlockBreak',
     executes(interaction, data) {
-        if (!config.AntiCheat.nuker)
-            return;
-        if (interaction.permission.hasPermission('admin'))
-            return;
-        if (data.block.getTags().some((tag) => VAILD_BLOCK_TAGS.includes(tag)))
-            return;
+        if (interaction.permission.hasPermission('admin')) return;
+        if (data.block.getTags().some((tag) => VAILD_BLOCK_TAGS.includes(tag))) return;
         const old = log.get(interaction);
         log.set(interaction, Date.now());
-        if (!old)
-            return;
-        if (IMPOSSIBLE_BREAKS.includes(data.block.typeId))
-            return;
-        if (old < Date.now() - IMPOSSIBLE_BREAK_TIME)
-            return;
+        if (!old) return;
+        if (IMPOSSIBLE_BREAKS.includes(data.block.typeId)) return;
+        if (old < Date.now() - IMPOSSIBLE_BREAK_TIME) return;
         data.cancel = true
         new CX.log({
             from: interaction.name,
-            translate: 'AntiCheat',
-            reason: 'nuker',
-            warn: false
+            reason: 'Nuker',
         });
         system.run(() => {
             interaction.kill()

@@ -1,4 +1,4 @@
-import { system } from "@minecraft/server";
+import { system, world } from "@minecraft/server";
 import { CX } from "../../API/CX";
 import { Databases } from "../../API/handlers/databases";
 import config from "../../config/main";
@@ -29,8 +29,9 @@ CX.Build(CX.BuildTypes["@event"], {
                 else player.response.send(`You must login before playing, use ${config.prefix}login <password> to login`, false, false)
                 system.runTimeout(() => {
                     if (!player.hasTag('logged')) player.runCommandAsync(`kick "${player.name}" Failed to login/register.`)
-                }, 700)
-            }
+                }, 1500)
+            } else player.addTag('logged')
+            if (config.tpToSpawnOnSpawn && Databases.server.has('spawn')) player.teleport(Databases.server.read('spawn').location, { dimension: world.getDimension(Databases.server.read('spawn').dimension) })
         }
     }
 });

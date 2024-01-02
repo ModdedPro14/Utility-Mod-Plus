@@ -40,6 +40,7 @@ CX.Build(CX.BuildTypes["@command"], {
                     .addToggle('Betting System', Databases.settings.read('betting'))
                     .addToggle('Ender Pearl Timer', Databases.settings.read('enderPearlT'))
                     .addToggle('Login/register system', Databases.settings.read('login'))
+                    .addToggle('Teleport a player to spawn once joining', Databases.settings.read('tpToSpawnOnSpawn'))
                     .show(sender, (result) => {
                         if (result.canceled) return;
                         if (result.formValues[0] == result.formValues[1]) return sender.response.error('The trust tag cant be the same as the admin tag');
@@ -61,6 +62,7 @@ CX.Build(CX.BuildTypes["@command"], {
                         CX.overRide('betting', result.formValues[13]);
                         CX.overRide('enderPearlT', result.formValues[14])
                         CX.overRide('login', result.formValues[15])
+                        CX.overRide('tpToSpawnOnSpawn', result.formValues[16])
                         sender.response.send('Successfully updated general settings data');
                     });
                 } else if (res.selection == 1) {

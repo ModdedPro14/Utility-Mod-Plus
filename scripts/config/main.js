@@ -27,6 +27,7 @@ export const config = {
     vaultMaxPages: !Databases.settings.has('vaultMaxPages') ? Databases.settings.write('vaultMaxPages', 5) && Databases.settings.read('vaultMaxPages') : Databases.settings.read('vaultMaxPages'),
     factionHomes: !Databases.settings.has('factionHomes') ? Databases.settings.write('factionHomes', true) && Databases.settings.read('factionHomes') : Databases.settings.read('factionHomes'),
     login: !Databases.settings.has('login') ? Databases.settings.write('login', false) && Databases.settings.read('login') : Databases.settings.read('login'),
+    tpToSpawnOnSpawn: !Databases.settings.has('tpToSpawnOnSpawn') ? Databases.settings.write('tpToSpawnOnSpawn', false) && Databases.settings.read('tpToSpawnOnSpawn') : Databases.settings.read('tpToSpawnOnSpawn'),
     chatFilteredWords: [
         "fuck",
         "ass",

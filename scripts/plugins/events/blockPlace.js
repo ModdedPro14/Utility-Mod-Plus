@@ -1,4 +1,4 @@
-import { GameMode, system, world } from "@minecraft/server";
+import { GameMode, world } from "@minecraft/server";
 import { Area } from "../../API/handlers/protect";
 import { CX } from "../../API/CX";
 import { Databases } from "../../API/handlers/databases";
@@ -37,7 +37,6 @@ const log = new Map()
 CX.Build(CX.BuildTypes["@event"], {
     data: 'AfterBlockPlace',
     executes(interaction, data) {
-        if (!config.AntiCheat.scaffold) return
         if (interaction.hasTag(config.adminTag) || !world.getPlayers({ excludeGameModes: [GameMode.creative], name: interaction.name }).length) return;
         const currentTime = Date.now();
         const playerAction = log.get(`${interaction.id}-checkBlocks`) || [];
@@ -45,19 +44,17 @@ CX.Build(CX.BuildTypes["@event"], {
         playerAction.push({ type: 'blocks', time: currentTime, position: data.block.location });
         const updatedActions = playerAction.filter(action => action.time >= timeThreshold);
         log.set(`${interaction.id}-checkBlocks`, updatedActions);
-        if (updatedActions.length < 5) return;
+        if (updatedActions.length < 7) return;
         const [lastAction] = updatedActions;
         const timeDifference = currentTime - lastAction.time;
         const distance = Math.sqrt((data.block.location.x - lastAction.position.x) ** 2 + (data.block.location.y - lastAction.position.y) ** 2 + (data.block.location.z - lastAction.position.z) ** 2);
         const blocksPlacedPerSecond = updatedActions.length / (timeDifference / 500);
         const averageDistance = distance / updatedActions.length;
-        if (blocksPlacedPerSecond >= 5 && averageDistance < 1) {
+        if (blocksPlacedPerSecond >= 7 && averageDistance < 1) {
             data.block.setType('air')
             new CX.log({
                 reason: 'Scaffold',
-                translate: 'AntiCheat',
-                from: interaction.name,
-                warn: true
+                from: interaction.name
             })
             interaction.applyDamage(10);
         }
