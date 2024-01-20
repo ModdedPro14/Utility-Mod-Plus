@@ -19,18 +19,21 @@ export class ItemDB {
    * Loads the database
    */
   load() {
-    if (world.getAllPlayers().length) {
-      if (world.getDimension('overworld').getEntities({ type: 'mod:database', name: this.name }).length) world.getDimension('overworld').getEntities({ type: 'mod:database', name: this.name }).map(e => this.entity = e)
-      else {
-        const r = system.runInterval(() => {
-          try {
-            this.entity = world.getDimension('overworld').spawnEntity('mod:database', new Vector(1000000, -60, 1000000))
-            this.entity.nameTag = this.name
-            if (this.entity) system.clearRun(r)
-          } catch {}
-        })
-      }
-    }
+    world.afterEvents.playerSpawn.subscribe(data => {
+      if (!data.initialSpawn) return
+      system.runTimeout(() => {
+        if (!world.getDimension('overworld').getEntities({ type: 'mod:database', name: this.name }).length) {
+          this.entity = world.getDimension('overworld').spawnEntity('mod:database', new Vector(1000000, -60, 1000000))
+          this.entity.nameTag = this.name   
+        }
+      }, 100)
+    })
+    const r = system.runInterval(() => {
+      world.getDimension('overworld').getEntities({ type: 'mod:database', name: this.name}).map(e => {
+        this.entity = e
+        system.clearRun(r)
+      })
+    })
     return this
   }
   /**

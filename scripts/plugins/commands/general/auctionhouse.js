@@ -87,7 +87,7 @@ const allAuctions = (page, sender) => {
             } catch {}
         } else {
             const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Seller: §6${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}`], data.typeId, data.amount, !data.enchantments.length ? false : true);
+            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8---------------\n§7Seller: §6${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}\n§8---------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
         }
     })
     form.show(sender, (result) => {
@@ -157,7 +157,7 @@ const myAuctions = (page, sender) => {
             } catch {}
         } else {
             const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Seller: §eYou\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}`], data.typeId, data.amount, !data.enchantments.length ? false : true);
+            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8---------------\n§7Seller: §eYou\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}\n§8---------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
         }
     })
     form.show(sender, (result) => {
@@ -255,7 +255,7 @@ const manageAuctions = (page, sender) => {
             } catch {}
         } else {
             const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Seller: §6${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}`], data.typeId, data.amount, !data.enchantments.length ? false : true);
+            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8---------------\n§7Seller: §6${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}\n§8---------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
         }
     })
     form.show(sender, (result) => {
@@ -301,7 +301,7 @@ const search = (page, sender, id, name) => {
             } catch {}
         } else {
             const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Seller: §6${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}`], data.typeId, data.amount, !data.enchantments.length ? false : true);
+            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8---------------\n§7Seller: §6${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}\n§8---------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
         }
     })
     form.force(sender, (result) => {
