@@ -71,7 +71,7 @@ const mails = (sender, page) => {
             form.addButton(i, `Note from: ${m.from.name}`, [`\n${m.note}`], 'minecraft:paper');
         } else if (m.data?.type == 'item') {
             const data = CX.item.getItemData(m.item)
-            form.addButton(i, m.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Sent by: ${m.data.from.name}`], data.typeId, data.amount, !data.enchantments.length ? false : true);
+            form.addButton(i, m.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Sent by: ${m.data.from.name}`], data.typeId, data.amount, !data.enchantments.length ? false : true);
         }
     })
     form.force(sender, (result) => {

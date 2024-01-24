@@ -117,7 +117,7 @@ const shop = (sender, page, category = undefined) => {
         form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
         items.forEach((item, i) => {
             const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8---------------\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}\n§8---------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);    
+            form.addButton(i, item.data.itemName, [data.enchantments.length ? data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8---------------\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}\n§8---------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);    
         })
         form.force(sender, (res) => {
             if (res.selection == 47 && page > 1) shop(sender, page - 1, category)

@@ -1,6 +1,6 @@
 import { ActionFormData } from '@minecraft/server-ui';
 import { system, ItemTypes, BlockTypes } from '@minecraft/server';
-import { typeIdToID } from "./typeIds.js";
+import { typeIdToID, typeIdToDataId } from "./typeIds.js";
 
 const number_of_1_16_100_items = ItemTypes.getAll().filter(item => !item.id.startsWith("minecraft:") && !item.id.endsWith("spawn_egg") && !BlockTypes.get(item.id)).length;
 const sizes = {
@@ -53,13 +53,13 @@ export class ChestForm {
      * @param {boolean} enchanted If the item is enchanted
      * @returns 
      */
-    addButton(slot, itemName, itemDesc, iconPath, stackSize = 1, enchanted = false) {
-        const ID = typeIdToID.get(iconPath.includes(':') ? iconPath : 'minecraft:' + iconPath);
-        this.data.buttons.splice(slot, 1, [`stack#${Math.min(Math.max(stackSize, 1) || 1, 99).toString().padStart(2, '0')}§r${itemName ?? ''}§r${itemDesc?.length ? `\n§r${itemDesc.join('\n§r')}` : ''}`,
-            (((ID + (ID < 256 ? 0 : number_of_1_16_100_items)) * 65536) + (!!enchanted * 32768)) || iconPath
-        ]);
-        return this;
-    }
+    addButton(slot, itemName, itemDesc, texture, stackSize = 1, enchanted = false) {
+        const ID = typeIdToDataId.get(texture) ?? typeIdToID.get(texture);
+		this.data.buttons.splice(slot, 1, [`stack#${Math.min(Math.max(stackSize, 1) || 1, 99).toString().padStart(2, '0')}§r${itemName ?? ''}§r${itemDesc?.length ? `\n§r${itemDesc.join('\n§r')}` : ''}`,
+		(((ID + (ID < 256 ? 0 : number_of_1_16_100_items)) * 65536) + (!!enchanted * 32768)) || texture
+		]);
+		return this;
+    }   
     /**
      * Adds a pattren to the chest form
      * @param {'top' | 'bottom' | 'circle'} type The type of the pattren

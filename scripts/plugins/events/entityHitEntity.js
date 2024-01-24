@@ -114,7 +114,7 @@ CX.Build(CX.BuildTypes["@event"], {
         .show(damagingEntity))
         items.forEach((item, i) => {
             const data = CX.item.getItemData(item.item)
-            form.addButton(i, CX.item.getItemName(item.item), [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Chance: §6${item.data.chance}%`], data.typeId, data.amount, !data.enchantments.length ? false : true);
+            form.addButton(i, CX.item.getItemName(item.item), [data.enchantments.length ? data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore, `\n§7Chance: §6${item.data.chance}%`], data.typeId, data.amount, !data.enchantments.length ? false : true);
         })
         form.show(damagingEntity, (res) => {
             if (res.canceled) return

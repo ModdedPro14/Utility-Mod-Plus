@@ -21,7 +21,7 @@ CX.Build(CX.BuildTypes["@command"], {
                 const item = container.getItem(i);
                 if (!item) continue;
                 const data = CX.item.getItemData(item);
-                form.addButton(slot, CX.item.getItemName(item), [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
+                form.addButton(slot, CX.item.getItemName(item), [data.enchantments.length ? data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
                 items.push({
                     slot: i,
                     item: item,

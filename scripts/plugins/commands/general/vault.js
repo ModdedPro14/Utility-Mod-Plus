@@ -71,7 +71,7 @@ const vault = (sender, page, id) => {
     form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
     items.forEach((v, i) => {
         const data = CX.item.getItemData(v.item)
-        form.addButton(i, CX.item.getItemName(v.item), [data.enchantments.length ? data.enchantments.map(e => `§7${e.id} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);    
+        form.addButton(i, CX.item.getItemName(v.item), [data.enchantments.length ? data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);    
     })
     form.force(sender, (res) => {
         if (res.canceled) return
