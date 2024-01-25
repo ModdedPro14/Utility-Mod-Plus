@@ -20,21 +20,7 @@ CX.Build(CX.BuildTypes["@command"], {
         ctx.execute((sender, args) => {
             if (args.length) return;
             sender.response.send('Close the chat within 10 secondes');
-            const form = new CX.chestForm()
-            .setTitle('Auction House')
-            .addPattren('circle', '', [], 'textures/blocks/glass_black', [26, 18, sender.permission.hasPermission('admin') ? 0 : undefined])
-            .addButton(26, '§cClose', ['§6Close this page'], 'textures/blocks/barrier')
-            .addButton(12, 'All Auctions', ['§6Shows all listed auctions'], 'minecraft:golden_carrot', 1, true)
-            .addButton(14, 'My Auctions', ['§6Shows all auctions that you have listed'], 'minecraft:carrot', 1, true)
-            .addButton(18, 'Expired Auctions', ['§6Shows all the auctions that have expired'], 'minecraft:nether_star', 1, true)
-            if (sender.permission.hasPermission('admin')) form.addButton(0, 'Manage Auctions', ['§6Manage listed auctions §c(admin only)'], 'minecraft:amethyst_shard', 1, true)
-            form.force(sender, (res) => {
-                if (res.canceled) return;
-                if (res.selection == 12) allAuctions(1, sender)
-                else if (res.selection == 14) myAuctions(1, sender)
-                else if (res.selection == 18) expiredAuctions(1, sender)
-                else if (res.selection == 0 && sender.permission.hasPermission('admin')) manageAuctions(1, sender)
-            }, 220);
+            allAuctions(1, sender)
         });
         ctx.executeArgument('sell', (sender, _, args) => {            
             if (auctionItems.allIDs().filter((k) => k.data.plrId == sender.id).length >= config.maxAuctions) return sender.response.error('You have made the maximum amount of auctions');
@@ -63,19 +49,16 @@ CX.Build(CX.BuildTypes["@command"], {
 })
 
 const allAuctions = (page, sender) => {
+    const aAuctions = auctionItems.allIDs().sort((a, b) => b.data.date - a.data.date), pages = Math.ceil(aAuctions.length / 45)
     const form = new CX.chestForm('large')
-    const aAuctions = auctionItems.allIDs().sort((a, b) => a.data.date - b.data.date), pages = Math.ceil(aAuctions.length / 45)
-    form.setTitle(`Auctions Page: ${page}/${pages}`)
-    if (!aAuctions.length) return (new CX.messageForm()
-    .setTitle('No Auctions Available')
-    .setBody('§cHmmm.. seems like theres no auctions to see, maybe add an auction using !ah sell <price>')
-    .setButton2('§cClose')
-    .setButton1('§aOk')
-    .show(sender))
-    form.addButton(49, '§cClose', ['§6Close this page'], 'textures/blocks/barrier');
-    if (page < pages) form.addButton(51, '§aNext page', ['§6Shows the next page'], 'minecraft:arrow')
-    if (page > 1) form.addButton(47, '§cPrevious page', ['§6Shows the previous page'], 'minecraft:arrow')
-    form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
+    .setTitle(`Auctions §f${page}§r/§f${pages}`)
+    .addButton(49, 'Informations', ['§7-------------------------------------', "§l» §r§7Welcome to the auction house", "§l» §r§7it's a market where all the players", "§l» §r§7can sell or buy items.", "", "§l» §r§7To be able to sell items you must do", `§l» §r§a${config.prefix}ah sell §7<§aprice§7>`, "", `§l» §r§7Number of items available§7: §b${aAuctions.length}`, "§7-------------------------------------"], 'minecraft:nether_star')
+    .addButton(50, 'Next page', [], 'minecraft:arrow')
+    .addButton(48, 'Previous page', [], 'minecraft:arrow')
+    .addButton(45, 'Expired Auctions', [`§r» §7You have §b${expiredAh.allIDs().filter(s => s.data.plrId == sender.id).length} §7expired items`], 'minecraft:chest')
+    .addButton(46, 'My Auctions', [`§r» §7You have §b${aAuctions.filter(i => i.data.plrId == sender.id).length} §7items`], 'minecraft:ender_chest')
+    .addButton(53, 'Search', ['§r» §7Search through a players auctions'], 'minecraft:spyglass')
+    if (sender.permission.hasPermission('admin')) form.addButton(52, 'Manage Auctions', ['§r» §7Manage the listed autctions'], 'minecraft:amethyst_shard')
     const items = aAuctions.slice((page - 1) * 45, (page - 1) * 45 + 45)
     items.forEach((item, i) => {
         if ((parseInt(item.data.expires, 16)) < Date.now()) {
@@ -87,14 +70,27 @@ const allAuctions = (page, sender) => {
             } catch {}
         } else {
             const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8---------------\n§7Seller: §6${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}\n§8---------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
+            form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8§l---------------------------\n§r§8[§a!§8]§r Click to buy this item\n\n  §r* Seller: §a${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n  §r* Price: §a${CX.extra.parseNumber(Number(item.data.price))}$\n  §r* Expire: §a${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§r§8§l---------------------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
         }
     })
-    form.show(sender, (result) => {
+    form.force(sender, (result) => {
         if (result.canceled) return
-        if (result.selection == 51 && page < pages) allAuctions(page + 1, sender)
-        else if (result.selection == 47 && page > 1) allAuctions(page - 1, sender)
-        else if (result.selection <= items.length) {
+        if (result.selection == 45) expiredAuctions(1, sender)
+        else if (result.selection == 46) myAuctions(1, sender)
+        else if (result.selection == 50) allAuctions(page < pages ? page + 1 : page, sender)
+        else if (result.selection == 48) allAuctions(page > 1 ? page - 1 : page, sender)
+        else if (result.selection == 52 && sender.permission.hasPermission('admin')) manageAuctions(1, sender)
+        else if (result.selection == 53) {
+            new CX.modalForm()
+            .setTitle('Search')
+            .addTextField('Enter a players name:', 'Somebody123')
+            .show(sender, (res) => {
+                if (res.canceled) return allAuctions(page, sender)
+                if (!res.formValues[0]) return sender.response.error('You must specify a players name')
+                if (!auctionItems.allIDs().find((v) => v.data.creator == res.formValues[0])) return sender.response.error(`There were no auctions by the seller: ${res.formValues[0]}`)
+                search(1, sender, auctionItems.allIDs().find((v) => v.data.creator == res.formValues[0]).data.plrId, res.formValues[0])
+            })
+        } else if (result.selection <= items.length) {
             const selection = items[result.selection]
             const form = new CX.chestForm('small')
             .setTitle(selection.data.itemName + ` Seller: ${selection.data.plrId == sender.id ? '§eYou' : selection.data.creator}`)
@@ -130,22 +126,16 @@ const allAuctions = (page, sender) => {
                 });
             }
         }
-    });
+    }, 220);
 }
-const myAuctions = (page, sender) => {
+const myAuctions = (page, sender) => { 
+    const aAuctions = auctionItems.allIDs().filter(i => i.data.plrId == sender.id).sort((a, b) => b.data.date - a.data.date), pages = Math.ceil(aAuctions.length / 45)
     const form = new CX.chestForm('large')
-    const aAuctions = auctionItems.allIDs().filter(i => i.data.plrId == sender.id).sort((a, b) => a.data.date - b.data.date), pages = Math.ceil(aAuctions.length / 45)
-    form.setTitle(`My Auctions Page: ${page}/${pages}`)
-    if (!aAuctions.length) return (new CX.messageForm()
-    .setTitle('No Auctions Available')
-    .setBody('§cHmmm.. seems like theres no auctions that you have made, maybe add an auction using !ah sell <price>')
-    .setButton2('§cClose')
-    .setButton1('§aOk')
-    .show(sender))
-    form.addButton(49, '§cClose', ['§6Close this page'], 'textures/blocks/barrier');
-    if (page < pages) form.addButton(51, '§aNext page', ['§6Shows the next page'], 'minecraft:arrow')
-    if (page > 1) form.addButton(47, '§cPrevious page', ['§6Shows the previous page'], 'minecraft:arrow')
-    form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
+    .setTitle(`My Auctions §f${page}§r/§f${pages}`)
+    .addButton(49, '§cBack', [], 'minecraft:nether_star')
+    .addButton(50, 'Next page', [], 'minecraft:arrow')
+    .addButton(48, 'Previous page', [], 'minecraft:arrow')
+    .addPattren('bottom', '', [], 'textures/blocks/glass_black', [48, 49, 50])
     const items = aAuctions.slice((page - 1) * 45, (page - 1) * 45 + 45)
     items.forEach((item, i) => {
         if ((parseInt(item.data.expires, 16)) < Date.now()) {
@@ -157,13 +147,14 @@ const myAuctions = (page, sender) => {
             } catch {}
         } else {
             const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8---------------\n§7Seller: §eYou\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}\n§8---------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
+            form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8§l---------------------------\n§r§8[§a!§8]§r Click to manage this item\n\n  §r* Seller: §eYou\n  §r* Price: §a${CX.extra.parseNumber(Number(item.data.price))}$\n  §r* Expire: §a${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§r§8§l---------------------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
         }
     })
     form.show(sender, (result) => {
         if (result.canceled) return
-        if (result.selection == 51 && page < pages) myAuctions(page + 1, sender)
-        else if (result.selection == 47 && page > 1) myAuctions(page - 1, sender)
+        if (result.selection == 49) allAuctions(1, sender)
+        else if (result.selection == 50) myAuctions(page < pages ? page + 1 : page, sender)
+        else if (result.selection == 48) myAuctions(page > 1 ? page - 1 : page, sender)
         else if (result.selection <= items.length) {
             const selection = items[result.selection]
             const form = new CX.chestForm('small')
@@ -187,19 +178,13 @@ const myAuctions = (page, sender) => {
     });
 }
 const expiredAuctions = (page, sender) => {
-    const form = new CX.chestForm('large')
     const aAuctions = expiredAh.allIDs().filter(i => i.data.plrId == sender.id), pages = Math.ceil(aAuctions.length / 45)
-    form.setTitle(`Expired Auctions Page: ${page}/${pages}`)
-    if (!aAuctions.length) return (new CX.messageForm()
-    .setTitle('No Auctions Available')
-    .setBody('§cHmmm.. seems like theres no auctions that you have expired yet, maybe add an auction using !ah sell <price>')
-    .setButton2('§cClose')
-    .setButton1('§aOk')
-    .show(sender))
-    form.addButton(49, '§cClose', ['§6Close this page'], 'textures/blocks/barrier');
-    if (page < pages) form.addButton(51, '§aNext page', ['§6Shows the next page'], 'minecraft:arrow')
-    if (page > 1) form.addButton(47, '§cPrevious page', ['§6Shows the previous page'], 'minecraft:arrow')
-    form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
+    const form = new CX.chestForm('large')
+    .setTitle(`Expired Auctions §f${page}§r/§f${pages}`)
+    .addButton(49, '§cBack', [], 'minecraft:nether_star')
+    .addButton(50, 'Next page', [], 'minecraft:arrow')
+    .addButton(48, 'Previous page', [], 'minecraft:arrow')
+    .addPattren('bottom', '', [], 'textures/blocks/glass_black', [48, 49, 50])
     const items = aAuctions.slice((page - 1) * 45, (page - 1) * 45 + 45)
     items.forEach((item, i) => {
         const data = CX.item.getItemData(item.item)
@@ -207,8 +192,9 @@ const expiredAuctions = (page, sender) => {
     })
     form.show(sender, (result) => {
         if (result.canceled) return
-        if (result.selection == 51 && page < pages) expiredAuctions(page + 1, sender)
-        else if (result.selection == 47 && page > 1) expiredAuctions(page - 1, sender)
+        if (result.selection == 49) allAuctions(1, sender)
+        else if (result.selection == 50) expiredAuctions(page < pages ? page + 1 : page, sender)
+        else if (result.selection == 48) expiredAuctions(page > 1 ? page - 1 : page, sender)
         else if (result.selection <= items.length) {
             const selection = items[result.selection]
             const form = new CX.chestForm('small')
@@ -231,19 +217,13 @@ const expiredAuctions = (page, sender) => {
     });
 }
 const manageAuctions = (page, sender) => {
+    const aAuctions = auctionItems.allIDs().sort((a, b) => b.data.date - a.data.date), pages = Math.ceil(aAuctions.length / 45)
     const form = new CX.chestForm('large')
-    const aAuctions = auctionItems.allIDs().sort((a, b) => a.data.date - b.data.date), pages = Math.ceil(aAuctions.length / 45)
-    form.setTitle(`Manage Auctions Page: ${page}/${pages}`)
-    if (!aAuctions.length) return (new CX.messageForm()
-    .setTitle('No Auctions Available')
-    .setBody('§cHmmm.. seems like theres no auctions to see')
-    .setButton2('§cClose')
-    .setButton1('§aOk')
-    .show(sender))
-    form.addButton(49, '§cClose', ['§6Close this page'], 'textures/blocks/barrier');
-    if (page < pages) form.addButton(51, '§aNext page', ['§6Shows the next page'], 'minecraft:arrow')
-    if (page > 1) form.addButton(47, '§cPrevious page', ['§6Shows the previous page'], 'minecraft:arrow')
-    form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
+    .setTitle(`Manage Auctions §f${page}§r/§f${pages}`)
+    .addButton(49, '§cBack', [], 'minecraft:nether_star')
+    .addButton(50, 'Next page', [], 'minecraft:arrow')
+    .addButton(48, '§cPrevious page', [], 'minecraft:arrow')
+    .addPattren('bottom', '', [], 'textures/blocks/glass_black', [48, 49, 50])
     const items = aAuctions.slice((page - 1) * 45, (page - 1) * 45 + 45)
     items.forEach((item, i) => {
         if ((parseInt(item.data.expires, 16)) < Date.now()) {
@@ -255,13 +235,14 @@ const manageAuctions = (page, sender) => {
             } catch {}
         } else {
             const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8---------------\n§7Seller: §6${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}\n§8---------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
+            form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8§l---------------------------\n§r§8[§a!§8]§r Click to manage this item\n\n  §r* Seller: §a${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n  §r* Price: §a${CX.extra.parseNumber(Number(item.data.price))}$\n  §r* Expire: §a${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§r§8§l---------------------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
         }
     })
     form.show(sender, (result) => {
         if (result.canceled) return
-        if (result.selection == 51 && page < pages) manageAuctions(page + 1, sender)
-        else if (result.selection == 47 && page > 1) manageAuctions(page - 1, sender)
+        if (result.selection == 49) allAuctions(1, sender)
+        else if (result.selection == 50) manageAuctions(page < pages ? page + 1 : page, sender)
+        else if (result.selection == 48) manageAuctions(page > 1 ? page - 1 : page, sender)
         else if (result.selection <= items.length) {
             const selection = items[result.selection]
             new CX.chestForm('small')
@@ -283,13 +264,13 @@ const manageAuctions = (page, sender) => {
     });
 }
 const search = (page, sender, id, name) => {
+    const aAuctions = auctionItems.allIDs().filter((v) => v.data.plrId == id).sort((a, b) => b.data.date - a.data.date), pages = Math.ceil(aAuctions.length / 45)
     const form = new CX.chestForm('large')
-    const aAuctions = auctionItems.allIDs().filter((v) => v.data.plrId == id).sort((a, b) => a.data.date - b.data.date), pages = Math.ceil(aAuctions.length / 45)
-    form.setTitle(`${name} Auctions ${page}/${pages}`)
-    form.addButton(49, '§cClose', ['§6Close this page'], 'textures/blocks/barrier');
-    if (page < pages) form.addButton(51, '§aNext page', ['§6Shows the next page'], 'minecraft:arrow')
-    if (page > 1) form.addButton(47, '§cPrevious page', ['§6Shows the previous page'], 'minecraft:arrow')
-    form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
+    .setTitle(`${name} Auctions §f${page}§r/§f${pages}`)
+    .addButton(49, '§cBack', [], 'minecraft:nether_star')
+    .addButton(50, 'Next page', [], 'minecraft:arrow')
+    .addButton(48, 'Previous page', [], 'minecraft:arrow')
+    .addPattren('bottom', '', [], 'textures/blocks/glass_black', [48, 49, 50])
     const items = aAuctions.slice((page - 1) * 45, (page - 1) * 45 + 45)
     items.forEach((item, i) => {
         if ((parseInt(item.data.expires, 16)) < Date.now()) {
@@ -301,13 +282,14 @@ const search = (page, sender, id, name) => {
             } catch {}
         } else {
             const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8---------------\n§7Seller: §6${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n§7Expires: §6${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§7Price: §a$${CX.extra.parseNumber(Number(item.data.price))}\n§8---------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
+            form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8§l---------------------------\n§r§8[§a!§8]§r Click to buy this item\n\n  §r* Seller: §a${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n  §r* Price: §a${CX.extra.parseNumber(Number(item.data.price))}$\n  §r* Expire: §a${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§r§8§l---------------------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
         }
     })
     form.force(sender, (result) => {
         if (result.canceled) return
-        if (result.selection == 51 && page < pages) search(page + 1, sender, id, name)
-        else if (result.selection == 47 && page > 1) search(page - 1, sender, id, name)
+        if (result.selection == 49) allAuctions(1, sender)
+        else if (result.selection == 50) search(page < pages ? page + 1 : page, sender, id, name)
+        else if (result.selection == 48) search(page > 1 ? page - 1 : page, sender, id, name)
         else if (result.selection <= items.length) {
             const selection = items[result.selection]
             const form = new CX.chestForm('small')

@@ -82,8 +82,16 @@ export class ChestForm {
         else if (type == 'circle') {
             this.addPattren('top', itemName, itemDsc, iconPath, exculdeSlots, stackSize, enchanted);
             this.addPattren('bottom', itemName, itemDsc, iconPath, exculdeSlots, stackSize, enchanted);
-            !exculdeSlots.includes(9) && this.addButton(9, itemName, itemDsc, iconPath, stackSize, enchanted);
-            !exculdeSlots.includes(17) && this.addButton(17, itemName, itemDsc, iconPath, stackSize, enchanted);
+            if (!exculdeSlots.includes(9)) this.addButton(9, itemName, itemDsc, iconPath, stackSize, enchanted);
+            if (!exculdeSlots.includes(17)) this.addButton(17, itemName, itemDsc, iconPath, stackSize, enchanted);
+            if (this.data.size[1] == 54) {
+                if (!exculdeSlots.includes(18)) this.addButton(18, itemName, itemDsc, iconPath, stackSize, enchanted);
+                if (!exculdeSlots.includes(26)) this.addButton(26, itemName, itemDsc, iconPath, stackSize, enchanted);
+                if (!exculdeSlots.includes(27)) this.addButton(27, itemName, itemDsc, iconPath, stackSize, enchanted);
+                if (!exculdeSlots.includes(35)) this.addButton(35, itemName, itemDsc, iconPath, stackSize, enchanted);
+                if (!exculdeSlots.includes(36)) this.addButton(36, itemName, itemDsc, iconPath, stackSize, enchanted);
+                if (!exculdeSlots.includes(44)) this.addButton(44, itemName, itemDsc, iconPath, stackSize, enchanted);
+            }
         }
         else if (this.data.size[1] == 27 && type == 'bottom') {
             for (let i = 18; i < 27; i++) {

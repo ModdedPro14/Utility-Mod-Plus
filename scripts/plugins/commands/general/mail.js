@@ -1,6 +1,7 @@
 import { CX } from "../../../API/CX";
 import { ItemDB } from "../../../API/database/IDB";
 import { Databases } from "../../../API/handlers/databases";
+import config from "../../../config/main";
 
 const mailItems = new ItemDB('mailItems')
 
@@ -24,7 +25,7 @@ CX.Build(CX.BuildTypes["@command"], {
         })
         ctx.executeArgument('send', (sender, _, args) => {
             if (!Databases.players.values().find((v) => v.name == args[1])) return sender.response.error('That player doesnt exist') 
-            if (args[1] == sender.name) return sender.response.error('You cant send a mail to yourself')
+            // if (args[1] == sender.name) return sender.response.error('You cant send a mail to yourself')
             if (args[0] == 'item') {
                 const inventory = sender.getComponent('inventory').container
                 if (!inventory.getItem(sender.selectedSlot)) return sender.response.error('You must hold the item you want to send')
@@ -52,19 +53,13 @@ CX.Build(CX.BuildTypes["@command"], {
 })
 
 const mails = (sender, page) => {
-    const form = new CX.chestForm('large')
     const allMails = [...mailItems.allIDs().filter((v) => v.data.to.id == sender.id), ...Databases.mails.values().filter((v) => v.to.id == sender.id)], pages = Math.ceil(allMails.length / 45)
-    form.setTitle(`Your Mails Page: ${page}/${pages}`)
-    if (!allMails.length) return (new CX.messageForm()
-    .setTitle('No Mails Available')
-    .setBody('§cHmmm.. it seems like that you have not recived any new mail yet...')
-    .setButton2('§cClose')
-    .setButton1('§aOk')
-    .force(sender, ((_) => {}), 220))
-    form.addButton(49, '§cClose', ['§6Close this page'], 'textures/blocks/barrier');
-    if (page < pages) form.addButton(51, '§aNext page', ['§6Shows the next page'], 'minecraft:arrow')
-    if (page > 1) form.addButton(47, '§cPrevious page', ['§6Shows the previous page'], 'minecraft:arrow')
-    form.addPattren('bottom', '', [], 'textures/blocks/glass_black', [page == 1 ? undefined : 47, 49, page < pages ? 51 : undefined])
+    const form = new CX.chestForm('large')
+    .setTitle(`Your Mails §f${page}§r/§f${pages}`)
+    .addButton(49, 'Informations', ['§7-------------------------------------', "§l» §r§7Welcome to the mail system", "§l» §r§7it's a mail system where players", "§l» §r§7can send you mail or you send mail to them.", "", "§l» §r§7To be able to send a mail you must do", `§l» §r§a${config.prefix}mail send item §7<§aplayer§7>`,`§l» §r§a${config.prefix}mail send note §7<§aplayer§7> §7<§atext§7>`,"", "§l» §r§7There are §b2§7 types of mails", "§l» §r§aNote mail, §7Send text mails to players", "§l» §r§aItem mail, §7Send an item as a mail to a player", "", `§l» §r§7Number of mails received§7: §b${allMails.length}`, "§7-------------------------------------"], 'minecraft:nether_star')
+    .addButton(50, 'Next page', [], 'minecraft:arrow')
+    .addButton(48, 'Previous page', [], 'minecraft:arrow')
+    .addPattren('bottom', '', [], 'textures/blocks/glass_black', [48, 49, 50])
     const mail = allMails.slice((page - 1) * 45, (page - 1) * 45 + 45)
     mail.forEach((m, i) => {
         if (m?.type == 'note') {
@@ -76,8 +71,8 @@ const mails = (sender, page) => {
     })
     form.force(sender, (result) => {
         if (result.canceled) return
-        if (result.selection == 51 && page < pages) mails(sender, page + 1)
-        else if (result.selection == 47 && page > 1) mails(sender, page - 1)
+        if (result.selection == 50) mails(sender, page < pages ? page + 1 : page)
+        else if (result.selection == 48) mails(sender, page > 1 ? page - 1 : page)
         else if (result.selection <= mail.length) {
             const selection = mail[result.selection]
             if (selection?.type == 'note') {
