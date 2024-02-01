@@ -12,7 +12,7 @@ CX.Build(CX.BuildTypes["@event"], {
         const tools = ['sword', 'pickaxe', 'shovel', 'hoe', 'axe'];
         Databases.enchantments.forEach((_, info) => {
             if (info.event == 'OnHit') {
-                if (data.damagingEntity instanceof Player) {
+                if ((data.damagingEntity instanceof Player)) {
                     const equipment = data.damagingEntity.getComponent('equipment_inventory');
                     if (tools.includes(info.equpiedOn)) {
                         const inv = data.damagingEntity.getComponent('inventory').container;
@@ -100,7 +100,7 @@ CX.Build(CX.BuildTypes["@event"], {
 CX.Build(CX.BuildTypes["@event"], {
     data: 'EntityHitEntity',
     executes(data) {
-        if (!data.damagingEntity instanceof Player) return
+        if (!(data.damagingEntity instanceof Player)) return
         const damagingEntity = CX.player.convert(data.damagingEntity)
         if (data.hitEntity.typeId !== 'mod:crate') return
         const form = new CX.chestForm('large')
