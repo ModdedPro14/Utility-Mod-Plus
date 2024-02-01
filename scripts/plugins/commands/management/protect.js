@@ -66,7 +66,7 @@ CX.Build(CX.BuildTypes["@command"], {
         });
         ctx.executeArgument('list', (sender) => {
             const areas = [];
-            for (const area of Databases.areas.allKeysP()) areas.push(area);
+            for (const area of Databases.areas.keys()) areas.push(area);
             if (areas.length == 0) return sender.response.error('You dont have any areas set yet');
             sender.response.send(`§c----------------\nAreas:\n${areas.sort().map((a) => `§6${a}`).join('\n')}\n§c----------------`, true, false);
         });

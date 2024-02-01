@@ -49,7 +49,17 @@ CX.Build(CX.BuildTypes["@command"], {
 })
 
 const allAuctions = (page, sender) => {
-    const aAuctions = auctionItems.allIDs().sort((a, b) => b.data.date - a.data.date), pages = Math.ceil(aAuctions.length / 45)
+    const aAuctions = auctionItems.allIDs().filter(item => {
+        if ((parseInt(item.data.expires, 16)) < Date.now()) {
+            try {
+                expiredAh.writeItem(item.item, {
+                    plrId: item.data.plrId
+                })
+                auctionItems.deleteID(item.ID)
+            } catch {}
+            return false
+        } else return true
+    }).sort((a, b) => b.data.date - a.data.date), pages = Math.ceil(aAuctions.length / 45)
     const form = new CX.chestForm('large')
     .setTitle(`Auctions §f${page}§r/§f${pages}`)
     .addButton(49, 'Informations', ['§7-------------------------------------', "§l» §r§7Welcome to the auction house", "§l» §r§7it's a market where all the players", "§l» §r§7can sell or buy items.", "", "§l» §r§7To be able to sell items you must do", `§l» §r§a${config.prefix}ah sell §7<§aprice§7>`, "", `§l» §r§7Number of items available§7: §b${aAuctions.length}`, "§7-------------------------------------"], 'minecraft:nether_star')
@@ -61,17 +71,8 @@ const allAuctions = (page, sender) => {
     if (sender.permission.hasPermission('admin')) form.addButton(52, 'Manage Auctions', ['§r» §7Manage the listed autctions'], 'minecraft:amethyst_shard')
     const items = aAuctions.slice((page - 1) * 45, (page - 1) * 45 + 45)
     items.forEach((item, i) => {
-        if ((parseInt(item.data.expires, 16)) < Date.now()) {
-            try {
-                expiredAh.writeItem(item.item, {
-                    plrId: item.data.plrId
-                })
-                auctionItems.deleteID(item.ID)
-            } catch {}
-        } else {
-            const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8§l---------------------------\n§r§8[§a!§8]§r Click to buy this item\n\n  §r* Seller: §a${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n  §r* Price: §a${CX.extra.parseNumber(Number(item.data.price))}$\n  §r* Expire: §a${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§r§8§l---------------------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
-        }
+        const data = CX.item.getItemData(item.item)
+        form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8§l---------------------------\n§r§8[§a!§8]§r Click to buy this item\n\n  §r* Seller: §a${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n  §r* Price: §a${CX.extra.parseNumber(Number(item.data.price))}$\n  §r* Expire: §a${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§r§8§l---------------------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
     })
     form.force(sender, (result) => {
         if (result.canceled) return
@@ -129,7 +130,17 @@ const allAuctions = (page, sender) => {
     }, 220);
 }
 const myAuctions = (page, sender) => { 
-    const aAuctions = auctionItems.allIDs().filter(i => i.data.plrId == sender.id).sort((a, b) => b.data.date - a.data.date), pages = Math.ceil(aAuctions.length / 45)
+    const aAuctions = auctionItems.allIDs().filter(i => i.data.plrId == sender.id).filter(item => {
+        if ((parseInt(item.data.expires, 16)) < Date.now()) {
+            try {
+                expiredAh.writeItem(item.item, {
+                    plrId: item.data.plrId
+                })
+                auctionItems.deleteID(item.ID)
+            } catch {}
+            return false
+        } else return true
+    }).sort((a, b) => b.data.date - a.data.date), pages = Math.ceil(aAuctions.length / 45)
     const form = new CX.chestForm('large')
     .setTitle(`My Auctions §f${page}§r/§f${pages}`)
     .addButton(49, '§cBack', [], 'minecraft:nether_star')
@@ -138,17 +149,8 @@ const myAuctions = (page, sender) => {
     .addPattren('bottom', '', [], 'textures/blocks/glass_black', [48, 49, 50])
     const items = aAuctions.slice((page - 1) * 45, (page - 1) * 45 + 45)
     items.forEach((item, i) => {
-        if ((parseInt(item.data.expires, 16)) < Date.now()) {
-            try {
-                expiredAh.writeItem(item.item, {
-                    plrId: item.data.plrId
-                })
-                auctionItems.deleteID(item.ID)
-            } catch {}
-        } else {
-            const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8§l---------------------------\n§r§8[§a!§8]§r Click to manage this item\n\n  §r* Seller: §eYou\n  §r* Price: §a${CX.extra.parseNumber(Number(item.data.price))}$\n  §r* Expire: §a${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§r§8§l---------------------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
-        }
+        const data = CX.item.getItemData(item.item)
+        form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8§l---------------------------\n§r§8[§a!§8]§r Click to manage this item\n\n  §r* Seller: §eYou\n  §r* Price: §a${CX.extra.parseNumber(Number(item.data.price))}$\n  §r* Expire: §a${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§r§8§l---------------------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
     })
     form.show(sender, (result) => {
         if (result.canceled) return
@@ -217,7 +219,17 @@ const expiredAuctions = (page, sender) => {
     });
 }
 const manageAuctions = (page, sender) => {
-    const aAuctions = auctionItems.allIDs().sort((a, b) => b.data.date - a.data.date), pages = Math.ceil(aAuctions.length / 45)
+    const aAuctions = auctionItems.allIDs().filter(item => {
+        if ((parseInt(item.data.expires, 16)) < Date.now()) {
+            try {
+                expiredAh.writeItem(item.item, {
+                    plrId: item.data.plrId
+                })
+                auctionItems.deleteID(item.ID)
+            } catch {}
+            return false
+        } else return true
+    }).sort((a, b) => b.data.date - a.data.date), pages = Math.ceil(aAuctions.length / 45)
     const form = new CX.chestForm('large')
     .setTitle(`Manage Auctions §f${page}§r/§f${pages}`)
     .addButton(49, '§cBack', [], 'minecraft:nether_star')
@@ -226,17 +238,8 @@ const manageAuctions = (page, sender) => {
     .addPattren('bottom', '', [], 'textures/blocks/glass_black', [48, 49, 50])
     const items = aAuctions.slice((page - 1) * 45, (page - 1) * 45 + 45)
     items.forEach((item, i) => {
-        if ((parseInt(item.data.expires, 16)) < Date.now()) {
-            try {
-                expiredAh.writeItem(item.item, {
-                    plrId: item.data.plrId
-                })
-                auctionItems.deleteID(item.ID)
-            } catch {}
-        } else {
-            const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8§l---------------------------\n§r§8[§a!§8]§r Click to manage this item\n\n  §r* Seller: §a${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n  §r* Price: §a${CX.extra.parseNumber(Number(item.data.price))}$\n  §r* Expire: §a${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§r§8§l---------------------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
-        }
+        const data = CX.item.getItemData(item.item)
+        form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8§l---------------------------\n§r§8[§a!§8]§r Click to manage this item\n\n  §r* Seller: §a${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n  §r* Price: §a${CX.extra.parseNumber(Number(item.data.price))}$\n  §r* Expire: §a${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§r§8§l---------------------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
     })
     form.show(sender, (result) => {
         if (result.canceled) return
@@ -264,7 +267,17 @@ const manageAuctions = (page, sender) => {
     });
 }
 const search = (page, sender, id, name) => {
-    const aAuctions = auctionItems.allIDs().filter((v) => v.data.plrId == id).sort((a, b) => b.data.date - a.data.date), pages = Math.ceil(aAuctions.length / 45)
+    const aAuctions = auctionItems.allIDs().filter((v) => v.data.plrId == id).filter(item => {
+        if ((parseInt(item.data.expires, 16)) < Date.now()) {
+            try {
+                expiredAh.writeItem(item.item, {
+                    plrId: item.data.plrId
+                })
+                auctionItems.deleteID(item.ID)
+            } catch {}
+            return false
+        } else return true
+    }).sort((a, b) => b.data.date - a.data.date), pages = Math.ceil(aAuctions.length / 45)
     const form = new CX.chestForm('large')
     .setTitle(`${name} Auctions §f${page}§r/§f${pages}`)
     .addButton(49, '§cBack', [], 'minecraft:nether_star')
@@ -273,17 +286,8 @@ const search = (page, sender, id, name) => {
     .addPattren('bottom', '', [], 'textures/blocks/glass_black', [48, 49, 50])
     const items = aAuctions.slice((page - 1) * 45, (page - 1) * 45 + 45)
     items.forEach((item, i) => {
-        if ((parseInt(item.data.expires, 16)) < Date.now()) {
-            try {
-                expiredAh.writeItem(item.item, {
-                    plrId: item.data.plrId
-                })
-                auctionItems.deleteID(item.ID)
-            } catch {}
-        } else {
-            const data = CX.item.getItemData(item.item)
-            form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8§l---------------------------\n§r§8[§a!§8]§r Click to buy this item\n\n  §r* Seller: §a${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n  §r* Price: §a${CX.extra.parseNumber(Number(item.data.price))}$\n  §r* Expire: §a${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§r§8§l---------------------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
-        }
+        const data = CX.item.getItemData(item.item)
+        form.addButton(i, item.data.itemName, [data.enchantments.length ? '\n' + data.enchantments.map(e => `§7${e.id.split('_').map(v => v[0].toUpperCase() + v.slice(1).toLowerCase()).join(" ")} ${CX.extra.convertToRoman(e.level)}`).join('\n') : '', `§8§l---------------------------\n§r§8[§a!§8]§r Click to buy this item\n\n  §r* Seller: §a${item.data.plrId == sender.id ? '§eYou' : item.data.creator}\n  §r* Price: §a${CX.extra.parseNumber(Number(item.data.price))}$\n  §r* Expire: §a${CX.extra.parseTime(parseInt(item.data.expires, 16) - new Date().getTime())}\n§r§8§l---------------------------`, data.lore], data.typeId, data.amount, !data.enchantments.length ? false : true);
     })
     form.force(sender, (result) => {
         if (result.canceled) return

@@ -1,6 +1,6 @@
 import { system, world, EquipmentSlot, GameMode } from "@minecraft/server";
 import { Area } from "../../API/handlers/protect";
-import config, { playerRequests, log } from "../../config/main";
+import config, { playerRequests } from "../../config/main";
 import { Databases } from "../../API/handlers/databases";
 import { CX } from "../../API/CX";
 import { open } from "../commands/management/gui";
@@ -228,11 +228,6 @@ system.runInterval(() => {
             player.addEffect('regeneration', 2, { amplifier: 255, showParticles: false })
             player.addEffect('absorption', 2, { amplifier: 255, showParticles: false })
             player.addEffect('fire_resistance', 2, { amplifier: 255, showParticles: false })
-        }
-        if (!player.hasTag(config.adminTag)) {
-            try {
-                log.set(player, log.get(player).map(e => e - 1).filter(e => e !== 0))
-            } catch {}
         }
         for (const e of player.dimension.getEntities()) if (e.hasTag('slapper')) {
             e.addEffect('resistance', 255, { amplifier: 255, showParticles: false })

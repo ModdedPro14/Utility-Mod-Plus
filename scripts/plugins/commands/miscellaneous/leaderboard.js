@@ -24,7 +24,7 @@ CX.Build(CX.BuildTypes["@command"], {
                 let dashes;
                 for (let i = 0; i < `${objective.toUpperCase()}§r§e LEADERBOARD§r`.length; i++) {
                     const colors = ['§6', '§e'];
-                    let txt = '', index = 0, text = new Array(i).join('-').replace(/§./g, '');
+                    let txt = '', index = 0, text = '-'.repeat(i)
                     for (let i = 0; i < text.length; i++) {
                         txt += `${colors[index]}${text[i]}`;
                         index + 1 >= colors.length ? index = 0 : index++;

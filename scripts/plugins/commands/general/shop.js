@@ -72,6 +72,7 @@ const shop = (sender, page, category = undefined) => {
                             sender.score.removeScore(config.currency, selection.data.price);
                             inventory.addItem(selection.item);
                             sender.response.send(`You have succssfully bought the item ${selection.data.itemName}`);
+                            shop(sender, page, category)
                         }
                     });
                 } else {
@@ -83,6 +84,7 @@ const shop = (sender, page, category = undefined) => {
                         if (res.selection == 5) {
                             sender.response.send(`You have succssfully removed the item ${selection.data.itemName}`);
                             shopItems.deleteID(selection.ID)
+                            shop(sender, page, category)
                         } else if (res.selection == 3) {
                             if (sender.score.getScore(config.currency) < selection.data.price) return sender.response.error(`You do not have enough ${config.currency}§r§c§l to buy this item`);
                             const inventory = sender.getComponent('inventory').container;
@@ -90,6 +92,7 @@ const shop = (sender, page, category = undefined) => {
                             sender.score.removeScore(config.currency, selection.data.price);
                             inventory.addItem(selection.item);
                             sender.response.send(`You have succssfully bought the item ${selection.data.itemName}`);
+                            shop(sender, page, category)
                         }
                     })
                 }

@@ -1,7 +1,7 @@
 import { CX } from "../../API/CX";
 import { Player, EquipmentSlot } from "@minecraft/server";
 import { Databases } from "../../API/handlers/databases";
-import config, { log } from "../../config/main";
+import config from "../../config/main";
 import { ItemDB } from "../../API/database/IDB";
 
 const crates = new ItemDB('crates')
@@ -47,23 +47,29 @@ CX.Build(CX.BuildTypes["@event"], {
     }
 });
 
+const clickData = new Map();
+
 CX.Build(CX.BuildTypes["@event"], {
     data: 'EntityHitEntity',
     executes(data) {
         if (!(data.damagingEntity instanceof Player) && !(data.damagingEntity instanceof Player) || data.damagingEntity.hasTag(config.adminTag)) return;
         if (config.AntiCheat.AAC) {
-            const arr = (log.get(data.damagingEntity) ?? [])
-            arr.push(11)
-            log.set(data.damagingEntity, arr)
-            if (arr.length > 20) {
+            const currentTime = Date.now();
+            const { clicks } = clickData.get(data.damagingEntity.id) || { clicks: [] };
+            const filteredClicks = clicks.filter(clickTime => currentTime - clickTime < 1500);
+            filteredClicks.push(currentTime);
+            const cps = filteredClicks.length;
+            if (cps > 24) {
                 new CX.log({
                     reason: 'Auto Clicker',
                     translate: 'AntiCheat',
                     from: data.damagingEntity.name,
                     warn: true
                 })
-                data.damagingEntity.kill()
+                clickData.delete(data.damagingEntity.id);
+                data.damagingEntity.addEffect('weakness', 10, { amplifier: 255, showParticles: false })
             }
+            clickData.set(data.damagingEntity.id, { clicks: filteredClicks });
         }
         if (!config.AntiCheat.AKA) return
         if (AKA(data.damagingEntity, data.hitEntity)) {
@@ -77,15 +83,7 @@ CX.Build(CX.BuildTypes["@event"], {
         }
     }
 })
-const NDP = (v1, v2) => (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z) / (Math.sqrt(v2.x ** 2 + v2.y ** 2 + v2.z ** 2) * Math.sqrt(v1.x ** 2 + v1.y ** 2 + v1.z ** 2));
-const AKA = (attacker, target) => {
-    if (attacker && target) {
-        const angleInDegrees = Math.acos(NDP(attacker.getViewDirection(), ({ x: target.location.x - attacker.location.x, y: target.location.y - attacker.location.y, z: target.location.z - attacker.location.z }))) * (180 / Math.PI);
-        const distance = Math.sqrt((target.location.x - attacker.location.x) ** 2 + (target.location.y - attacker.location.y) ** 2 + (target.location.z - attacker.location.z) ** 2);
-        return angleInDegrees > 90 && distance >= 4;
-    }
-    return false;
-}
+
 CX.Build(CX.BuildTypes["@event"], {
     data: 'EntityHitEntity',
     executes(data) {
@@ -135,3 +133,13 @@ CX.Build(CX.BuildTypes["@event"], {
         })
     }
 })
+
+const NDP = (v1, v2) => (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z) / (Math.sqrt(v2.x ** 2 + v2.y ** 2 + v2.z ** 2) * Math.sqrt(v1.x ** 2 + v1.y ** 2 + v1.z ** 2));
+const AKA = (attacker, target) => {
+    if (attacker && target) {
+        const angleInDegrees = Math.acos(NDP(attacker.getViewDirection(), ({ x: target.location.x - attacker.location.x, y: target.location.y - attacker.location.y, z: target.location.z - attacker.location.z }))) * (180 / Math.PI);
+        const distance = Math.sqrt((target.location.x - attacker.location.x) ** 2 + (target.location.y - attacker.location.y) ** 2 + (target.location.z - attacker.location.z) ** 2);
+        return angleInDegrees > 90 && distance >= 4;
+    }
+    return false;
+}
