@@ -1,4 +1,4 @@
-import { Vector, system, world } from "@minecraft/server";
+import { system, world } from "@minecraft/server";
 import { CX } from "../CX";
 import { Database } from "./DB";
 
@@ -23,7 +23,7 @@ export class ItemDB {
       if (!data.initialSpawn) return
       system.runTimeout(() => {
         if (!world.getDimension('overworld').getEntities({ type: 'mod:database', name: this.name }).length) {
-          this.entity = world.getDimension('overworld').spawnEntity('mod:database', new Vector(1000000, -60, 1000000))
+          this.entity = world.getDimension('overworld').spawnEntity('mod:database', { x: 1000000, y: -60, z: 1000000 })
           this.entity.nameTag = this.name   
         }
       }, 100)

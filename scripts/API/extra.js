@@ -1,5 +1,5 @@
 import { CX } from "./CX";
-import { system, world, Vector } from "@minecraft/server";
+import { system, world } from "@minecraft/server";
 
 let lastTick = Date.now(), tps = 20, timeArray = [];
 
@@ -91,7 +91,7 @@ export class Extra {
         const { x, y, z } = player.location;
         const h = world.getDimension(`overworld`).spawnEntity('mod:damage_entity', new Vector(x + offset[0], y + offset[1], z + offset[2]));
         h.nameTag = text;
-        h.applyImpulse(new Vector(vector[0], vector[1], vector[2]));
+        h.applyImpulse({ x: vector[0], y: vector[1], z: vector[2] });
     }
     /**
      * Parse a time

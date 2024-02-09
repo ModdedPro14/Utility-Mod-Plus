@@ -5,7 +5,7 @@ export const config = {
     trustTag: !Databases.settings.has('trustTag') ? Databases.settings.write('trustTag', 'trusted') && Databases.settings.read('trustTag') : Databases.settings.read('trustTag'),
     defaultRank: !Databases.settings.has('defaultRank') ? Databases.settings.write('defaultRank', '§6Member') && Databases.settings.read('defaultRank') : Databases.settings.read('defaultRank'),
     prefix: !Databases.settings.has('prefix') ? Databases.settings.write('prefix', '!') && Databases.settings.read('prefix') : Databases.settings.read('prefix'),
-    version: "S2 U6",
+    version: "S2 U7",
     discord: "https://discord.gg/U8P5NhKs2d",
     youtube: "https://www.youtube.com/@MP09234",
     omlet: "moddedpro234",
