@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { CX } from "../CX";
+import { CX } from "../Vera";
 export class AfterBlockPlace {
     on(callback) {
         world.afterEvents.playerPlaceBlock.subscribe((data) => {

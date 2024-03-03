@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { CX } from "../CX.js";
+import { CX } from "../Vera.js";
 import config from "../../config/main.js";
 const forceQ = {};
 export class Commands {

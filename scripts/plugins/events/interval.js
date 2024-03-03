@@ -12,7 +12,7 @@ Databases.customCmds.forEach((k, v) => {
         .setName(k)
         .setDescription(v.description)
         .setCategory(v.category)
-        .setAdmin(v.admin)
+        .setPermissions({ admin: v.admin })
         .setDevelopers([v.developer]),
         executes(ctx) {
             ctx.execute((sender) => {
@@ -49,34 +49,23 @@ system.runInterval(() => {
 system.runInterval(() => {
     world.getAllPlayers().forEach(player => {
         if (!player.hasTag(config.adminTag) && config.AntiCheat.illegalEnchantments) {
-            const { container } = player.getComponent("inventory");
-            if (container.size === container.emptySlotsCount)
-                return;
+            const container = player.getComponent("inventory").container;
             for (let i = 0; i < container.size; i++) {
                 const item = container.getItem(i);
-                if (!item)
-                    continue;
-                const { enchantments } = item.getComponent("enchantments");
-                const enchantmentIterator = enchantments[Symbol.iterator]();
-                let set = false;
-                for (let object = enchantmentIterator.next(); !object?.done; object = enchantmentIterator.next()) {
-                    const { value: enchant } = object;
-                    const { type: { maxLevel }, level } = enchant;
-                    if (level <= maxLevel)
-                        continue;
-                    enchantments.removeEnchantment(enchant.type);
-                    item.getComponent("enchantments").enchantments = enchantments;
-                    set = true;
+                if (!item) continue;
+                const enchants = item.getComponent('enchantable')?.getEnchantments()
+                if (!enchants) return
+                for (const enchant of enchants) {
+                    if (enchant.type.maxLevel >= enchant.level) continue
+                    item.removeEnchantment(enchant.type)
+                    new CX.log({
+                        from: player.name,
+                        translate: 'AntiCheat',
+                        reason: 'illegal enchantments',
+                        warn: true
+                    });
+                    break;
                 }
-                if (!set)
-                    continue;
-                container.setItem(i, item);
-                new CX.log({
-                    from: player.name,
-                    translate: 'AntiCheat',
-                    reason: 'illegal enchantments',
-                    warn: true
-                });
             }
         }
     });

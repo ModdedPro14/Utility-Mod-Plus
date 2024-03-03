@@ -1,5 +1,5 @@
-import { CX } from "./CX";
-import { system, world } from "@minecraft/server";
+import { CX } from "./Vera";
+import { system, world, Vector } from "@minecraft/server";
 
 let lastTick = Date.now(), tps = 20, timeArray = [];
 

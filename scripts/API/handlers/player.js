@@ -1,6 +1,6 @@
 import { world, Player as PLR, GameMode } from "@minecraft/server";
 import config, { playerRequests } from "../../config/main.js";
-import { CX } from "../CX.js";
+import { CX } from "../Vera.js";
 class Player {
     /**
      * Player service manager

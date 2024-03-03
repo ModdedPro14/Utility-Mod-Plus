@@ -1,5 +1,5 @@
 import { Player, world } from "@minecraft/server";
-import { CX } from "../CX";
+import { CX } from "../Vera";
 export class ProjectileHitEntity {
     on(callback) {
         world.afterEvents.projectileHitEntity.subscribe((data) => {

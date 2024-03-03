@@ -36,7 +36,7 @@ export class item {
         newItem.nameTag = item.nameTag;
         newItem.getComponents = item.getComponents;
         newItem.setLore(item.getLore());
-        newItem.getComponent('enchantments').enchantments = item.getComponent('enchantments').enchantments;
+        newItem.getComponent('enchantable')?.addEnchantments(item.getComponent('enchantable')?.getEnchantments())
         return newItem;
     }
     /**

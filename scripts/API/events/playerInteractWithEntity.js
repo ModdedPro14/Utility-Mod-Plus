@@ -1,5 +1,5 @@
 import { Player, world } from "@minecraft/server";
-import { CX } from "../CX";
+import { CX } from "../Vera";
 export class PlayerInteractWithEntity {
     on(callback) {
         world.beforeEvents.playerInteractWithEntity.subscribe((data) => {
