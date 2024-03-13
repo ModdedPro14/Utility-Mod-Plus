@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { CX } from "../Vera.js";
+import { Vera } from "../Vera.js";
 import config from "../../config/main.js";
 const forceQ = {};
 export class Commands {
@@ -47,10 +47,10 @@ export class Commands {
         if (allTypes.includes('plr')) {
             if (args[0] === '@s' || args[0].toLowerCase() === sender.name.toLowerCase())
                 if (command.args[argTypes['plr']].tv[0]?.self ?? true)
-                    return { arn: argTypes['plr'], tv: command.args[argTypes['plr']].tv[1] ? sender : CX.player.offline(sender.name), na: args.slice(1) };
+                    return { arn: argTypes['plr'], tv: command.args[argTypes['plr']].tv[1] ? sender : Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).offline(sender.name), na: args.slice(1) };
                 else
                     return;
-            const val = command.args[argTypes['plr']].tv[1] ? CX.player.convert(world.getAllPlayers().find(p => p.name.toLowerCase() === args[0].toLowerCase())) : CX.player.offline(args[0]);
+            const val = command.args[argTypes['plr']].tv[1] ? Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().find(p => p.name.toLowerCase() === args[0].toLowerCase())) :  Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).offline(args[0])
             if (val)
                 return { arn: argTypes['plr'], tv: val, na: args.slice(1) };
         }
@@ -344,6 +344,7 @@ export class Commands {
             cb: command.info.cb,
             usage: command.info.usage
         });
+        return this
     }
 }
 Commands.registeredCommands = [];

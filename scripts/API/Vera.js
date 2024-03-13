@@ -1,37 +1,35 @@
 import { Commands } from "./handlers/command.js";
 import { scoreboard } from "./handlers/scoreboard.js";
 import { factions } from "./handlers/faction.js";
-import player from "./handlers/player.js";
+import { Player } from './handlers/player.js'
 import { system, world } from "@minecraft/server";
-import { events } from "./events/events.js";
-import config from "../config/main.js";
-import { item } from "./handlers/item.js";
+// import { events } from "./events/events.js";
+// import config from "../config/main.js";
+// import { item } from "./handlers/item.js";
 import { Logs } from "./logger.js";
-import { Extra } from "./extra.js";
+// import { Extra } from "./extra.js";
 import { MessageForm } from "./handlers/forms/MessageFormData.js";
 import { ActionForm } from "./handlers/forms/ActionFormData.js";
 import { ModalForm } from "./handlers/forms/ModalFormData.js";
-import { Enchantment } from "./handlers/enchantment.js";
+// import { Enchantment } from "./handlers/enchantment.js";
 import { ChestForm } from "./handlers/forms/ChestFormData.js";
-import { Databases } from "./handlers/databases.js";
+// import { Databases } from "./handlers/databases.js";
+import { Event } from "./events/events.js";
 
-class Vera {
-    /**
-     * VeraJar Eng.
-     */
-    
+
+export class Vera {
         /**
          * Main package manager
          */
         static JAR = {
             /**
              * Gets a package
-             * @param {Vera.Engine} package The package to get
+             * @param {Vera.Engine['new']} Package The package to get
              */
-            getPackage: (package) => {
+            getPackage: (Package) => {
                 /**
                  * Represents a package from Vera.Engine
-                 * @typedef {Vera.Engine[keyof typeof Vera.Engine]} packageData
+                 * @typedef {Vera.Engine['new'][keyof typeof Vera.Engine.new]} packageData
                  */
                 return {
                     /**
@@ -39,33 +37,38 @@ class Vera {
                      * @param {(any: InstanceType<packageData>) => void} data Package data
                      */
                     unpack: (data) => {
-                        return data(new package())   
+                        if (Package == Vera.Engine.new.commandPackage) {
+                            const pkg = new Package()
+                            data(pkg)
+                            return new Package().register(pkg)
+                        } else return data(new Package())
                     }
                 }
+            },
+            /**
+             * Gets a raw package
+             * @param {Vera.Engine['raw'][keyof typeof Vera.Engine.raw ]} Package The package to get
+             */
+            getRawPackage: (Package) => {
+                return Package
             }
         }
         static Engine = {
-            commandPackage: Commands,
-            actionFormPackage: ActionForm
+            new: {
+                commandPackage: Commands,
+                actionFormPackage: ActionForm,
+                modalFormPackage: ModalForm,
+                messageFormPackage: MessageForm,
+                chestFormPackage: ChestForm,
+                logPackage: Logs,
+                eventPackage: Event
+            },
+            raw: {
+                playerPackage: new Player(),
+                scoreboardPackage: new scoreboard(),
+                factionsPackage: new factions()
+            }
         }
-
-
-    //     /**
-    //      * The main command handler
-    //      */
-    //     this.command = Commands;
-    //     /**
-    //      * Scoreboard manager
-    //      */
-    //     this.scoreboard = new scoreboard();
-    //     /**
-    //      * Factions class
-    //      */
-    //     this.factions = new factions();
-    //     /**
-    //      * The player API class
-    //      */
-    //     this.player = player;
     //     /**
     //      * Extras class
     //      */
@@ -75,53 +78,9 @@ class Vera {
     //      */
     //     this.item = new item();
     //     /**
-    //      * The logging system
-    //      */
-    //     this.log = Logs;
-    //     /**
-    //      * Builds a message form
-    //      */
-    //     this.messageForm = MessageForm;
-    //     /**
-    //      * Builds a action form
-    //      */
-    //     this.actionForm = ActionForm;
-    //     /**
-    //      * Builds a modal form
-    //      */
-    //     this.modalForm = ModalForm;
-    //     /**
-    //      * Builds a chest form
-    //      */
-    //     this.chestForm = ChestForm;
-    //     /**
     //      * Enchantment class
     //      */
     //     this.enchantment = new Enchantment();
-    //     /**
-    //      * Building Types
-    //      */
-    //     this.BuildTypes = {
-    //         /**
-    //          * The command builder type
-    //          * @param {{ data: CX.command, executes(any: CX.commandExecution) => void}} data Data
-    //          */
-    //         ['@command']: (data) => {
-    //             if (data.executes) {
-    //                 data.executes(data.data);
-    //                 new this.command().register(data.data);
-    //             }
-    //         },
-    //         /**
-    //          * The event builder type
-    //          * @param {{ data: EventType, executes(any: EventTypeExecution) => void}} data Data 
-    //          * @returns 
-    //          */
-    //         ['@event']: (data) => {
-    //             return new events[data.data]().on(data.executes);
-    //         }
-    //     };
-    // }
     // /**
     //  * Send a message to everyone
     //  * @param {any} message 
@@ -171,6 +130,9 @@ class Vera {
     // }
 }
 // export const CX = new cx();
+
+
+
 
 system.beforeEvents.watchdogTerminate.subscribe(data => {
     data.cancel = true;

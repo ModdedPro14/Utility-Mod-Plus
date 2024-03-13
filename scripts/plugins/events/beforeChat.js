@@ -1,14 +1,20 @@
 import { system, world } from "@minecraft/server";
 import config from "../../config/main.js";
-import { CX } from "../../API/CX.js";
+import { Vera } from "../../API/Vera.js";
 import { Commands } from "../../API/handlers/command.js";
 
-CX.Build(CX.BuildTypes['@event'], {
-    data: 'Chat',
-    executes(player, data) {
+Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd) => {
+    cmd.setName('hi')
+    .execute((sender) => {
+        sender.response.send('hi')
+    })
+})
+
+Vera.JAR.getPackage(Vera.Engine.new.eventPackage).unpack((event) => {
+    event.subscribe({ event: 'chatSend', eventType: 'beforeEvents' }, (data) => {
         let message = data.message;
-        const sender = player;
-        data.cancel();
+        const sender = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(data.sender);
+        data.cancel = true;
         if (!message.startsWith(config.prefix)) {
             if (config.login && !sender.hasTag('logged')) return
             system.run(() => {
@@ -34,13 +40,13 @@ CX.Build(CX.BuildTypes['@event'], {
                         player.response.send(`§8(§cStaff Chat§8) ${chat}`, false, false);
                     }
                 }
-                else if (sender.hasTag(`factionchat:${CX.factions.getPlayersFaction(sender)}`)) {
-                    for (const player of world.getPlayers({ tags: [`factionchat:${CX.factions.getPlayersFaction(sender)}`] })) {
+                else if (sender.hasTag(`factionchat:${Vera.JAR.getRawPackage(Vera.Engine.raw.factionsPackage).getPlayersFaction(sender)}`)) {
+                    for (const player of world.getPlayers({ tags: [`factionchat:${Vera.JAR.getRawPackage(Vera.Engine.raw.factionsPackage).getPlayersFaction(sender)}`] })) {
                         player.response.send(`§8(§aTeam Chat§8) ${chat}`, false, false);
                     }
                 }
                 else {
-                    CX.send(chat);
+                    world.sendMessage(chat);
                 }
                 sender.score.addScore('sents', 1);
             });
@@ -51,14 +57,14 @@ CX.Build(CX.BuildTypes['@event'], {
                 if (!cmdData)
                     return sender.response.error(`Unknown command: ${message.substring(config.prefix.length).match(/[\S]+/g)?.[0] ?? []}. Please check that the command exists and that you have permission to use it.`);
                 if (config.login && !sender.hasTag('logged') && !(cmdData.name == 'login' || cmdData.name == 'register')) return
-                new CX.log({
-                    from: sender.name,
-                    translate: 'command',
-                    reason: cmdData.name,
-                    warn: false
-                });
-                new CX.command().runCommand(cmdData, sender, args, message);
+                // new CX.log({
+                //     from: sender.name,
+                //     translate: 'command',
+                //     reason: cmdData.name,
+                //     warn: false
+                // });
+                Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd) => cmd.runCommand(cmdData, sender, args, message))
             });
         }
-    }
-});
+    })
+})

@@ -22,7 +22,7 @@ const startPlugins = () => {
 startPlugins().log();
 
 //_________________ Events _________________
-// import "./plugins/events/beforeChat.js"
+import "./plugins/events/beforeChat.js"
 // import "./plugins/events/blockBreak.js"
 // import "./plugins/events/blockPlace.js"
 // import "./plugins/events/dataDrivenEntityTriggerEvent.js"

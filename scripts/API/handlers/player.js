@@ -1,22 +1,20 @@
 import { world, Player as PLR, GameMode } from "@minecraft/server";
 import config, { playerRequests } from "../../config/main.js";
-import { CX } from "../Vera.js";
-class Player {
+import { Vera } from "../Vera.js";
+import { Databases } from "./databases.js";
+
+export class Player {
     /**
-     * Player service manager
-     * @param {any} author The author of the service 
+     * Player advanced methods
+     * @param {PLR | string} player The player to add methods to
+     * @param {any} author The author of the class
      */
-    constructor(author) {
+    constructor(author = 'Vera') {
         this.author = author;
     }
-    /**
-     * Converts a normal Minecraft player to MOD's advanced methodes for the player
-     * @param {PLR | string} player The player you want to convert
-     */
-    convert(player) {
+    type(player) {
         const plr = player instanceof PLR ? player : world.getAllPlayers().find(p => p?.name.toLowerCase() === player?.toLowerCase());
-        if (!plr)
-            return;
+        if (!plr) return;
         return Object.assign(player, {
             response: {
                 /**
@@ -184,34 +182,34 @@ class Player {
                  * @param {any} objective The objective to get the score from
                  * @returns 
                  */
-                getScore: (objective) => CX.scoreboard.get(plr, objective),
+                getScore: (objective) => Vera.JAR.getRawPackage(Vera.Engine.raw.scoreboardPackage).get(plr, objective),
                 /**
                  * Sets a score to an objective
                  * @param {any} objective The objective to set the score too
                  * @param {number} value The value
                  * @returns 
                  */
-                setScore: (objective, value) => CX.scoreboard.set(plr, objective, value),
+                setScore: (objective, value) => Vera.JAR.getRawPackage(Vera.Engine.raw.scoreboardPackage).set(plr, objective, value),
                 /**
                  * Adds a score to an objective
                  * @param {any} objective The objective to add the score too
                  * @param {number} value The value
                  * @returns 
                  */
-                addScore: (objective, value) => CX.scoreboard.add(plr, objective, value),
+                addScore: (objective, value) => Vera.JAR.getRawPackage(Vera.Engine.raw.scoreboardPackage).add(plr, objective, value),
                 /**
                  * Resets the players objective
                  * @param {any} objective The objective to reset
                  * @returns 
                  */
-                resetSore: (objective) => CX.scoreboard.reset(plr, objective),
+                resetSore: (objective) => Vera.JAR.getRawPackage(Vera.Engine.raw.scoreboardPackage).reset(plr, objective),
                 /**
                  * Removes a score from an objective
                  * @param {any} objective The objective to remove the score from
                  * @param {number} value The value
                  * @returns 
                  */
-                removeScore: (objective, value) => CX.scoreboard.remove(plr, objective, value)
+                removeScore: (objective, value) => Vera.JAR.getRawPackage(Vera.Engine.raw.scoreboard).remove(plr, objective, value)
             }
         });
     }
@@ -289,18 +287,18 @@ class Player {
         return Boolean(player.hasTag('jailed'));
     }
     jail(player) {
-        const location = CX.server.read('jail').location;
-        player.teleport(location, { dimension: world.getDimension(CX.server.read('jail').dimension) });
-        player.setSpawnPoint({ dimension: world.getDimension(CX.server.read('jail').dimension), x: location.x, y: location.y, z: location.z });
+        const location = Databases.server.read('jail').location;
+        player.teleport(location, { dimension: world.getDimension(Databases.server.read('jail').dimension) });
+        player.setSpawnPoint({ dimension: world.getDimension(Databases.server.read('jail').dimension), x: location.x, y: location.y, z: location.z });
         player.runCommandAsync('gamemode a @s');
         player.addTag('jailed');
         player.runCommandAsync('clear @s ender_pearl');
         player.runCommandAsync('clear @s chorus_fruit');
     }
     unjail(player) {
-        const location = CX.server.read('spawn').location;
-        player.teleport(location, { dimension: world.getDimension(CX.server.read('spawn').dimension), x: location.x, y: location.y, z: location.z });
-        player.setSpawnPoint({ dimension: world.getDimension(CX.server.read('spawn').dimension), x: location.x, y: location.y, z: location.z });
+        const location = Databases.server.read('spawn').location;
+        player.teleport(location, { dimension: world.getDimension(Databases.server.read('spawn').dimension), x: location.x, y: location.y, z: location.z });
+        player.setSpawnPoint({ dimension: world.getDimension(Databases.server.read('spawn').dimension), x: location.x, y: location.y, z: location.z });
         player.removeTag('jailed');
     }
     inStaffChat(player) {
@@ -458,5 +456,3 @@ class Player {
         return playerRequests.some(r => r.sender?.id === sender?.id && r.target?.id === target?.id);
     }
 }
-const player = new Player('UM+');
-export default player;

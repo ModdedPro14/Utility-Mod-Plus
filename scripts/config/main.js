@@ -1,4 +1,5 @@
 import { Databases } from "../API/handlers/databases";
+
 export const config = {
     adminTag: !Databases.settings.has('adminTag') ? Databases.settings.write('adminTag', 'skummeh') && Databases.settings.read('adminTag') : Databases.settings.read('adminTag'),
     modTag: !Databases.settings.has('modTag') ? Databases.settings.write('modTag', 'mod') && Databases.settings.read('modTag') : Databases.settings.read('modTag'),
