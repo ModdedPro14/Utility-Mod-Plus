@@ -1,19 +1,17 @@
-import { CX } from "../../../API/CX";
 import config from "../../../config/main";
 import { Commands } from "../../../API/handlers/command";
+import { Vera } from "../../../API/Vera";
 
-CX.Build(CX.BuildTypes["@command"], {
-    data: new CX.command()
-    .setName('help')
+Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd) => {
+    cmd.setName('help')
     .setCategory('general')
     .setAliases(['?'])
     .setDescription('Provides you a list of commands or information about a command')
     .firstArguments(['page', 'command'], false)
-    .addAnyArgument('command', [], 1)
-    .addNumberArgument('page', [], [], { min: 0 }),
-    executes(ctx) {
-        ctx.execute((_, args) => !args.length && ctx.forceValue('page', 1));
-        ctx.executeArgument('command', (sender, val) => {
+    .addAnyArgument((arg) => {
+        arg.setName('command')
+        arg.setLength(1)
+        arg.setCallback((sender, val) => {
             const cmdList = Commands.registeredCommands.find(c => c.name === val || c.aliases?.includes(val));
             if (!cmdList) return sender.response.error(`Cant find the command ${val}`);
             if (cmdList.permissions.mod && !sender.permission.hasPermission('mod') && !sender.permission.hasPermission('admin')) return sender.response.error(`Cant find the command ${val}`);
@@ -35,8 +33,12 @@ CX.Build(CX.BuildTypes["@command"], {
             })
             if (cmdList.argNames[0].length) hI += `§l§4Usage:§4 [\n§c${args.join('\n')}\n§4]`;
             sender.response.send(`§4${hI}`, true, false);
-        });
-        ctx.executeArgument('page', (sender, page) => {
+        })
+    })
+    .addNumberArgument((arg) => {
+        arg.setName('page')
+        arg.setData({ min: 0 })
+        arg.setCallback((sender, page) => {
             const cmdList = Commands.registeredCommands.filter(c => sender.permission.hasPermission('admin') ? true : sender.permission.hasPermission('mod') ? c.permissions.mod + !c.permissions.admin : !c.permissions.admin);
             const commandList = new Array(Math.ceil(cmdList.length / 35)).fill(0).map(_ => cmdList.splice(0, 35)), help = [], categoryHold = [];
             if (!commandList[page - 1]?.[0]) return sender.response.error('Unable to find this page');
@@ -46,6 +48,7 @@ CX.Build(CX.BuildTypes["@command"], {
                 help.push(`§e- ${config.prefix}${command.name} §c- ${command.description}`);
             }
             sender.response.send(`§l${help.join('\n')}\n§4§l<---------->\n§cPage: §a${page}§c/§a${commandList.length}\n§cUse "§4${config.prefix}help §4<Page Number>§c" §cTo see the next page\n§l§4<---------->`, true, false);
-        });
-    }
-});
+        })
+    })
+    .execute((_, args) => !args.length && cmd.forceValue('page', 1))
+})

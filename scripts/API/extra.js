@@ -12,21 +12,7 @@ system.runInterval(() => {
 });
 
 export class Extra {
-    /**
-     * Converts a number to a metric number
-     * @param {number} value The number to convert
-     * @returns 
-     */
-    parseNumber(value) {
-        const types = ["", "k", "M", "B", "T", "P", "E", "Z", "Y"];
-        let selectType = 0;
-        let scaled = value;
-        while (scaled >= 1000 && selectType < types.length - 1) {
-            scaled /= 1000;
-            selectType++;
-        }
-        return scaled.toFixed(1) + types[selectType];
-    }
+    
     /**
      * Gets the worlds TPS
      * @returns 
@@ -34,35 +20,7 @@ export class Extra {
     tps() {
         return tps.toFixed(1);
     }
-    /**
-     * Convert a number into a roman numeral number
-     * @param {number} num 
-     * @returns 
-     */
-    convertToRoman(num) {
-        const roman = {
-            M: 1000,
-            CM: 900,
-            D: 500,
-            CD: 400,
-            C: 100,
-            XC: 90,
-            L: 50,
-            XL: 40,
-            X: 10,
-            IX: 9,
-            V: 5,
-            IV: 4,
-            I: 1
-        };
-        let str = '';
-        for (var i of Object.keys(roman)) {
-            var q = Math.floor(num / roman[i]);
-            num -= q * roman[i];
-            str += i.repeat(q);
-        }
-        return str;
-    }
+    
     /**
      * Broadcast a message to the world
      * @param {any} message 
@@ -93,16 +51,5 @@ export class Extra {
         h.nameTag = text;
         h.applyImpulse({ x: vector[0], y: vector[1], z: vector[2] });
     }
-    /**
-     * Parse a time
-     * @param {*} value The value to parse
-     * @returns 
-     */
-    parseTime(value) {
-        let seconds = value / 1000
-        const hours = parseInt(seconds / 3600)
-        seconds %= 3600
-        const minutes = parseInt(seconds / 60)
-        return `${hours}h ${minutes}m`
-    }
+    
 }

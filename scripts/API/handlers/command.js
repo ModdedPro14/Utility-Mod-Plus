@@ -229,93 +229,317 @@ export class Commands {
      * @param {{ name: string, type: 'dyn' | 'number' | 'player' | 'any'}[]?} beforeArgs The arguments before this argument
      * @returns 
      */
-    addDynamicArgument(name, beforeArgs, value, nextArgs, needValue, length, needNextArgs) {
-        if (Object.keys(this.info.args).includes(name))
-            return;
-        const v = [].concat(value);
-        const na = [].concat(nextArgs ?? []);
-        Object.assign(this.info.args, { [name]: {
+    addDynamicArgument() {
+        const info = {
+            name: '',
+            beforeArgs: [],
+            value: [] || '',
+            nextArgs: [],
+            needValue: true,
+            length: 0,
+            needNextArgs: true,
+            callback: null
+        }
+        data({
+            /**
+             * Sets the name of the argument
+             * @param {any} name The name of the argument 
+             */
+            setName: (name) => {
+                info.name = name
+            },
+            /**
+             * Sets the before arguments of the argument
+             * @param {{ name: string, type: 'dyn' | 'number' | 'player' | 'any'}[]?} args The arguments
+             */
+            setBeforeArgs: (args) => {
+                info.beforeArgs = args
+                
+            },
+            /**
+             * Sets value(s) of the argument
+             * @param {any} value The value(s) of the argument
+             */
+            setValue: (value) => {
+                info.value = value
+            },
+            /**
+             * Sets the next arguments of the argument
+             * @param {any[]} nextArgs The next arguments
+             */
+            setNextArgs: (nextArgs) => {
+                info.nextArgs = nextArgs
+            },
+            /**
+             * Sets the need next args of the argument
+             * @param {boolean} needNextArgs The need next args
+             */
+            setNeedNextArg: (needNextArgs) => {
+                info.needNextArgs = needNextArgs
+                
+            },
+            /**
+             * Sets wether the value(s) are needed or not
+             * @param {boolean} needValue 
+             */
+            setNeedValue: (needValue) => {
+                info.needValue = needValue
+            },
+            /**
+            * Sets the length of the argument
+            * @param {number} length The length
+            */
+            setLength: (length) => {
+                info.length = length
+            },
+            /**
+             * Sets the callback of the argument
+             * @param {any} cb The callback to set
+             */
+            setCallback: (cb) => {
+                info.callback = cb
+            }
+        })
+        if (Object.keys(this.info.args).includes(info.name)) return;
+        const v = [].concat(info.value);
+        const na = [].concat(info.nextArgs ?? []);
+        Object.assign(this.info.args, { [info.name]: {
                 type: 'dyn',
-                tv: [v, needValue, length ?? 1],
-                cb: null,
+                tv: [v, info.needValue, info.length ?? 1],
+                cb: info.callback,
                 na: na,
-                nn: na.length ? needNextArgs ?? Boolean(na?.length) : false,
+                nn: na.length ? info.needNextArgs ?? Boolean(na?.length) : false,
         }});
-        if (!nextArgs?.length) this.info.usage.push({ name: name, beforeArgs: beforeArgs ?? [], type: 'dyn' })
-        return this;
-    }
-    /**
-     * Add a number type argument
-     * @param {any} name The name of the argument
-     * @param {any} nextArgs Nextargs
-     * @param {any} data Data
-     * @param {any} needNextArgs NeedNextArgs
-     * @param {{ name: string, type: 'dyn' | 'number' | 'player' | 'any'}[]?} beforeArgs The arguments before this argument
-     * @returns 
-     */
-    addNumberArgument(name, beforeArgs, nextArgs, data, needNextArgs) {
-        if (Object.keys(this.info.argNames).includes(name))
-            return;
-        if (data && data.min > data.max)
-            throw console.warn(`Argument "${name}" from command "${this.name}" cannot have a min value greater than the max.`);
-        const na = [].concat(nextArgs ?? []);
-        Object.assign(this.info.args, { [name]: {
-                type: 'num',
-                tv: data ?? null,
-                cb: null,
-                na: na,
-                nn: na.length ? needNextArgs ?? Boolean(na?.length) : false
-        }});
-        if (!nextArgs?.length) this.info.usage.push({ name: name, beforeArgs: beforeArgs ?? [], type: 'number' })
-        return this;
-    }
-    /**
-     * Adds a player type argument
-     * @param {any} name The name of the argument
-     * @param {boolean} online Online
-     * @param {any} nextArgs Nextargs
-     * @param {any} data Data
-     * @param {any} needNextArg NeedNextArgs
-     * @param {{ name: string, type: 'dyn' | 'number' | 'player' | 'any'}[]?} beforeArgs The arguments before this argument
-     * @returns 
-     */
-    addPlayerArgument(name, beforeArgs, online, nextArgs, data, needNextArg) {
-        if (Object.keys(this.info.args).includes(name))
-            return;
-        const na = [].concat(nextArgs ?? []);
-        Object.assign(this.info.args, { [name]: {
-                type: 'plr',
-                tv: [data ?? {}, online ?? true],
-                cb: null,
-                na: na,
-                nn: na.length ? needNextArg ?? Boolean(na?.length) : false
-        }});
-        if (!nextArgs?.length) this.info.usage.push({ name: name, beforeArgs: beforeArgs ?? [], type: 'player' })
+        if (!info.nextArgs?.length) this.info.usage.push({ name: info.name, beforeArgs: info.beforeArgs ?? [], type: 'dyn' })
         return this;
     }
     /**
      * Adds an any type argument
-     * @param {any} name The name of the argument
-     * @param {any} length The length of the argument
-     * @param {any} filter The filter of the argument
-     * @param {any} nextArgs Nextargs
-     * @param {any} needNextArg NeedNextArgs
-     * @param {{ name: string, type: 'dyn' | 'number' | 'player' | 'any'}[]?} beforeArgs The arguments before this argument
+     * @param {any} data The data of the argument
      * @returns 
      */
-    addAnyArgument(name, beforeArgs, length, filter, nextArgs, needNextArg) {
-        if (Object.keys(this.info.args).includes(name))
-            return;
-        const na = [].concat(nextArgs ?? []);
-        Object.assign(this.info.args, { [name]: {
-                type: 'any',
-                tv: [length ?? 256, filter ?? true],
-                cb: null,
+    addNumberArgument(data) {
+        const info = {
+            name: '',
+            beforeArgs: [],
+            nextArgs: [],
+            data: null,
+            needNextArgs: true,
+            callback: null
+        }
+        data({
+            /**
+             * Sets the name of the argument
+             * @param {any} name The name of the argument 
+             */
+            setName: (name) => {
+                info.name = name
+            },
+            /**
+             * Sets the before arguments of the argument
+             * @param {{ name: string, type: 'dyn' | 'number' | 'player' | 'any'}[]?} args The arguments
+             */
+            setBeforeArgs: (args) => {
+                info.beforeArgs = args
+            },
+            /**
+             * Sets the data of the argument
+             * @param {any} dta The data
+             */
+            setData: (dta) => {
+                info.data = dta
+            },
+            /**
+             * Sets the next arguments of the argument
+             * @param {any[]} nextArgs The next arguments
+             */
+            setNextArgs: (nextArgs) => {
+                info.nextArgs = nextArgs
+            },
+            /**
+             * Sets the need next args of the argument
+             * @param {boolean} needNextArgs The need next args
+             */
+            setNeedNextArg: (needNextArgs) => {
+                info.needNextArgs = needNextArgs
+            },
+            /**
+             * Sets the callback of the argument
+             * @param {any} cb The callback to set
+             */
+            setCallback: (cb) => {
+                info.callback = cb
+            }
+        })
+        if (Object.keys(this.info.argNames).includes(info.name)) return;
+        if (info.data && info.data.min > info.data.max)
+            throw console.warn(`Argument "${info.name}" from command "${this.info.name}" cannot have a min value greater than the max.`);
+        const na = [].concat(info.nextArgs ?? []);
+        Object.assign(this.info.args, { [info.name]: {
+                type: 'num',
+                tv: info.data ?? null,
+                cb: info.callback,
                 na: na,
-                nn: na.length ? needNextArg ?? Boolean(na?.length) : false,
+                nn: na.length ? info.needNextArgs ?? Boolean(na?.length) : false
         }});
-        if (!nextArgs?.length) this.info.usage.push({ name: name, beforeArgs: beforeArgs ?? [], type: 'any' })
+        if (!info.nextArgs?.length) this.info.usage.push({ name: info.name, beforeArgs: info.beforeArgs ?? [], type: 'number' })
         return this;
+    }
+     /**
+     * Adds a player type argument
+     * @param {any} data The data of the argument
+     * @returns 
+     */
+    addPlayerArgument(data) {
+        const info = {
+            name: '',
+            beforeArgs: [],
+            online: true,
+            nextArgs: [],
+            data: {},
+            needNextArg: true,
+            callback: null
+        }
+        data({
+            /**
+             * Sets the name of the argument
+             * @param {any} name The name of the argument 
+             */
+            setName: (name) => {
+                info.name = name
+            },
+            /**
+             * Sets the before arguments of the argument
+             * @param {{ name: string, type: 'dyn' | 'number' | 'player' | 'any'}[]?} args The arguments
+             */
+            setBeforeArgs: (args) => {
+                info.beforeArgs = args
+            },
+            /**
+            * Sets if the player needs to be online
+            * @param {boolean} online 
+            */
+            setOnline: (online) => {
+                info.online = online
+            },
+            /**
+             * Sets the data of the argument
+             * @param {any} dta The data
+             */
+            setData: (dta) => {
+                info.data = dta
+            },
+            /**
+             * Sets the next arguments of the argument
+             * @param {any[]} nextArgs The next arguments
+             */
+            setNextArgs: (nextArgs) => {
+                info.nextArgs = nextArgs
+            },
+            /**
+             * Sets the need next arg of the argument
+             * @param {boolean} needNextArg The need next arg
+             */
+            setNeedNextArg: (needNextArg) => {
+                info.needNextArg = needNextArg
+            },
+            /**
+             * Sets the callback of the argument
+             * @param {any} cb The callback to set
+             */
+            setCallback: (cb) => {
+                info.callback = cb
+            }
+        })
+        if (Object.keys(this.info.args).includes(info.name)) return;
+        const na = [].concat(info.nextArgs ?? []);
+        Object.assign(this.info.args, { [info.name]: {
+                type: 'plr',
+                tv: [info.data ?? {}, info.online ?? true],
+                cb: info.callback,
+                na: na,
+                nn: na.length ? info.needNextArg ?? Boolean(na?.length) : false
+        }});
+        if (!info.nextArgs?.length) this.info.usage.push({ name: info.name, beforeArgs: info.beforeArgs ?? [], type: 'player' })
+        return this;
+    }
+    /**
+     * Adds an any type argument
+     * @param {any} data The data of the argument
+     * @returns 
+     */
+    addAnyArgument(data) {
+        const info = {
+            name: '',
+            beforeArgs: [],
+            length: 0,
+            filter: {},
+            nextArgs: [],
+            needNextArg: true,
+            callback: null
+        }
+        data({
+            /**
+             * Sets the name of the argument
+             * @param {any} name The name of the argument 
+             */
+            setName: (name) => {
+                info.name = name
+            },
+            /**
+             * Sets the before arguments of the argument
+             * @param {{ name: string, type: 'dyn' | 'number' | 'player' | 'any'}[]?} args The arguments
+             */
+            setBeforeArgs: (args) => {
+                info.beforeArgs = args
+            },
+            /**
+            * Sets the length of the argument
+            * @param {number} length The length
+            */
+            setLength: (length) => {
+                info.length = length
+            },
+            /**
+             * Sets the filter of the argument
+             * @param {any} filter The filter
+             */
+            setFilter: (filter) => {
+                info.filter = filter
+            },
+            /**
+             * Sets the next arguments of the argument
+             * @param {any[]} nextArgs The next arguments
+             */
+            setNextArgs: (nextArgs) => {
+                info.nextArgs = nextArgs
+            },
+            /**
+             * Sets the need next arg of the argument
+             * @param {boolean} needNextArg The need next arg
+             */
+            setNeedNextArg: (needNextArg) => {
+                info.needNextArg = needNextArg
+            },
+            /**
+             * Sets the callback of the argument
+             * @param {any} cb The callback to set
+             */
+            setCallback: (cb) => {
+                info.callback = cb
+            }
+        })
+        if (Object.keys(this.info.args).includes(info.name)) return;
+        const na = [].concat(info.nextArgs ?? []);
+        Object.assign(this.info.args, { [info.name]: {
+                type: 'any',
+                tv: [info.length ?? 256, info.filter ?? true],
+                cb: info.callback,
+                na: na,
+                nn: na.length ? info.needNextArg ?? Boolean(na?.length) : false,
+        }});
+        if (!info.nextArgs?.length) this.info.usage.push({ name: info.name, beforeArgs: info.beforeArgs ?? [], type: 'any' })
+        return this
     }
     /**
      * Execute an argument callback

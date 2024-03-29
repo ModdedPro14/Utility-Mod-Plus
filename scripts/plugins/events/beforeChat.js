@@ -63,7 +63,7 @@ Vera.JAR.getPackage(Vera.Engine.new.eventPackage).unpack((event) => {
                 //     reason: cmdData.name,
                 //     warn: false
                 // });
-                Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd) => cmd.runCommand(cmdData, sender, args, message))
+                new Vera.Engine.new.commandPackage().runCommand(cmdData, sender, args, message)
             });
         }
     })

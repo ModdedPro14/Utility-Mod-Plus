@@ -5,7 +5,7 @@ import { Player } from './handlers/player.js'
 import { system, world } from "@minecraft/server";
 // import { events } from "./events/events.js";
 // import config from "../config/main.js";
-// import { item } from "./handlers/item.js";
+import { item } from "./handlers/item.js";
 import { Logs } from "./logger.js";
 // import { Extra } from "./extra.js";
 import { MessageForm } from "./handlers/forms/MessageFormData.js";
@@ -66,17 +66,14 @@ export class Vera {
             raw: {
                 playerPackage: new Player(),
                 scoreboardPackage: new scoreboard(),
-                factionsPackage: new factions()
+                factionsPackage: new factions(),
+                itemPackage: new item()
             }
         }
     //     /**
     //      * Extras class
     //      */
     //     this.extra = new Extra();
-    //     /**
-    //      * The item class
-    //      */
-    //     this.item = new item();
     //     /**
     //      * Enchantment class
     //      */
@@ -121,18 +118,70 @@ export class Vera {
     //  * Generate a random ID
     //  * @returns {number}
     //  */
-    // generateID() {
-    //     const min = 1000000;
-    //     const max = 9999999;
-    //     let id;
-    //     id = Math.floor(Math.random() * (max - min + 1)) + min;
-    //     return id.toString();
-    // }
+    static generateID() {
+        const min = 1000000;
+        const max = 9999999;
+        let id;
+        id = Math.floor(Math.random() * (max - min + 1)) + min;
+        return id.toString();
+    }
+    /**
+     * Converts a number to a metric number
+     * @param {number} value The number to convert
+     * @returns 
+     */
+    static parseNumber(value) {
+        const types = ["", "k", "M", "B", "T", "P", "E", "Z", "Y"];
+        let selectType = 0;
+        let scaled = value;
+        while (scaled >= 1000 && selectType < types.length - 1) {
+            scaled /= 1000;
+            selectType++;
+        }
+        return scaled.toFixed(1) + types[selectType];
+    }
+    /**
+     * Convert a number into a roman numeral number
+     * @param {number} num 
+     * @returns 
+     */
+    static convertToRoman(num) {
+        const roman = {
+            M: 1000,
+            CM: 900,
+            D: 500,
+            CD: 400,
+            C: 100,
+            XC: 90,
+            L: 50,
+            XL: 40,
+            X: 10,
+            IX: 9,
+            V: 5,
+            IV: 4,
+            I: 1
+        };
+        let str = '';
+        for (var i of Object.keys(roman)) {
+            var q = Math.floor(num / roman[i]);
+            num -= q * roman[i];
+            str += i.repeat(q);
+        }
+        return str;
+    }
+    /**
+     * Parse a time
+     * @param {*} value The value to parse
+     * @returns 
+     */
+    static parseTime(value) {
+        let seconds = value / 1000
+        const hours = parseInt(seconds / 3600)
+        seconds %= 3600
+        const minutes = parseInt(seconds / 60)
+        return `${hours}h ${minutes}m`
+    }
 }
-// export const CX = new cx();
-
-
-
 
 system.beforeEvents.watchdogTerminate.subscribe(data => {
     data.cancel = true;

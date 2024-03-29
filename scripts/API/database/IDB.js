@@ -1,7 +1,6 @@
 import { system, world } from "@minecraft/server";
-import { CX } from "../CX";
 import { Database } from "./DB";
-
+import { Vera } from "../Vera";
 export class ItemDB {
   /**
    * Creates an item database
@@ -45,8 +44,8 @@ export class ItemDB {
   writeItem(item, data = {}) {
     if (!this.entity) this.load()
     if (!item) return
-    const id = CX.generateID()
-    this.database.write(id, Object.assign(data, { nameTag: CX.item.getItemName(item) }))
+    const id = Vera.generateID()
+    this.database.write(id, Object.assign(data, { nameTag: Vera.JAR.getRawPackage(Vera.Engine.raw.itemPackage).getItemName(item) }))
     item.nameTag = id
     this.entity.getComponent('inventory').container.addItem(item)
     return id
