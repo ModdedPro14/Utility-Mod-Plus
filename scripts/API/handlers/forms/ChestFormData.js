@@ -6,7 +6,7 @@ const number_of_1_16_100_items = ItemTypes.getAll().filter(item => !item.id.star
 const sizes = {
     small: [`§c§h§e§s§t§s§m§a§l§l§r`, 8],
     medium: [`§c§h§e§s§t§m§e§d§i§u§m§r`, 27],
-    large: [`§c§h§e§s§t§l§a§r§g§e§r`, 54]
+    large: [`§c§h§e§s§t§l§a§r§g§e§r`, 54],
 };
 
 export class ChestForm {

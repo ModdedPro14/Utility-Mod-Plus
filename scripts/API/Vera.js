@@ -1,4 +1,4 @@
-import { Commands } from "./handlers/command.js";
+import { Command, commands } from "./handlers/command.js";
 import { scoreboard } from "./handlers/scoreboard.js";
 import { factions } from "./handlers/faction.js";
 import { Player } from './handlers/player.js'
@@ -40,7 +40,8 @@ export class Vera {
                         if (Package == Vera.Engine.new.commandPackage) {
                             const pkg = new Package()
                             data(pkg)
-                            return new Package().register(pkg)
+                            pkg.buildUsage();
+                            return commands.push(pkg);
                         } else return data(new Package())
                     }
                 }
@@ -55,7 +56,7 @@ export class Vera {
         }
         static Engine = {
             new: {
-                commandPackage: Commands,
+                commandPackage: Command,
                 actionFormPackage: ActionForm,
                 modalFormPackage: ModalForm,
                 messageFormPackage: MessageForm,

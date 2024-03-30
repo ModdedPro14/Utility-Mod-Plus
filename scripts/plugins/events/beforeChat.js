@@ -1,14 +1,7 @@
 import { system, world } from "@minecraft/server";
 import config from "../../config/main.js";
 import { Vera } from "../../API/Vera.js";
-import { Commands } from "../../API/handlers/command.js";
-
-Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd) => {
-    cmd.setName('hi')
-    .execute((sender) => {
-        sender.response.send('hi')
-    })
-})
+import { commands } from "../../API/handlers/command.js";
 
 Vera.JAR.getPackage(Vera.Engine.new.eventPackage).unpack((event) => {
     event.subscribe({ event: 'chatSend', eventType: 'beforeEvents' }, (data) => {
@@ -52,10 +45,9 @@ Vera.JAR.getPackage(Vera.Engine.new.eventPackage).unpack((event) => {
             });
         }
         else {
-            const args = message.substring(config.prefix.length).replace(/@(?=\w{2})|@(?!s)/g, '').trim().replace(/ {2,}/g, ' ').match(/".*?"|[\S]+/g)?.map(item => item.replaceAll('"', '')) ?? [], cmd = args.shift()?.toLowerCase(), cmdData = Commands.registeredCommands.find(c => c.name === cmd || c.aliases.includes(cmd));
+            const args = message.substring(config.prefix.length).replace(/@(?=\w{2})|@(?!s)/g, '').trim().replace(/ {2,}/g, ' ').match(/".*?"|[\S]+/g)?.map(item => item.replaceAll('"', '')) ?? [], cmd = args.shift().toLowerCase(), cmdData = commands.find(c => c.name == cmd || c.aliases.includes(cmd));
             system.run(() => {
-                if (!cmdData)
-                    return sender.response.error(`Unknown command: ${message.substring(config.prefix.length).match(/[\S]+/g)?.[0] ?? []}. Please check that the command exists and that you have permission to use it.`);
+                if (!cmdData) return sender.response.error(`Unknown command: ${message.substring(config.prefix.length).match(/[\S]+/g)?.[0] ?? []}. Please check that the command exists and that you have permission to use it.`);
                 if (config.login && !sender.hasTag('logged') && !(cmdData.name == 'login' || cmdData.name == 'register')) return
                 // new CX.log({
                 //     from: sender.name,
@@ -63,7 +55,8 @@ Vera.JAR.getPackage(Vera.Engine.new.eventPackage).unpack((event) => {
                 //     reason: cmdData.name,
                 //     warn: false
                 // });
-                new Vera.Engine.new.commandPackage().runCommand(cmdData, sender, args, message)
+
+                cmdData.executeCommand(sender, args);
             });
         }
     })

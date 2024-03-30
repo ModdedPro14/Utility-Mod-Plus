@@ -22,7 +22,7 @@ const startPlugins = () => {
 startPlugins().log();
 
 //_________________ Events _________________
-// import "./plugins/events/beforeChat.js"
+import "./plugins/events/beforeChat.js"
 // import "./plugins/events/blockBreak.js"
 // import "./plugins/events/blockPlace.js"
 // import "./plugins/events/dataDrivenEntityTriggerEvent.js"
@@ -54,8 +54,7 @@ startPlugins().log();
 // import "./plugins/commands/general/clearlag.js"
 // import "./plugins/commands/general/emojilist.js"
 // import "./plugins/commands/general/faction.js"
-// import "./plugins/commands/general/help.js"
-import "./plugins/commands/general/test.js"
+import "./plugins/commands/general/help.js"
 import "./plugins/commands/general/auctionhouse.js"
 // import "./plugins/commands/general/info.js"
 // import "./plugins/commands/general/list.js"
