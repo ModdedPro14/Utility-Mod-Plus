@@ -189,7 +189,7 @@ export class Command {
                     }
                     for (const subArg of subArguments) {
                         if (!subArgs[subArg.name] && !subArg.optional) return sender.sendMessage(`No value provided for sub-argument "${subArg.name}".`);
-                        if (subArgs[subArg.name] && !this.checkArgumentType(subArg.type, subArgs[subArg.name], subArg)) return sender.sendMessage(`Invalid type for sub-argument "${subArg.name}".`);
+                        if (subArgs[subArg.name] && !this.checkArgumentType(subArg.type, subArgs[subArg.name], subArg, sender)) return sender.sendMessage(`Invalid type for sub-argument "${subArg.name}".`);
                     }
                     parsedArgsObj[argument.name] = subArgs;
                     processedIndices.add(dynamicArgIndex);
@@ -200,7 +200,7 @@ export class Command {
                 }
             } else {
                 if (!dynProcessed) {
-                    const argIndex = cleanedArgs.findIndex(arg => this.checkArgumentType(argument.type, arg, argument));
+                    const argIndex = cleanedArgs.findIndex(arg => this.checkArgumentType(argument.type, arg, argument, sender));
                     if (argIndex !== -1) {
                         let val = cleanedArgs[argIndex];
                         if (argument.type == 'player') {
@@ -247,7 +247,7 @@ export class Command {
                 }
             } else if (!dynProcessed && !argument.optional) return sender.sendMessage(`No value provided for required argument "${argument.name}".`);
         }
-        this.executeCallback(sender, args);
+        if (this.executeCallback) this.executeCallback(sender, args);
     }
     /**
      * Force execute an argument in this command
@@ -265,7 +265,7 @@ export class Command {
      * @param {any} argument The argument
      * @returns {boolean}
      */
-    checkArgumentType(type, value, argument) {
+    checkArgumentType(type, value, argument, sender) {
         switch (type) {
             case "dynamic":
                 return argument.values && argument.values.includes(value);
