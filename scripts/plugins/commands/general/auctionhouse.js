@@ -5,19 +5,19 @@ import { Vera } from "../../../API/Vera";
 
 const auctionItems = new ItemDB('auctions'), expiredAh = new ItemDB('expiredAuctions')
 
-Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd) => cmd
-    .setName('auctionhouse')
+Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd) => {
+    cmd.setName('auctionhouse')
     .setDescription('An auction house')
     .setCategory('general')
     .setAliases(['ah'])
-    .addDynamicArgument((arg) => arg
-        .setName('sell')
+    .addDynamicArgument((arg) => {
+        arg.setName('sell')
         .setOptional(true)
         .setValues(['sell'])
-    )
-    .addSubArguments('sell', (args) => args
-        .addNumberArgument((arg) => arg
-            .setName('price')
+    })
+    .addSubArguments('sell', (args) => {
+        args.addNumberArgument((arg) => {
+            arg.setName('price')
             .setCallback((sender, value) => {
                 if (auctionItems.allIDs().filter((k) => k.data.plrId == sender.id).length >= config.maxAuctions) return sender.response.error('You have made the maximum amount of auctions');
                 const inventory = sender.getComponent('inventory').container;
@@ -36,29 +36,29 @@ Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd) => cmd
                 })
                 inventory.setItem(sender.selectedSlot);
             })
-        )
-    )
-    .addDynamicArgument((arg) => arg
-        .setName('search')
+        })
+    })
+    .addDynamicArgument((arg) => {
+        arg.setName('search')
         .setOptional(true)
         .setValues(['search'])
-    )
-    .addSubArguments('search', (args) => args
-        .addAnyArgument((arg) => arg
-            .setName('name')
+    })
+    .addSubArguments('search', (args) => {
+        args.addAnyArgument((arg) => {
+            arg.setName('name')
             .setCallback((sender, value) => {
                 if (!auctionItems.allIDs().find((v) => v.data.creator == value)) return sender.response.error(`There were no auctions by the seller: ${value}`)
                 sender.response.send('Close the chat in 10 seconds')
                 search(1, sender, auctionItems.allIDs().find((v) => v.data.creator == value).data.plrId, value)
             })
-        )
-    )
+        })
+    })
     .execute((sender, args) => {
         if (args.length) return;
         sender.response.send('Close the chat within 10 secondes');
         allAuctions(1, sender)
     })
-)
+})
 
 const allAuctions = (page, sender) => {
     const aAuctions = auctionItems.allIDs().filter(item => {

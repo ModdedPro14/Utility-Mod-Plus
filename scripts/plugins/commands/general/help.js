@@ -1,13 +1,13 @@
 import { Vera } from "../../../API/Vera";
 import { commands } from "../../../API/handlers/command";
 
-Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd => cmd
-    .setName('help')
+Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd) => {
+    cmd.setName('help')
     .setCategory('general')
     .setAliases(['?'])
     .setDescription('Provides you a list of commands or information about a command')
-    .addAnyArgument((arg) => arg
-        .setName('command | page')
+    .addAnyArgument((arg) => {
+        arg.setName('command | page')
         .setOptional(true)
         .setCallback((sender, val) => {
             if (isNaN(val)) {
@@ -23,7 +23,7 @@ Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd => cmd
                 hI += `§l§4Usage:§4 [\n§c${cmdList.usage.join('\n')}\n§4]`;
                 sender.sendMessage(`§4${hI}`);   
             } else {
-                const cmdList = commands.filter(c => sender.hasTag('admin') ? true : !c.permissions.admin);
+                const cmdList = commands.filter(c => sender.permission.hasPermission('admin') ? true : sender.permission.hasPermission('mod') ? c.permissions.mod + !c.permissions.admin : !c.permissions.admin);
                 const commandList = new Array(Math.ceil(cmdList.length / 35)).fill(0).map(_ => cmdList.splice(0, 35)), help = [], categoryHold = [];
                 if (!commandList[val - 1]?.[0]) return sender.sendMessage('Unable to find this page');
                 for (const command of commandList[val - 1]) {
@@ -34,6 +34,6 @@ Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd => cmd
                 sender.sendMessage(`§l${help.join('\n')}\n§4§l<---------->\n§cPage: §a${val}§c/§a${commandList.length}\n§cUse "§4!help §4<Page Number>§c" §cTo see the next page\n§l§4<---------->`);
             }
         })
-    )
+    })
     .execute((sender, args) => !args.length && cmd.executeArgument('command | page', sender, 1))  
-))
+})

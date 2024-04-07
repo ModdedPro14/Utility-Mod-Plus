@@ -167,50 +167,69 @@ export class Command {
      * @returns 
      */
     executeCommand(sender, args) {
-        const parsedArgsObj = {}, processedIndices = new Set(), cleanedArgs = args
-        let dynProcessed = false
+        const parsedArgsObj = {}, processedIndices = new Set(), cleanedArgs = args;
+        let dynProcessed = false;
         for (const argument of this.arguments) {
             if (argument.type === 'dynamic') {
                 const dynamicArgIndex = cleanedArgs.findIndex(arg => argument.values.includes(arg));
                 if (dynamicArgIndex !== -1) {
-                    dynProcessed = true;
                     const subArgs = {}, subArguments = argument.subArguments ?? [];
                     for (const subArg of subArguments) {
                         const subArgIndex = dynamicArgIndex + 1 + subArguments.indexOf(subArg);
                         if (cleanedArgs[subArgIndex] && !argument.subArguments.find(sa => sa.name === cleanedArgs[subArgIndex])) {
-                            let val = cleanedArgs[subArgIndex]
-                            if (subArg.type == 'player') {
-                                let player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val
-                                if (val == '@s') player = sender
-                                if (!subArg.data.self && player == sender) return sender.sendMessage('The player argument cannot be yourself')
-                                val = player
+                            let val = cleanedArgs[subArgIndex];
+                            if (subArg.type === 'player') {
+                                let player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val;
+                                if (val == '@s') player = sender;
+                                if (!subArg.data.self && player == sender) return sender.sendMessage('The player argument cannot be yourself');
+                                val = player;
                             }
-                            subArgs[subArg.name] = val
+                            subArgs[subArg.name] = val;
+                            processedIndices.add(subArgIndex);
                         }
-                    }
-                    for (const subArg of subArguments) {
                         if (!subArgs[subArg.name] && !subArg.optional) return sender.sendMessage(`No value provided for sub-argument "${subArg.name}".`);
                         if (subArgs[subArg.name] && !this.checkArgumentType(subArg.type, subArgs[subArg.name], subArg, sender)) return sender.sendMessage(`Invalid type for sub-argument "${subArg.name}".`);
                     }
                     parsedArgsObj[argument.name] = subArgs;
                     processedIndices.add(dynamicArgIndex);
-                    for (const subArgName in subArgs) {
-                        const subArgIndex = cleanedArgs.findIndex(arg => arg === subArgs[subArgName]);
-                        processedIndices.add(subArgIndex);
-                    }
+                    dynProcessed = true;
+                    break;
                 }
-            } else {
-                if (!dynProcessed) {
+            }
+        }
+        if (!dynProcessed) {
+            for (const argument of this.arguments) {
+                if (argument.type !== 'dynamic') {
                     const argIndex = cleanedArgs.findIndex(arg => this.checkArgumentType(argument.type, arg, argument, sender));
                     if (argIndex !== -1) {
+                        const subArgs = {}
                         let val = cleanedArgs[argIndex];
-                        if (argument.type == 'player') {
-                            let player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val
-                            if (val == '@s') player = sender
-                            if (!argument.data.self && player == sender) return sender.sendMessage('The player argument cannot be yourself')
-                            val = player
+                        if (argument.type === 'player') {
+                            let player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val;
+                            if (val == '@s') player = sender;
+                            if (!argument.data.self && player == sender) return sender.sendMessage('The player argument cannot be yourself');
+                            val = player;
                         }
                         parsedArgsObj[argument.name] = val;
+                        processedIndices.add(argIndex);
+                        const subArguments = argument.subArguments ?? [];
+                        for (const subArg of subArguments) {
+                            const subArgIndex = argIndex + 1 + subArguments.indexOf(subArg);
+                            if (cleanedArgs[subArgIndex] && !argument.subArguments.find(sa => sa.name === cleanedArgs[subArgIndex])) {
+                                let val = cleanedArgs[subArgIndex];
+                                if (subArg.type === 'player') {
+                                    let player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val;
+                                    if (val == '@s') player = sender;
+                                    if (!subArg.data.self && player == sender) return sender.sendMessage('The player argument cannot be yourself');
+                                    val = player;
+                                }
+                                subArgs[subArg.name] = val;
+                                processedIndices.add(subArgIndex)
+                            }
+                            if (!subArgs[subArg.name] && !subArg.optional) return sender.sendMessage(`No value provided for sub-argument "${subArg.name}".`);
+                            if (subArgs[subArg.name] && !this.checkArgumentType(subArg.type, subArgs[subArg.name], subArg, sender)) return sender.sendMessage(`Invalid type for sub-argument "${subArg.name}".`);
+                        }
+                        parsedArgsObj[argument.name] = { val: val, subArgs: subArgs };
                         processedIndices.add(argIndex);
                     } else if (!argument.optional) return sender.sendMessage(`No value provided for required argument "${argument.name}".`);
                 }
@@ -221,33 +240,29 @@ export class Command {
             if (argument.type === 'dynamic') {
                 const dynamicArgValue = cleanedArgs.find(arg => argument.values.includes(arg));
                 if (dynamicArgValue !== undefined) {
-                    dynProcessed = true
                     if (argument.callback) argument.callback(sender, dynamicArgValue, parsedArgsObj);
                     if (argument.subArguments) {
-                        if (Object.keys(parsedArgsObj[argument.name]).length > 0) {
-                            for (const subArgName in parsedArgsObj[argument.name]) {
-                                const subArgValue = parsedArgsObj[argument.name][subArgName], subArgument = argument.subArguments.find(subArg => subArg.name === subArgName);
-                                if (subArgument && subArgument.callback) subArgument.callback(sender, subArgValue, args);
+                        const subArgs = parsedArgsObj[argument.name];
+                        if (subArgs && Object.keys(subArgs).length > 0) {
+                            for (const subArgName in subArgs) {
+                                const subArgument = argument.subArguments.find(subArg => subArg.name === subArgName);
+                                if (subArgument && subArgument.callback) subArgument.callback(sender, subArgs[subArgName], args);
                             }
                         }
                     }
                 }
-            }
-        }
-        for (const argument of this.arguments) {
-            if (dynProcessed) continue;
-            if (argument.type !== 'dynamic' && parsedArgsObj.hasOwnProperty(argument.name)) {
-                let argValue = parsedArgsObj[argument.name];
-                if (argument.callback) argument.callback(sender, argValue, parsedArgsObj);
+            } else if (parsedArgsObj.hasOwnProperty(argument.name)) {
+                if (argument.callback) argument.callback(sender, parsedArgsObj[argument.name].val, parsedArgsObj);
                 if (argument.subArguments) {
-                    if (Object.keys(parsedArgsObj[argument.name]).length > 0) {
-                        for (const subArgName in parsedArgsObj[argument.name]) {
-                            const subArgValue = parsedArgsObj[argument.name][subArgName], subArgument = argument.subArguments.find(subArg => subArg.name === subArgName);
-                            if (subArgument && subArgument.callback) subArgument.callback(sender, subArgValue, args);
+                    const subArgs = parsedArgsObj[argument.name].subArgs;
+                    if (subArgs && Object.keys(subArgs).length > 0) {
+                        for (const subArgName in subArgs) {
+                            const subArgument = argument.subArguments.find(subArg => subArg.name === subArgName);
+                            if (subArgument && subArgument.callback) subArgument.callback(sender, subArgs[subArgName], args);
                         }
                     }
                 }
-            } else if (!dynProcessed && !argument.optional) return sender.sendMessage(`No value provided for required argument "${argument.name}".`);
+            }
         }
         if (this.executeCallback) this.executeCallback(sender, args);
     }
