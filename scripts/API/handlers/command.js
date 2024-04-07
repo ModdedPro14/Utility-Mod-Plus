@@ -180,7 +180,8 @@ export class Command {
                         if (cleanedArgs[subArgIndex] && !argument.subArguments.find(sa => sa.name === cleanedArgs[subArgIndex])) {
                             let val = cleanedArgs[subArgIndex]
                             if (subArg.type == 'player') {
-                                const player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val
+                                let player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val
+                                if (val == '@s') player = sender
                                 if (!subArg.data.self && player == sender) return sender.sendMessage('The player argument cannot be yourself')
                                 val = player
                             }
@@ -204,7 +205,8 @@ export class Command {
                     if (argIndex !== -1) {
                         let val = cleanedArgs[argIndex];
                         if (argument.type == 'player') {
-                            const player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val
+                            let player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val
+                            if (val == '@s') player = sender
                             if (!argument.data.self && player == sender) return sender.sendMessage('The player argument cannot be yourself')
                             val = player
                         }
@@ -274,7 +276,8 @@ export class Command {
             case "boolean":
                 return value?.toLowerCase() === "true" || value?.toLowerCase() === "false";
             case "player":
-                const player = world.getAllPlayers().find(p => p.name.toLowerCase() === value.toLowerCase());
+                let player = world.getAllPlayers().find(p => p.name.toLowerCase() === value.toLowerCase());
+                if (value == '@s') player = sender
                 if (!player) return false;                 
                 if (!argument.data.self && player === sender) return false;
                 return true;

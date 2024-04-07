@@ -18,7 +18,9 @@ export class ChestForm {
         this.data = {
             size: sizes[size],
             title: sizes[size][0],
-            buttons: []
+            buttons: [],
+            callbacks: [],
+            taken: []
         };
         for (let i = 0; i < this.data.size[1]; i++)
             this.data.buttons.push(['', undefined]);
@@ -44,22 +46,40 @@ export class ChestForm {
         return this;
     }
     /**
-     * Adds a button to the chest form
-     * @param {number} slot The slot to add too
+     * Sets a button to the chest form
+     * @param {number} slot The slot to set to
      * @param {any} itemName The item name
      * @param {any[]} itemDesc The description of the item 
-     * @param {string} iconPath The icon of the item
+     * @param {string} texture The icon of the item
      * @param {number} stackSize The amount of the item
      * @param {boolean} enchanted If the item is enchanted
      * @returns 
      */
-    addButton(slot, itemName, itemDesc, texture, stackSize = 1, enchanted = false) {
+    setButton(slot, itemName, itemDesc, texture, stackSize = 1, enchanted = false) {
         const ID = typeIdToDataId.get(texture) ?? typeIdToID.get(texture);
 		this.data.buttons.splice(slot, 1, [`stack#${Math.min(Math.max(stackSize, 1) || 1, 99).toString().padStart(2, '0')}§r${itemName ?? ''}§r${itemDesc?.length ? `\n§r${itemDesc.join('\n§r')}` : ''}`,
 		(((ID + (ID < 256 ? 0 : number_of_1_16_100_items)) * 65536) + (!!enchanted * 32768)) || texture
 		]);
-		return this;
-    }   
+        this.data.taken.push(slot)
+		return this
+    }
+    /**
+     * Add a button to the form
+     * @param {any} itemName The item name
+     * @param {any[]} itemDesc The description of the item 
+     * @param {string} texture The icon of the item
+     * @param {number} stackSize The amount of the item
+     * @param {boolean} enchanted If the item is enchanted
+     * @returns
+     */
+    addButton(itemName, itemDesc, texture, stackSize = 1, enchanted = false) {
+        for (let i = 0; i < this.data.size[1]; i++) {
+            if (this.data.taken.includes(i)) continue;
+            this.setButton(i, itemName, itemDesc, texture, stackSize, enchanted)
+            return i
+        }
+        return this
+    }
     /**
      * Adds a pattren to the chest form
      * @param {'top' | 'bottom' | 'circle'} type The type of the pattren
@@ -76,37 +96,47 @@ export class ChestForm {
             for (let i = 0; i < 9; i++) {
                 if (exculdeSlots.includes(i))
                     continue;
-                this.addButton(i, itemName, itemDsc, iconPath, stackSize, enchanted);
+                this.setButton(i, itemName, itemDsc, iconPath, stackSize, enchanted);
             }
         }
         else if (type == 'circle') {
             this.addPattren('top', itemName, itemDsc, iconPath, exculdeSlots, stackSize, enchanted);
             this.addPattren('bottom', itemName, itemDsc, iconPath, exculdeSlots, stackSize, enchanted);
-            if (!exculdeSlots.includes(9)) this.addButton(9, itemName, itemDsc, iconPath, stackSize, enchanted);
-            if (!exculdeSlots.includes(17)) this.addButton(17, itemName, itemDsc, iconPath, stackSize, enchanted);
+            if (!exculdeSlots.includes(9)) this.setButton(9, itemName, itemDsc, iconPath, stackSize, enchanted);
+            if (!exculdeSlots.includes(17)) this.setButton(17, itemName, itemDsc, iconPath, stackSize, enchanted);
             if (this.data.size[1] == 54) {
-                if (!exculdeSlots.includes(18)) this.addButton(18, itemName, itemDsc, iconPath, stackSize, enchanted);
-                if (!exculdeSlots.includes(26)) this.addButton(26, itemName, itemDsc, iconPath, stackSize, enchanted);
-                if (!exculdeSlots.includes(27)) this.addButton(27, itemName, itemDsc, iconPath, stackSize, enchanted);
-                if (!exculdeSlots.includes(35)) this.addButton(35, itemName, itemDsc, iconPath, stackSize, enchanted);
-                if (!exculdeSlots.includes(36)) this.addButton(36, itemName, itemDsc, iconPath, stackSize, enchanted);
-                if (!exculdeSlots.includes(44)) this.addButton(44, itemName, itemDsc, iconPath, stackSize, enchanted);
+                if (!exculdeSlots.includes(18)) this.setButton(18, itemName, itemDsc, iconPath, stackSize, enchanted);
+                if (!exculdeSlots.includes(26)) this.setButton(26, itemName, itemDsc, iconPath, stackSize, enchanted);
+                if (!exculdeSlots.includes(27)) this.setButton(27, itemName, itemDsc, iconPath, stackSize, enchanted);
+                if (!exculdeSlots.includes(35)) this.setButton(35, itemName, itemDsc, iconPath, stackSize, enchanted);
+                if (!exculdeSlots.includes(36)) this.setButton(36, itemName, itemDsc, iconPath, stackSize, enchanted);
+                if (!exculdeSlots.includes(44)) this.setButton(44, itemName, itemDsc, iconPath, stackSize, enchanted);
             }
         }
         else if (this.data.size[1] == 27 && type == 'bottom') {
             for (let i = 18; i < 27; i++) {
                 if (exculdeSlots.includes(i))
                     continue;
-                this.addButton(i, itemName, itemDsc, iconPath, stackSize, enchanted);
+                this.setButton(i, itemName, itemDsc, iconPath, stackSize, enchanted);
             }
         }
         else {
             for (let i = 45; i < 54; i++) {
                 if (exculdeSlots.includes(i)) continue;
-                this.addButton(i, itemName, itemDsc, iconPath, stackSize, enchanted);
+                this.setButton(i, itemName, itemDsc, iconPath, stackSize, enchanted);
             }
         }
         return this;
+    }
+    /**
+     * Set a button callback
+     * @param {number} id The id/slot of the button
+     * @param {() => void} callback The callback to set
+     * @returns 
+     */
+    executeButton(id, callback) {
+        this.data.callbacks.push({ id: id, callback: callback})
+        return this
     }
     /**
      * Force show the chest form
@@ -126,6 +156,10 @@ export class ChestForm {
             const response = await (form.show(player));
             if (response.cancelationReason !== "UserBusy") {
                 callback(response);
+                if (response.canceled) return
+                this.data.callbacks.forEach((c) => {
+                    if (response.selection == c.id) c.callback(response)
+                })
                 return response;
             }
         }
@@ -144,7 +178,11 @@ export class ChestForm {
             form.button(button[0], button[1]?.toString());
         });
         return form.show(player).then((response) => {
-            callback(response);
+            if (callback) callback(response); 
+            if (response.canceled) return
+            this.data.callbacks.forEach((c) => {
+                if (response.selection == c.id) c.callback(response)
+            })
         });
     }
 }

@@ -23,7 +23,7 @@ Vera.JAR.getPackage(Vera.Engine.new.commandPackage).unpack((cmd => cmd
                 hI += `§l§4Usage:§4 [\n§c${cmdList.usage.join('\n')}\n§4]`;
                 sender.sendMessage(`§4${hI}`);   
             } else {
-                const cmdList = commands.filter(c => sender.hasTag('admin') ? c.permissions.admin : !c.permissions.admin);
+                const cmdList = commands.filter(c => sender.hasTag('admin') ? true : !c.permissions.admin);
                 const commandList = new Array(Math.ceil(cmdList.length / 35)).fill(0).map(_ => cmdList.splice(0, 35)), help = [], categoryHold = [];
                 if (!commandList[val - 1]?.[0]) return sender.sendMessage('Unable to find this page');
                 for (const command of commandList[val - 1]) {
