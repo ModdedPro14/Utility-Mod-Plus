@@ -135,7 +135,9 @@ export class Command {
      * Build the usage of the command
      */
     buildUsage() {
-        const dynamicArguments = this.arguments.filter(argument => argument.type === 'dynamic'), staticArguments = this.arguments.filter(argument => argument.type !== 'dynamic'), dynamicUsages = dynamicArguments.flatMap(dynamicArg => {
+        const dynamicArguments = this.arguments.filter(argument => argument.type === 'dynamic'), staticArguments = this.arguments.filter(argument => argument.type !== 'dynamic');
+        if (staticArguments.every(argument => argument.optional)) this.usage.push(`!${this.name}`);
+        const dynamicUsages = dynamicArguments.flatMap(dynamicArg => {
             const dynamicUsage = dynamicArg.optional ? `<${dynamicArg.name}: optional>` : `${dynamicArg.name}`;
             if (dynamicArg.subArguments && dynamicArg.subArguments.length > 0) {
                 return dynamicArg.subArguments.map(subArg => {
@@ -144,8 +146,12 @@ export class Command {
                 }).map(subArgUsage => `${dynamicUsage} ${subArgUsage}`);
             } else return [dynamicUsage];
         });
-        const staticUsages = staticArguments.map(argument => { return argument.optional ? `[${argument.name}: ${argument.type}]` : `<${argument.name}: ${argument.type}>` }), allUsages = [...dynamicUsages, ...staticUsages];
-        allUsages.forEach(usage => this.usage.push(`!${this.name} ${usage}`));
+        const staticUsages = staticArguments.flatMap(argument => {
+            const staticUsage = argument.optional ? `[${argument.name}: ${argument.type}]` : `<${argument.name}: ${argument.type}>`;
+            if (argument.subArguments && argument.subArguments.length > 0) return argument.subArguments.map(subArg => { return subArg.optional ? `[${subArg.name}: ${subArg.type}]` : `<${subArg.name}: ${subArg.type}>`; }).map(subArgUsage => `${staticUsage} ${subArgUsage}`);
+            else return [staticUsage];
+        });
+        [...dynamicUsages, ...staticUsages].forEach(usage => this.usage.push(`!${this.name} ${usage}`));
     }
     /**
      * Adds sub arguments to an argument
@@ -181,14 +187,14 @@ export class Command {
                             if (subArg.type === 'player') {
                                 let player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val;
                                 if (val == '@s') player = sender;
-                                if (!subArg.data.self && player == sender) return sender.sendMessage('The player argument cannot be yourself');
+                                if (!subArg.data.self && player == sender) return sender.response.error('The player argument cannot be yourself!')
                                 val = player;
                             }
                             subArgs[subArg.name] = val;
                             processedIndices.add(subArgIndex);
                         }
-                        if (!subArgs[subArg.name] && !subArg.optional) return sender.sendMessage(`No value provided for sub-argument "${subArg.name}".`);
-                        if (subArgs[subArg.name] && !this.checkArgumentType(subArg.type, subArgs[subArg.name], subArg, sender)) return sender.sendMessage(`Invalid type for sub-argument "${subArg.name}".`);
+                        if (!subArgs[subArg.name] && !subArg.optional) return sender.response.error(`No value provided for sub argument ${subArg.name}!`);
+                        if (subArgs[subArg.name] && !this.checkArgumentType(subArg.type, subArgs[subArg.name], subArg, sender)) return sender.response.error(`Invalid value for sub argument ${subArg.name}!`);
                     }
                     parsedArgsObj[argument.name] = subArgs;
                     processedIndices.add(dynamicArgIndex);
@@ -207,7 +213,6 @@ export class Command {
                         if (argument.type === 'player') {
                             let player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val;
                             if (val == '@s') player = sender;
-                            if (!argument.data.self && player == sender) return sender.sendMessage('The player argument cannot be yourself');
                             val = player;
                         }
                         parsedArgsObj[argument.name] = val;
@@ -220,22 +225,22 @@ export class Command {
                                 if (subArg.type === 'player') {
                                     let player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val;
                                     if (val == '@s') player = sender;
-                                    if (!subArg.data.self && player == sender) return sender.sendMessage('The player argument cannot be yourself');
+                                    if (!subArg.data.self && player == sender) return sender.response.error('The player argument cannot be yourself!')
                                     val = player;
                                 }
                                 subArgs[subArg.name] = val;
                                 processedIndices.add(subArgIndex)
                             }
-                            if (!subArgs[subArg.name] && !subArg.optional) return sender.sendMessage(`No value provided for sub-argument "${subArg.name}".`);
-                            if (subArgs[subArg.name] && !this.checkArgumentType(subArg.type, subArgs[subArg.name], subArg, sender)) return sender.sendMessage(`Invalid type for sub-argument "${subArg.name}".`);
+                            if (!subArgs[subArg.name] && !subArg.optional) return sender.response.error(`No value provided for sub argument ${subArg.name}!`);
+                            if (subArgs[subArg.name] && !this.checkArgumentType(subArg.type, subArgs[subArg.name], subArg, sender)) return sender.response.error(`Invalid value for sub argument ${subArg.name}!`);
                         }
                         parsedArgsObj[argument.name] = { val: val, subArgs: subArgs };
                         processedIndices.add(argIndex);
-                    } else if (!argument.optional) return sender.sendMessage(`No value provided for required argument "${argument.name}".`);
+                    } else if (!argument.optional) return sender.response.error(`No value provided for required argument ${argument.name}!`);
                 }
             }
         }
-        if (cleanedArgs.length > processedIndices.size) return sender.sendMessage("Invalid command syntax. Extra arguments provided.");
+        if (cleanedArgs.length > processedIndices.size) return sender.response.error(`Invaild command syntax, maybe try removing "${cleanedArgs.filter((_, index) => !processedIndices.has(index)).join(" ")}"!`);
         for (const argument of this.arguments) {
             if (argument.type === 'dynamic') {
                 const dynamicArgValue = cleanedArgs.find(arg => argument.values.includes(arg));
