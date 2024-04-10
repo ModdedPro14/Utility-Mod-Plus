@@ -245,7 +245,7 @@ export class Command {
             if (argument.type === 'dynamic') {
                 const dynamicArgValue = cleanedArgs.find(arg => argument.values.includes(arg));
                 if (dynamicArgValue !== undefined) {
-                    if (argument.callback) argument.callback(sender, dynamicArgValue, parsedArgsObj);
+                    if (argument.callback) argument.callback(sender, dynamicArgValue, args);
                     if (argument.subArguments) {
                         const subArgs = parsedArgsObj[argument.name];
                         if (subArgs && Object.keys(subArgs).length > 0) {
@@ -257,7 +257,7 @@ export class Command {
                     }
                 }
             } else if (parsedArgsObj.hasOwnProperty(argument.name)) {
-                if (argument.callback) argument.callback(sender, parsedArgsObj[argument.name].val, parsedArgsObj);
+                if (argument.callback) argument.callback(sender, parsedArgsObj[argument.name].val, args);
                 if (argument.subArguments) {
                     const subArgs = parsedArgsObj[argument.name].subArgs;
                     if (subArgs && Object.keys(subArgs).length > 0) {
