@@ -174,10 +174,11 @@ export class Command {
      */
     executeCommand(sender, args) {
         const parsedArgsObj = {}, processedIndices = new Set(), cleanedArgs = args;
-        let dynProcessed = false;
+        let dynProcessed = false, processed = 0
         for (const argument of this.arguments) {
             if (argument.type === 'dynamic') {
                 const dynamicArgIndex = cleanedArgs.findIndex(arg => argument.values.includes(arg));
+                processed += 1
                 if (dynamicArgIndex !== -1) {
                     const subArgs = {}, subArguments = argument.subArguments ?? [];
                     for (const subArg of subArguments) {
@@ -200,23 +201,23 @@ export class Command {
                     processedIndices.add(dynamicArgIndex);
                     dynProcessed = true;
                     break;
-                }
+                } else if (processed >= this.arguments.length && !argument.optional) return sender.response.error(`No value provided for required argument ${argument.name}!`);
             }
         }
         if (!dynProcessed) {
+            let processed = 0
             for (const argument of this.arguments) {
                 if (argument.type !== 'dynamic') {
                     const argIndex = cleanedArgs.findIndex(arg => this.checkArgumentType(argument.type, arg, argument, sender));
+                    processed += 1
                     if (argIndex !== -1) {
                         const subArgs = {}
-                        let val = cleanedArgs[argIndex];
+                        let val = cleanedArgs[argIndex]
                         if (argument.type === 'player') {
                             let player = Vera.JAR.getRawPackage(Vera.Engine.raw.playerPackage).type(world.getAllPlayers().filter(p => p.name.toLowerCase() == val.toLowerCase())[0]) ?? val;
                             if (val == '@s') player = sender;
                             val = player;
                         }
-                        parsedArgsObj[argument.name] = val;
-                        processedIndices.add(argIndex);
                         const subArguments = argument.subArguments ?? [];
                         for (const subArg of subArguments) {
                             const subArgIndex = argIndex + 1 + subArguments.indexOf(subArg);
@@ -236,7 +237,8 @@ export class Command {
                         }
                         parsedArgsObj[argument.name] = { val: val, subArgs: subArgs };
                         processedIndices.add(argIndex);
-                    } else if (!argument.optional) return sender.response.error(`No value provided for required argument ${argument.name}!`);
+                        break;
+                    } else if (processed >= this.arguments.length && !argument.optional) return sender.response.error(`No value provided for required argument ${argument.name}!`);
                 }
             }
         }
@@ -245,25 +247,25 @@ export class Command {
             if (argument.type === 'dynamic') {
                 const dynamicArgValue = cleanedArgs.find(arg => argument.values.includes(arg));
                 if (dynamicArgValue !== undefined) {
-                    if (argument.callback) argument.callback(sender, dynamicArgValue, args);
+                    if (argument.callback) argument.callback(sender, dynamicArgValue, cleanedArgs.slice(cleanedArgs.indexOf(dynamicArgValue) + 1));
                     if (argument.subArguments) {
                         const subArgs = parsedArgsObj[argument.name];
                         if (subArgs && Object.keys(subArgs).length > 0) {
                             for (const subArgName in subArgs) {
                                 const subArgument = argument.subArguments.find(subArg => subArg.name === subArgName);
-                                if (subArgument && subArgument.callback) subArgument.callback(sender, subArgs[subArgName], args);
+                                if (subArgument && subArgument.callback) subArgument.callback(sender, subArgs[subArgName], cleanedArgs.slice(cleanedArgs.indexOf(subArgs[subArgName]) + 1));
                             }
                         }
                     }
                 }
             } else if (parsedArgsObj.hasOwnProperty(argument.name)) {
-                if (argument.callback) argument.callback(sender, parsedArgsObj[argument.name].val, args);
+                if (argument.callback) argument.callback(sender, parsedArgsObj[argument.name].val, cleanedArgs.slice(cleanedArgs.indexOf(parsedArgsObj[argument.name].val) + 1));
                 if (argument.subArguments) {
                     const subArgs = parsedArgsObj[argument.name].subArgs;
                     if (subArgs && Object.keys(subArgs).length > 0) {
                         for (const subArgName in subArgs) {
                             const subArgument = argument.subArguments.find(subArg => subArg.name === subArgName);
-                            if (subArgument && subArgument.callback) subArgument.callback(sender, subArgs[subArgName], args);
+                            if (subArgument && subArgument.callback) subArgument.callback(sender, subArgs[subArgName], cleanedArgs.slice(cleanedArgs.indexOf(subArgs[subArgName]) + 1));
                         }
                     }
                 }
