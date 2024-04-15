@@ -136,19 +136,21 @@ export class Command {
      */
     buildUsage() {
         const dynamicArguments = this.arguments.filter(argument => argument.type === 'dynamic'), staticArguments = this.arguments.filter(argument => argument.type !== 'dynamic');
-        if (staticArguments.every(argument => argument.optional)) this.usage.push(`!${this.name}`);
+        if (this.arguments.every((arg) => arg.optional)) this.usage.push(`!${this.name}`);
+        function getSubArgumentUsage(parentArgument) {
+            if (parentArgument.subArguments) {
+                const subArgumentUsage = parentArgument.subArguments.map(subArg => { return subArg.optional ? `[${subArg.name}: ${subArg.type}]` : `<${subArg.name}: ${subArg.type}>`; }).join(" ");
+                return subArgumentUsage;
+            }
+            return "";
+        }
         const dynamicUsages = dynamicArguments.flatMap(dynamicArg => {
-            const dynamicUsage = dynamicArg.optional ? `<${dynamicArg.name}: optional>` : `${dynamicArg.name}`;
-            if (dynamicArg.subArguments && dynamicArg.subArguments.length > 0) {
-                return dynamicArg.subArguments.map(subArg => {
-                    if (subArg.type === 'dynamic') return subArg.optional ? `<${subArg.name}: optional>` : `${subArg.name}`;
-                    else return subArg.optional ? `[${subArg.name}: ${subArg.type}]` : `<${subArg.name}: ${subArg.type}>`;
-                }).map(subArgUsage => `${dynamicUsage} ${subArgUsage}`);
-            } else return [dynamicUsage];
-        });
-        const staticUsages = staticArguments.flatMap(argument => {
-            const staticUsage = argument.optional ? `[${argument.name}: ${argument.type}]` : `<${argument.name}: ${argument.type}>`;
-            if (argument.subArguments && argument.subArguments.length > 0) return argument.subArguments.map(subArg => { return subArg.optional ? `[${subArg.name}: ${subArg.type}]` : `<${subArg.name}: ${subArg.type}>`; }).map(subArgUsage => `${staticUsage} ${subArgUsage}`);
+            const dynamicUsage = dynamicArg.optional ? `<${dynamicArg.name}: optional>` : `${dynamicArg.name}`, subArgumentUsage = getSubArgumentUsage(dynamicArg);
+            if (subArgumentUsage) return [`${dynamicUsage} ${subArgumentUsage}`];
+            else return [dynamicUsage];
+        }), staticUsages = staticArguments.flatMap(argument => {
+            const staticUsage = argument.optional ? `[${argument.name}: ${argument.type}]` : `<${argument.name}: ${argument.type}>`, subArgumentUsage = getSubArgumentUsage(argument);
+            if (subArgumentUsage) return [`${staticUsage} ${subArgumentUsage}`];
             else return [staticUsage];
         });
         [...dynamicUsages, ...staticUsages].forEach(usage => this.usage.push(`!${this.name} ${usage}`));
